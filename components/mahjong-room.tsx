@@ -1,6 +1,6 @@
 "use client";
 import {useEffect,useState} from 'react';
-import {ArrowLeft,Copy,DoorOpen,History,Layers3,LogOut,Menu,Trophy,X} from 'lucide-react';
+import {ArrowLeft,Copy,DoorOpen,History,Layers3,LogOut,Menu,SlidersHorizontal,Trophy,X} from 'lucide-react';
 import type {MahjongView} from '@/lib/mahjong/game';
 import type {ChatBubble,ChatSnapshot} from '@/lib/chat-bubbles';
 import {chips,publicRound} from '@/lib/mahjong/report';
@@ -18,7 +18,6 @@ import {RoomFriends} from './friends-panel';
 import {RoomChat} from './room-chat';
 import {RoomCodeCopy} from './room-code-copy';
 import {TableSound} from './table-sound';
-import {TableDetailsTrigger} from './table-ui';
 import {ReportDialog,RoundDetails} from './mahjong-report';
 import {Button} from './ui/button';
 import {Sheet,SheetTrigger,SheetContent,SheetTitle,SheetDescription,SheetClose} from './ui/sheet';
@@ -45,7 +44,7 @@ export function MahjongRoom({room,userId,busy,selected,onSelect,connected,bubble
  return <main className="mj-room mj-immersive table-light" aria-label="四人麻将牌桌">
  <div className="mj-table-frame" aria-hidden="true"/><div className="mj-table-brand" aria-hidden="true">娱乐中心<small>好 友 游 戏 室</small></div>
  <Sound room={room} userId={userId} target={soundTarget}/><Sheet open={menuOpen} onOpenChange={setMenuOpen}><SheetTrigger asChild><button className="mj-menu mj-menu-toggle" aria-label="牌桌菜单"><Menu size={24}/><span>菜单</span></button></SheetTrigger><SheetContent side="left" className="mj-menu-drawer" showCloseButton={false}><div className="mj-menu-panel"><header><SheetTitle>{room.title}</SheetTitle><SheetDescription>牌桌菜单</SheetDescription><SheetClose className="mj-menu-close" aria-label="收起牌桌菜单"><ArrowLeft size={20}/></SheetClose><span>房间 {room.code}<RoomCodeCopy code={room.code} compact/></span><small>{g.rules.name}{g.session?' · 基础 '+chips(g.session.baseChips)+' 筹码':''}</small></header><Button variant="ghost" onClick={()=>{setMenuOpen(false);onBack()}}><ArrowLeft size={17}/>返回大厅（保留座位）</Button>{!solo&&<Button variant="ghost" onClick={()=>void copy()}><Copy size={17}/>邀请朋友</Button>}{copyHint&&<p role="status">{copyHint}</p>}<RoomFriends code={room.code} game={g}/><div ref={setSoundTarget}/>
-<Dialog><DialogTrigger asChild><TableDetailsTrigger/></DialogTrigger><DialogContent className="mj-details-modal"><DialogHeader><DialogTitle>牌桌详情</DialogTitle><DialogDescription>本桌规则、筹码收支与公开操作记录。</DialogDescription></DialogHeader><div className="mj-details-content"><section className="mj-side-card"><div className="section-tag">这 一 桌</div><h3>{g.rules.name}</h3><p>136 张 · 无花牌<br/>不换三张 · 不定缺</p><div className="mj-rule-facts">{g.session?<><span>初始筹码<b>{chips(g.session.initialChips)} / 人</b></span><span>基础筹码<b>{chips(g.session.baseChips)} / 局</b></span><span>胡牌付款<b>自摸三家 · 点炮一家</b></span><span>响应时间<b>8 秒</b></span>{ham&&<><span>流局保留<b>12 张</b></span><span>庄家规则<b>庄赢或流局连庄</b></span>{g.wildcard>=0&&<span>赖子 / 白板代牌<b>{typeName(g.wildcard)}</b></span>}</>}</>:<span>胡牌基础分<b>1 分</b></span>}<span>出牌时限<b>{g.seconds} 秒</b></span></div><MahjongRules rulesId={g.rules.id} name={g.rules.name} snapshot={g.rules}/></section>
+<Dialog><DialogTrigger asChild><Button variant="ghost"><SlidersHorizontal size={18}/>牌桌详情</Button></DialogTrigger><DialogContent className="mj-details-modal"><DialogHeader><DialogTitle>牌桌详情</DialogTitle><DialogDescription>本桌规则、筹码收支与公开操作记录。</DialogDescription></DialogHeader><div className="mj-details-content"><section className="mj-side-card"><div className="section-tag">这 一 桌</div><h3>{g.rules.name}</h3><p>136 张 · 无花牌<br/>不换三张 · 不定缺</p><div className="mj-rule-facts">{g.session?<><span>初始筹码<b>{chips(g.session.initialChips)} / 人</b></span><span>基础筹码<b>{chips(g.session.baseChips)} / 局</b></span><span>胡牌付款<b>自摸三家 · 点炮一家</b></span><span>响应时间<b>8 秒</b></span>{ham&&<><span>流局保留<b>12 张</b></span><span>庄家规则<b>庄赢或流局连庄</b></span>{g.wildcard>=0&&<span>赖子 / 白板代牌<b>{typeName(g.wildcard)}</b></span>}</>}</>:<span>胡牌基础分<b>1 分</b></span>}<span>出牌时限<b>{g.seconds} 秒</b></span></div><MahjongRules rulesId={g.rules.id} name={g.rules.name} snapshot={g.rules}/></section>
  {g.entries.length>0&&<section className="mj-side-card ham-live-ledger"><h3>本局筹码流水</h3>{g.entries.map(e=><p key={e.id}>{e.description}</p>)}</section>}
  {g.result&&<section className="mj-side-card ham-current-result"><h3>本局计算</h3><RoundDetails round={publicRound(g.result)}/></section>}
  <section className="mj-side-card mj-log"><h3><History size={16}/>牌桌动态</h3>{g.log.length?<div>{g.log.slice(-15).reverse().map((l,i)=><p key={i}>{l.text}</p>)}</div>:<p>牌局开始后，公开动作会记录在这里。</p>}</section>
