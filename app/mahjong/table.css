@@ -106,3 +106,12 @@
 @media(prefers-reduced-motion:reduce){.mj-menu-drawer[data-slot=sheet-content]{animation:none!important;transition:none!important}}
 
 @media(orientation:landscape) and (max-height:500px){.portrait-south .mj-seat-name{position:absolute;left:calc(100% + 10px);top:8px;transform:none;margin-top:0}}
+
+/* Reserve space for full names even when every opponent has four exposed sets. */
+@media(min-width:581px) and (max-width:700px){.portrait-west .mj-seat-name,.portrait-east .mj-seat-name{width:78px}}
+@media(orientation:landscape) and (max-height:500px){.rack-north{width:48%}.portrait-south .mj-seat-name{top:24px}.portrait-north .mj-seat-name{font-size:9px;line-height:1.1;top:-3px}}
+@media(max-width:580px) and (orientation:portrait){.rack-north{left:40.5%;width:43%}}
+@media(max-width:580px) and (orientation:portrait) and (max-height:650px){.rack-west,.mj-immersive .rack-east{width:22dvh;top:39%}}
+
+.mj-center-turn{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+@media(orientation:landscape) and (max-height:500px){.portrait-west .mj-seat-name,.portrait-east .mj-seat-name{width:90px}}
