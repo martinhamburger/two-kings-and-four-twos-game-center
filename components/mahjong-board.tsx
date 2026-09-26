@@ -33,7 +33,9 @@ export function MahjongPortrait({g,index,position,own=false,botControls,bubble}:
 }
 const PlayerRack=memo(function PlayerRack({s,g,position,highlightType=null}:{s:Seat;g:MahjongView;position:string;highlightType?:number|null}){
  const finished=g.phase==='finished',visible=['playing','choosing','revealing','finished'].includes(g.phase);
- return <div className={`mj-outer-rack rack-${position}`}><div className="mj-rack-local"><div className="mj-concealed-rack" aria-label={`${s.name}的 ${s.count} 张${finished?'结算手牌':'暗手牌'}`}>{visible&&(finished?s.hand.map(t=><MahjongTile key={t} tile={t} small wildcard={g.wildcard}/>):Array.from({length:s.count},(_,i)=><MahjongTile key={i} hidden small/>))}</div><MahjongMelds s={s} own={false} finished={finished} wildcard={g.wildcard} highlightType={highlightType}/></div></div>;
+ // Reserve the extra tile slot before drawing, including after chi/pong/kong.
+ const restingCount=Math.max(0,13-s.melds.length*3);
+ return <div className={`mj-outer-rack rack-${position}`}><div className="mj-rack-local"><div className="mj-concealed-rack" aria-label={`${s.name}的 ${s.count} 张${finished?'结算手牌':'暗手牌'}`}>{visible&&<>{finished?s.hand.map((t,i)=><MahjongTile key={t} tile={t} small drawn={i===restingCount} wildcard={g.wildcard}/>):Array.from({length:s.count},(_,i)=><MahjongTile key={i} hidden small drawn={i===restingCount}/>)}{s.count<=restingCount&&<span className="mj-tile is-small is-back is-drawn mj-draw-placeholder" aria-hidden="true"/>}</>}</div><MahjongMelds s={s} own={false} finished={finished} wildcard={g.wildcard} highlightType={highlightType}/></div></div>;
 });
 export const MahjongSurface=memo(function MahjongSurface({g,seat,clock,children,botControls,bubbles={},expanded=false,highlightType=null}:{g:MahjongView;seat:number;clock?:MahjongClockSource;children?:ReactNode;botControls?:BotSeatControls;bubbles?:Record<string,ChatBubble>;expanded?:boolean;highlightType?:number|null}){
  const positions=['south','east','north','west'];
