@@ -1,4 +1,5 @@
 "use client";
+import {PlayerAvatar} from './player-avatar';
 import type {ReactNode} from 'react';
 import {ArrowRight,Info,Users} from 'lucide-react';
 import {useClub,HistoryEntry} from './club-provider';
@@ -17,5 +18,5 @@ export function GameLobby({game,actions,art,code,onCode,onJoin,busy}:{game:Game;
  {lobby?.config.announcement&&<div className="game-lobby-notice"><Info size={17}/><span>{lobby.config.announcement}</span></div>}
  <section className="lobby-feature"><div className="lobby-feature-copy"><span className="lobby-feature-kicker">{c.number} / 好友牌桌</span><h2>{c.name}</h2><p>{c.subtitle}</p><div className="lobby-feature-tags"><span><Users size={15}/>{c.tags[0]}</span><span>{c.tags[1]}</span></div><div className="lobby-feature-actions">{actions}</div></div><div className={`lobby-feature-art art-${game}`} aria-hidden="true">{art}</div><footer><span>{c.footer}</span><span>输赢是过程，开心是正事。</span></footer></section>
  <section className="lobby-join"><div><h3>朋友已经开桌了？</h3><p>输入 6 位房间号，马上入座。</p></div><form onSubmit={e=>{e.preventDefault();onJoin()}}><Input aria-label="6 位房间号" placeholder="6 位房间号" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} value={code} onChange={e=>onCode(e.target.value.replace(/\D/g,''))} required/><Button type="submit" disabled={busy||code.length!==6}>加入房间<ArrowRight size={17}/></Button></form></section>
- </section><aside className="game-lobby-aside"><section className="lobby-profile"><span className="lobby-profile-avatar">{user.name.slice(0,1)}</span><div><h3>{user.name}</h3><p>今天也来一场好牌</p></div></section><HistoryEntry game={game}/><FriendsPanel/><p className="lobby-aside-note">好友在线状态会定期更新。</p></aside></main>;
+ </section><aside className="game-lobby-aside"><section className="lobby-profile"><PlayerAvatar className="lobby-profile-avatar" name={user.name} userId={user.id}/><div><h3>{user.name}</h3><p>今天也来一场好牌</p></div></section><HistoryEntry game={game}/><FriendsPanel/><p className="lobby-aside-note">好友在线状态会定期更新。</p></aside></main>;
 }

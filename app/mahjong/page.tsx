@@ -1,4 +1,5 @@
 "use client";
+import {useRoomAvatarSync} from '@/components/avatar-provider';
 import "./table.css";
 import {useCallback,useEffect,useRef,useState} from 'react';
 import {useSearchParams} from 'next/navigation';
@@ -32,6 +33,7 @@ export default function MahjongPage(){
  const {openRoom,followRoom}=useRoomNavigation();
 
  const [room,setRoom]=useClubState<Room|null>('mahjong:room',null);
+ useRoomAvatarSync(room?.code);
  const [error,setError]=useState(''),[busy,setBusy]=useState(false),[code,setCode]=useClubState('mahjong:code',''),[title,setTitle]=useClubState('mahjong:title','');
  const [createOpen,setCreateOpen]=useState(false),[endAction,setEndAction]=useState<'leave'|'end_table'|'end_practice'|null>(null),[selected,setSelected]=useClubState<number|null>('mahjong:selected',null);
  const [mode,setMode]=useClubState('mahjong:mode','friends');

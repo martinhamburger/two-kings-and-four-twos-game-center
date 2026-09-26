@@ -41,3 +41,5 @@
 ## 加功能时保持的边界
 
 界面改动优先改组件；规则改动进入引擎并新增规则版本；账本改动集中在结算事务；数据库变更追加迁移。不要用昵称、聊天内容或日志文字来猜测牌局动作，也不要在组件里重算服务端筹码。
+
+账号头像由 `components/avatar-provider.tsx` 按用户订阅，`components/avatar-editor.tsx` 本地裁剪；`lib/avatar/` 负责输入结构、版本合并和资料查询。`/api/profile/avatar` 只写本人独立头像表，`/api/avatars/[userId]/[version]` 读取版本图片。元数据搭载现有好友心跳，牌局同步不读取图片；追加迁移保持旧账号、房间和筹码不变。
