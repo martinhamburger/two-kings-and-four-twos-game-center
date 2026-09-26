@@ -17,3 +17,8 @@ export async function boundedImage(req:Request){
  if(size>65536)throw new AppError('头像不能超过 64KB',413);
  const bytes=new Uint8Array(size);let offset=0;for(const part of chunks){bytes.set(part,offset);offset+=part.length;}return bytes;
 }
+
+export async function discardUnreadBody(req:Request){
+ if(!req.body||req.bodyUsed)return;
+ const reader=req.body.getReader();try{while(!(await reader.read()).done){/* Discard without retaining uploaded bytes. */}}finally{reader.releaseLock();}
+}
