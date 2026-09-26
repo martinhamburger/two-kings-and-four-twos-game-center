@@ -67,3 +67,13 @@
 .mj-self-rack>.mj-melds .mj-meld>div{width:100%;min-width:0}
 .mj-immersive .mj-self-rack>.mj-melds .mj-tile{width:var(--own-meld-w);height:auto;aspect-ratio:1/1.40625;flex-shrink:1;min-width:0}
 .mj-immersive .mj-self-rack>.mj-melds .mj-meld>span{font-size:clamp(11px,1vw,15px)}
+
+/* Size the readout from its console, leaving a separate rim for wind labels. */
+.mj-center-console .mj-center-display{width:58%;height:58%;padding:2px;gap:1px}
+.mj-center-console .mj-center-display>strong{font-size:min(42px,calc(var(--console-h)*.30),calc(var(--console-w)*.24));line-height:1}
+.mj-center-console .mj-center-display>.mj-center-phase{font-size:min(19px,calc(var(--console-w)*.16));line-height:1.1}
+.mj-center-console .mj-remaining{font-size:min(20px,calc(var(--console-h)*.16),calc(var(--console-w)*.14));line-height:1.1;gap:3px;white-space:nowrap}
+.mj-center-console .mj-remaining i{width:.55em;height:.8em;border-bottom-width:2px;flex-shrink:0}
+.mj-center-console .mj-remaining small{font-size:.65em}
+.mj-center-console .mj-wind{font-size:clamp(11px,calc(var(--console-h)*.14),20px)}
+.mj-center-console .wind-north{top:3px}.mj-center-console .wind-south{bottom:3px}
