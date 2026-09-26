@@ -59,7 +59,7 @@
 .mj-immersive .mj-rack-local .mj-tile{flex-shrink:1;min-width:0}
 @media(orientation:landscape) and (max-height:500px){.mj-immersive .rack-east{top:42%}.portrait-north{left:75%}}
 @media(max-width:580px) and (orientation:portrait){.mj-immersive .rack-east{top:46%}.portrait-north{left:64%}.rack-north{left:37.5%;width:49%}.mj-rotate-hint{top:52px}}
-@media(max-width:580px) and (orientation:portrait) and (max-height:650px){.portrait-west,.portrait-east{top:12%}.mj-rotate-hint{display:none}}
+@media(max-width:580px) and (orientation:portrait) and (max-height:650px){.portrait-west,.portrait-east{top:10%}.mj-rotate-hint{display:none}}
 
 /* Keep exposed sets legible; dense sets shrink within the reserved rack. */
 .mj-self-rack>.mj-melds{--own-meld-w:calc(var(--hand-w)*.75);max-width:100%}
