@@ -120,10 +120,47 @@
 .mj-immersive .mj-concealed-rack .is-drawn{margin-left:clamp(4px,.7vw,10px)}
 .mj-immersive .mj-concealed-rack .mj-draw-placeholder{visibility:hidden;pointer-events:none}
 
-/* Keep each player's tiles together instead of pinning melds to the far edge. */
-.mj-immersive .mj-rack-local{justify-content:center;gap:clamp(12px,1.2vw,24px)}
+/* Fixed anchors: changing tile counts never recenters a rack or its exposed sets. */
+.mj-immersive .mj-draw-placeholder{visibility:hidden;pointer-events:none}
+.mj-self-rack>.mj-melds{flex-direction:row-reverse;gap:12px}
+.mj-self-rack>.mj-melds .mj-meld{width:calc(var(--own-meld-w)*4 + 3px);flex:none}
+.mj-immersive .mj-self-rack>.mj-melds .mj-tile{flex:none}
 @media(min-width:581px),(orientation:landscape){
- .mj-self-rack{display:flex;align-items:end;justify-content:center;gap:clamp(16px,2vw,36px)}
- .mj-immersive .mj-self-rack>.mj-hand{position:relative;left:auto;bottom:auto;flex:none}
- .mj-self-rack>.mj-melds{position:static;flex:0 1 auto;min-width:0}
+ .mj-self-rack{left:50%;right:auto;transform:translateX(-50%);width:min(94%,calc(var(--hand-w)*14 + 82px))}
+ .mj-immersive .mj-self-rack>.mj-hand{left:0}
 }
+@media(max-width:580px) and (orientation:portrait){
+ .mj-self-rack>.mj-melds{--own-meld-w:min(calc(var(--hand-w)*.75),calc((100vw - 60px)/16));gap:8px}
+}
+/* Four fixed four-tile set slots also keep an existing pong still when it becomes a kong. */
+.mj-outer-rack{container-type:inline-size}
+.mj-immersive .mj-rack-local{--rack-tile-w:min(calc(var(--u)*2.3),calc((100cqw - 64px)/18));display:block}
+.mj-immersive .mj-rack-local>.mj-concealed-rack{position:absolute;left:0;bottom:0}
+.mj-immersive .mj-rack-local>.mj-melds{position:absolute;right:0;bottom:0;flex-direction:row-reverse;gap:8px}
+.mj-immersive .mj-rack-local .mj-meld{width:calc(var(--rack-tile-w)*4 + 3px);flex:none}
+.mj-immersive .mj-rack-local .mj-tile{width:var(--rack-tile-w);flex:none}
+.mj-immersive .mj-concealed-rack .mj-tile{height:calc(var(--rack-tile-w)*1.76)}
+.mj-immersive .mj-outer-rack .mj-meld .mj-tile{width:var(--rack-tile-w);height:calc(var(--rack-tile-w)*1.40625)}
+@media(max-width:1100px),(max-height:620px){.mj-immersive .mj-rack-local{--rack-tile-w:min(24px,calc((100cqw - 64px)/18))}}
+@media(orientation:landscape) and (max-height:500px){.mj-immersive .mj-rack-local{--rack-tile-w:min(14px,calc((100cqw - 48px)/18))}.mj-immersive .mj-rack-local>.mj-melds{gap:4px}}
+@media(max-width:580px) and (orientation:portrait){.mj-immersive .mj-rack-local{--rack-tile-w:min(13px,calc((100cqw - 44px)/18))}.mj-immersive .mj-rack-local>.mj-melds{gap:4px}}
+
+/* Side players have separate fixed hand and meld rails, using the empty space inward. */
+@media(min-width:701px) and (min-height:621px){
+ .mj-immersive .rack-west,.mj-immersive .rack-east{width:62dvh}
+ .mj-immersive .rack-west .mj-rack-local,.mj-immersive .rack-east .mj-rack-local{--rack-tile-w:min(calc(var(--u)*2.6),calc((100cqw - 24px)/14));--side-meld-w:min(calc(var(--meld-w)*1.5),calc((100cqw - 36px)/16))}
+ .mj-immersive .rack-west .mj-melds,.mj-immersive .rack-east .mj-melds{bottom:calc(var(--rack-tile-w)*1.76 + 14px)}
+ .mj-immersive .rack-west .mj-meld,.mj-immersive .rack-east .mj-meld{width:calc(var(--side-meld-w)*4 + 3px)}
+ .mj-immersive .rack-west .mj-meld .mj-tile,.mj-immersive .rack-east .mj-meld .mj-tile{width:var(--side-meld-w);height:calc(var(--side-meld-w)*1.40625)}
+}
+
+@media(min-width:701px) and (min-height:621px){.mj-immersive .rack-north .mj-rack-local{--rack-tile-w:min(calc(var(--u)*2.6),calc((100cqw - 64px)/18))}}
+
+/* Turn ownership is a shape and label, not just a text color change. */
+.mj-portrait.is-active .mj-portrait-frame{outline:3px solid #ffda69;outline-offset:3px;box-shadow:0 0 0 7px #f3c95928,0 0 22px #f2bc6280}
+.mj-turn-badge{position:absolute;z-index:2;left:50%;top:-9px;transform:translateX(-50%);padding:2px 7px;border-radius:5px;background:#ffe08a;color:#224b40;border:1px solid #fff4c8;font-size:11px;line-height:1.25;font-weight:750;white-space:nowrap;box-shadow:0 2px 5px #123f4666}
+.mj-center-console .mj-wind.is-active{color:#254d43;background:#ffe08a;border-radius:3px;outline:2px solid #ffedb0;box-shadow:0 0 0 4px #efc86350,0 0 12px #f3d585a0;text-shadow:none}
+@media(max-width:580px),(max-height:500px){.mj-turn-badge{font-size:9px;padding:1px 5px;top:-7px}}
+
+/* The scene must not scroll when the browser focuses a hand tile near the edge. */
+.mj-room.mj-immersive{overflow:clip}
