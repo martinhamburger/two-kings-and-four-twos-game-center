@@ -1,7 +1,7 @@
 "use client";
 import {createContext,useCallback,useContext,useEffect,useRef,useState,useSyncExternalStore,type ReactNode} from 'react';
 import {defaultAvatar,mergeProfiles,type AvatarProfile} from '@/lib/avatar/profile';
-import {useFriends} from './friends-provider';
+import {useFriends,useFriendsRefresh} from './friends-provider';
 import {AvatarEditor} from './avatar-editor';
 class AvatarStore{
  profiles:Record<string,AvatarProfile>={};listeners=new Set<()=>void>();
@@ -19,4 +19,4 @@ function AccountAvatars({userId,children}:{userId:string|null;children:ReactNode
  return <Context.Provider value={value}>{children}{userId&&open&&<AvatarEditor userId={userId} profile={store.read(userId)} accept={store.merge} close={()=>setOpen(false)}/>}</Context.Provider>;
 }
 export function useAvatar(id?:string){const context=useContext(Context),read=useCallback(()=>context.store.read(id),[context.store,id]);const profile=useSyncExternalStore(context.store.subscribe,read,()=>defaultAvatar);return {profile,editable:!!id&&id===context.userId,edit:context.edit};}
-export function useRoomAvatarSync(code?:string){const {refresh}=useFriends();useEffect(()=>{if(code)void refresh()},[code,refresh]);}
+export function useRoomAvatarSync(code?:string){const refresh=useFriendsRefresh();useEffect(()=>{if(code)void refresh()},[code,refresh]);}

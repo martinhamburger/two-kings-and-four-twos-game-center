@@ -4,6 +4,7 @@ import {api} from '@/lib/client';
 import {emptySocial,SOCIAL_POLL_MS,type SocialSnapshot} from '@/lib/club/social';
 type SocialContext={data:SocialSnapshot;ready:boolean;busy:boolean;error:string;refresh:()=>Promise<void>;send:(payload:Record<string,unknown>)=>Promise<any>};
 const Context=createContext<SocialContext|null>(null);
+const RefreshContext=createContext<(()=>Promise<void>)|null>(null);
 export function FriendsProvider({userId,children}:{userId:string|null;children:ReactNode}){
  const [state,setState]=useState<{owner:string|null;data:SocialSnapshot;ready:boolean;error:string}>({owner:null,data:emptySocial(),ready:false,error:''});
  const [busy,setBusy]=useState(false),serial=useRef(0),identity=useRef(userId),mutating=useRef(false),poll=useRef<AbortController|null>(null);
@@ -32,6 +33,8 @@ export function FriendsProvider({userId,children}:{userId:string|null;children:R
   finally{if(identity.current===userId){mutating.current=false;setBusy(false);}}
  },[userId]);
  const own=state.owner===userId;
- return <Context.Provider value={{data:own?state.data:emptySocial(),ready:own&&state.ready,busy,error:own?state.error:'',refresh,send}}>{children}</Context.Provider>;
+ return <Context.Provider value={{data:own?state.data:emptySocial(),ready:own&&state.ready,busy,error:own?state.error:'',refresh,send}}><RefreshContext.Provider value={refresh}>{children}</RefreshContext.Provider></Context.Provider>;
 }
 export function useFriends(){const value=useContext(Context);if(!value)throw Error('FriendsProvider is required');return value;}
+
+export function useFriendsRefresh(){const refresh=useContext(RefreshContext);if(!refresh)throw Error('FriendsProvider is required');return refresh;}
