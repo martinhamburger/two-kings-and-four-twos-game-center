@@ -122,6 +122,7 @@ try {
     const room = (await request(endpoint, { action: 'create', capacity: size, mode: 'practice', title: '本机自动验收' }, player.cookie)).data;
     assert.equal(room.game.seats.length, size);
     assert.equal(room.game.seats.filter(seat => seat.bot).length, size - 1);
+    if(endpoint==='/api/game'){const sync=(await request('/api/game/sync?room='+room.code+'&revision='+room.revision,undefined,player.cookie)).data;assert.equal(sync.room,null);assert.equal(sync.revision,room.revision);}
     await request(endpoint + '?room=' + room.code, undefined, outsider.cookie, 403);
     await request('/api/chat?room=' + room.code, undefined, outsider.cookie, 403);
     const message = { code: room.code, clientId: crypto.randomUUID(), kind: 'text', text: '本地测试消息' };
@@ -201,7 +202,7 @@ try {
   v3 = (await request('/api/game', { action: 'shop_done', code: v3.code, revision: v3.revision }, v3Player.cookie)).data;
   for (let attempt = 0; attempt < 8 && v3.game.phase !== 'bidding'; attempt++) {
     await pause(1000);
-    v3 = (await request('/api/game?room=' + v3.code, undefined, v3Player.cookie)).data;
+    v3 = (await request('/api/game/sync?room=' + v3.code, undefined, v3Player.cookie)).data.room;
     assert(['shopping', 'equipment', 'bidding'].includes(v3.game.phase), `V3 开局阶段异常：${v3.game.phase}`);
   }
   assert.equal(v3.game.phase, 'bidding');
@@ -263,6 +264,38 @@ try {
   for(let i=1;i<3;i++)extended=(await request('/api/game',{action:'join',code:extended.code},v3Humans[i].cookie)).data;
   for(let i=0;i<3;i++)extended=(await request('/api/game',{action:'ready',code:extended.code,revision:extended.revision},v3Humans[i].cookie)).data;
   assert.equal(extended.game.phase,'shopping');assert.deepEqual(extended.game.bottom,[-1,-1,-1]);
+  // Combined reads authorize even when the caller claims the current revision.
+  const syncPath='/api/game/sync?room='+extended.code;
+  await request(syncPath,undefined,'',401);
+  await request(syncPath+'&revision='+extended.revision,undefined,outsider.cookie,403);
+  await request(syncPath+'&revision=-1',undefined,v3Humans[0].cookie,400);
+  await request(syncPath+'&after=9007199254740992',undefined,v3Humans[0].cookie,400);
+  const fullSync=(await request(syncPath,undefined,v3Humans[0].cookie)).data;
+  assert.equal(fullSync.room.game.shops[0].offers.length,12);
+  assert(fullSync.room.game.shops.slice(1).every(shop=>shop.offers.length===0));
+  assert(fullSync.room.game.seats.every(seat=>seat.hand.length===0),'商店期不能泄露任何手牌');
+  const unchanged=(await request(syncPath+'&revision='+extended.revision+'&after=0',undefined,v3Humans[0].cookie)).data;
+  assert.equal(unchanged.room,null);assert.equal(unchanged.revision,extended.revision);
+  assert(JSON.stringify(unchanged).length<512,'无变化只返回小包');
+  const firstText=(await request('/api/chat',{code:extended.code,kind:'text',text:'同步甲',clientId:crypto.randomUUID()},v3Humans[0].cookie)).data;
+  const secondText=(await request('/api/chat',{code:extended.code,kind:'text',text:'同步乙',clientId:crypto.randomUUID()},v3Humans[1].cookie)).data;
+  const chatOnly=(await request(syncPath+'&revision='+extended.revision+'&after=0',undefined,v3Humans[0].cookie)).data;
+  assert.equal(chatOnly.room,null);assert.deepEqual(chatOnly.chat.messages.map(message=>message.id),[firstText.id,secondText.id]);
+  assert.equal(chatOnly.chat.cursor,secondText.id);assert.equal(chatOnly.revision,extended.revision);
+  const emptyChat=(await request(syncPath+'&revision='+extended.revision+'&after='+secondText.id,undefined,v3Humans[0].cookie)).data;
+  assert.deepEqual(emptyChat.chat.messages,[]);
+  const twoViews=await Promise.all(v3Humans.slice(0,2).map(player=>request(syncPath,undefined,player.cookie)));
+  const purchases=await Promise.all(twoViews.map(async(view,index)=>{
+    const response=await fetch(origin+'/api/game',{method:'POST',headers:{Origin:origin,'Content-Type':'application/json',Cookie:v3Humans[index].cookie},body:JSON.stringify({action:'shop_buy',code:extended.code,revision:extended.revision,offerId:view.data.room.game.shops[index].offers[0].offerId})});
+    return {status:response.status,data:await response.json(),index};
+  }));
+  assert.deepEqual(purchases.map(result=>result.status).sort(),[200,409]);checks+=2;
+  const winner=purchases.find(result=>result.status===200);
+  extended=winner.data;assert.equal(extended.game.equipment[winner.index].length,1);
+  const loser=1-winner.index;assert.equal(extended.game.coins[loser],'2');
+  const currentSync=(await request(syncPath+'&revision='+fullSync.revision,undefined,v3Humans[loser].cookie)).data;
+  assert.equal(currentSync.room.revision,extended.revision);
+  extended=(await request('/api/game',{action:'shop_sell',code:extended.code,revision:extended.revision,instanceId:extended.game.equipment[winner.index][0].instanceId},v3Humans[winner.index].cookie)).data;
   const stale=extended.revision;
   extended=(await request('/api/game',{action:'shop_done',code:extended.code,revision:extended.revision},v3Humans[0].cookie)).data;
   await request('/api/game',{action:'shop_done',code:extended.code,revision:stale},v3Humans[1].cookie,409);
@@ -275,7 +308,8 @@ try {
   for(let turn=0;extended.game.phase!=='finished';turn++){
     assert(turn<200,'V3 should finish a complete hand');
     const seat=extended.game.turn;
-    extended=(await request('/api/game?room='+extended.code,undefined,v3Humans[seat].cookie)).data;
+    extended=(await request(syncPath,undefined,v3Humans[seat].cookie)).data.room;
+    assert(extended.game.seats.filter((_,index)=>index!==seat).every(player=>player.hand.length===0),'同步只能返回本人手牌');
     const options=hints(extended.game.seats[seat].hand,extended.game.last?.combo??null);
     extended=(await request('/api/game',{action:options.length?'play':'pass',cards:options[0]??[],code:extended.code,revision:extended.revision},v3Humans[seat].cookie)).data;
   }
