@@ -6,11 +6,14 @@ import {Button} from './ui/button';
 import type {ChatSnapshot} from '@/lib/chat-bubbles';
 import {EMOTE_COOLDOWN_MS} from '@/lib/emotes';
 import {EmotePicker} from './emote-picker';
-import {useRoomMessages} from './use-room-messages';
+import {useRoomMessages,type RoomMessageStream} from './use-room-messages';
 import {AnimationPreload} from './animation-cache';
 import {deliverChatSignal,type ChatPayload} from '@/lib/chat-send';
-export function RoomChat({code,userId,closed=false,onSnapshot,compact=false}:{compact?:boolean;code:string;userId:string;closed?:boolean;onSnapshot?:(snapshot:ChatSnapshot)=>void}){
- const stream=useRoomMessages(code,onSnapshot),messages=useMemo(()=>stream.messages.filter(message=>message.kind!=='emote'),[stream.messages]),isClosed=closed||stream.closed;
+type Props={compact?:boolean;code:string;userId:string;closed?:boolean;onSnapshot?:(snapshot:ChatSnapshot)=>void;stream?:RoomMessageStream};
+export function RoomChat(props:Props){return props.stream?<RoomChatView {...props} stream={props.stream}/>:<SubscribedRoomChat {...props}/>;}
+function SubscribedRoomChat(props:Props){const stream=useRoomMessages(props.code,props.onSnapshot);return <RoomChatView {...props} stream={stream}/>;}
+function RoomChatView({code,userId,closed=false,onSnapshot,compact=false,stream}:Props&{stream:RoomMessageStream}){
+ const messages=useMemo(()=>stream.messages.filter(message=>message.kind!=='emote'),[stream.messages]),isClosed=closed||stream.closed;
  const [open,setOpen]=useState(false),[draft,setDraft]=useState(''),[busy,setBusy]=useState(false),[error,setError]=useState(''),[seen,setSeen]=useState<number|null>(null),[localReady,setLocalReady]=useState(0),[now,setNow]=useState(Date.now);
  const list=useRef<HTMLDivElement>(null),atBottom=useRef(true),pending=useRef<{id:string;signature:string}|null>(null),input=useRef<HTMLTextAreaElement>(null),sending=useRef(false);
  useEffect(()=>{if(stream.initialized&&seen===null)setSeen(messages.at(-1)?.id||0);},[stream.initialized,seen,messages]);
