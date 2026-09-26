@@ -104,3 +104,5 @@
 .mj-menu-drawer .room-code-copy button{background:#fff8e6;color:#244e46;border-color:#d8c88e}
 @media(max-width:580px),(max-height:500px){.mj-menu-toggle{width:42px;min-height:44px;padding:4px;gap:0;font-size:10px}.mj-menu-toggle svg{width:20px}}
 @media(prefers-reduced-motion:reduce){.mj-menu-drawer[data-slot=sheet-content]{animation:none!important;transition:none!important}}
+
+@media(orientation:landscape) and (max-height:500px){.portrait-south .mj-seat-name{position:absolute;left:calc(100% + 10px);top:8px;transform:none;margin-top:0}}
