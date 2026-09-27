@@ -164,3 +164,46 @@
 
 /* The scene must not scroll when the browser focuses a hand tile near the edge. */
 .mj-room.mj-immersive{overflow:clip}
+
+/* Pair the foreground with each light control surface; never inherit felt-colored text. */
+:is(.mj-immersive,.mj-menu-drawer,.mj-result-modal,.mj-expanded-modal,.mj-details-modal,.mj-choice-modal,.mj-award-modal,.ham-picker,.ham-report-modal){--mj-control-bg:#fff8e6;--mj-control-ink:#244e46;--mj-control-hover:#eee2c3;--mj-control-border:#c3b47e}
+:is(.mj-immersive,.mj-menu-drawer,.mj-result-modal,.mj-expanded-modal,.mj-details-modal,.mj-choice-modal,.mj-award-modal,.ham-picker,.ham-report-modal) [data-slot=button][data-variant=outline]{background:var(--mj-control-bg);color:var(--mj-control-ink);border-color:var(--mj-control-border)}
+:is(.mj-immersive,.mj-menu-drawer,.mj-result-modal,.mj-expanded-modal,.mj-details-modal,.mj-choice-modal,.mj-award-modal,.ham-picker,.ham-report-modal) [data-slot=button][data-variant=outline]:hover:not(:disabled){background:var(--mj-control-hover);color:#183d36;border-color:#a58e50}
+:is(.mj-immersive,.mj-menu-drawer,.mj-result-modal,.mj-expanded-modal,.mj-details-modal,.mj-choice-modal,.mj-award-modal,.ham-picker,.ham-report-modal) [data-slot=button][data-variant]:disabled{background:#dce2d9;color:#52604f;border-color:#aab5a5;opacity:1;box-shadow:none}
+.mj-immersive [data-slot=button]:focus-visible{outline:3px solid #ffdb70;outline-offset:3px}
+:is(.mj-menu-drawer,.mj-result-modal,.mj-expanded-modal,.mj-details-modal,.mj-choice-modal,.mj-award-modal,.ham-picker,.ham-report-modal) [data-slot=button]:focus-visible{outline:3px solid #2a7769;outline-offset:3px}
+.mj-choice-panel [data-slot=button][data-variant=ghost]{background:#eef2e4;color:#244e46}
+.mj-choice-panel [data-slot=button][data-variant=ghost]:hover{background:#dce6cd;color:#183d36}
+.mj-immersive .mj-hu{background:#965022!important;color:#fff!important}
+
+/* Solid ivory faces over a green resin base. All depth is paint, not rack geometry. */
+.mj-immersive .mj-tile,.mj-immersive .mj-tile.is-small{
+ --tile-depth:clamp(3px,.48vw,7px);
+ background:linear-gradient(180deg,#fffef6 0%,#f5f2e8 14%,#eeece2 82%,#e1ddd1 100%);
+ border-color:#c6c3b6;
+ border-radius:5px;
+ box-shadow:inset 0 2px 1px #ffffff,inset 2px 0 2px #ffffffb3,inset -2px 0 2px #a9a59766,inset 0 -2px 2px #a9a59766,0 var(--tile-depth) 0 #bdb9ab,0 calc(var(--tile-depth) + 3px) 0 #207c47,1px calc(var(--tile-depth) + 4px) 1px #114d32,2px calc(var(--tile-depth) + 7px) 7px #052e3266;
+}
+.mj-immersive .mj-tile.is-small{--tile-depth:clamp(2px,.3vw,4px);border-radius:4px}
+.mj-immersive .mj-tile .mj-face{filter:drop-shadow(0 1px 0 #ffffffc9)}
+.mj-immersive .mj-hand .mj-tile:before{
+ content:'';position:absolute;inset:0 0 auto;height:9%;border-radius:4px 4px 0 0;
+ background:linear-gradient(#358950 0 18%,#d2cec1 24%,#fffdf4 85%);pointer-events:none;
+}
+.mj-immersive .mj-tile.is-selected{box-shadow:inset 0 2px 1px #fff,inset -2px -2px 2px #a9a59766,0 var(--tile-depth) 0 #c9c2ac,0 calc(var(--tile-depth) + 3px) 0 #2a8b4f,1px calc(var(--tile-depth) + 4px) 1px #114d32,2px calc(var(--tile-depth) + 12px) 10px #052e3280}
+/* The concealed face is never drawn. Opposite and side seats show the ivory rim of the solid back. */
+.mj-immersive .mj-tile.is-back{
+ background:linear-gradient(180deg,#37a36b 0%,#16814d 34%,#086738 86%,#075a33 87% 100%);
+ border-color:#24714c;
+ box-shadow:inset 2px 0 2px #67bd8680,inset -2px -2px 3px #034b32b3,0 3px 0 #075a37,2px 6px 6px #062d3166;
+}
+.mj-immersive .mj-tile.is-back:before{content:'';position:absolute;inset:auto -1px -1px;height:22%;border:1px solid #c4c0af;border-radius:0 0 4px 4px;background:linear-gradient(180deg,#bcb8aa,#e5e0d3 35%,#fffbed 80%,#d4cebf);box-shadow:0 -1px 2px #07523280;pointer-events:none}
+.mj-immersive :is(.rack-west,.rack-east) .mj-concealed-rack .mj-tile.is-back{background:none;border-color:transparent;box-shadow:none}
+.mj-immersive :is(.rack-west,.rack-east) .mj-concealed-rack .mj-tile.is-back:before{
+ inset:0;height:auto;border:1px solid #24714c;border-radius:4px;
+ background:linear-gradient(180deg,#fffbef 0%,#dedacd 23%,#b9b7a8 26%,#4aaa73 28%,#15834b 34%,#086b3b 92%,#06532f 100%);
+ box-shadow:inset 1px 0 1px #ffffffa6,inset -1px -2px 2px #034c32b3,1px 3px 0 #075333,3px 5px 5px #062e3266;
+ transform:skewX(-8deg) scaleX(.96);
+}
+.mj-immersive .rack-east .mj-concealed-rack .mj-tile.is-back:before{transform:skewX(8deg) scaleX(.96)}
+@media(max-width:580px),(max-height:500px){.mj-immersive .mj-tile{--tile-depth:2px}.mj-immersive .mj-tile.is-small{--tile-depth:1px}}
