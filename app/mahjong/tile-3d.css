@@ -1,0 +1,129 @@
+/*
+ * Shared-camera tile contract. Parents supply --tile-w, --tile-h, --tile-d
+ * as lengths, and rotate each seat around Z; data-seat only selects lighting.
+ * Flat bounds: x=[0,w], y=[0,h], z=[0,d]. Standing bounds: x=[0,w],
+ * y=[0,d], z=[0,h]. Its ivory front faces local +Y; the green back faces -Y.
+ * Keep preserve-3d ancestors free of filters, opacity, isolation and scrolling.
+ */
+.mj-solid{
+ --mj-tile-w:var(--tile-w,30px);--mj-tile-h:var(--tile-h,42px);--mj-tile-d:var(--tile-d,8px);
+ --mj-ivory:#f4f0e4;--mj-side-light:#e8e3d4;--mj-side-dark:#c9c2b0;
+ --mj-left-ivory:var(--mj-side-light);--mj-right-ivory:var(--mj-side-dark);
+ --mj-top-ivory:#fff9e9;--mj-bottom-ivory:#d7cfba;
+ --mj-back-light:#329a63;--mj-back-dark:#12653d;
+ --mj-face-light-angle:135deg;--mj-highlight-x:1px;--mj-highlight-y:1px;
+ --mj-shadow-x:2px;--mj-shadow-y:4px;
+ position:relative;display:inline-block;flex:none;vertical-align:bottom;
+ width:var(--mj-tile-w);height:var(--mj-tile-h);padding:0;margin:0;border:0;
+ background:none;color:#253e31;box-shadow:none;border-radius:0;
+ transform-style:preserve-3d;overflow:visible;user-select:none;
+}
+.mj-solid.is-standing{height:var(--mj-tile-d)}
+.mj-solid[data-seat=east]{--mj-left-ivory:var(--mj-side-dark);--mj-right-ivory:var(--mj-side-light);--mj-top-ivory:#efe8d8;--mj-bottom-ivory:#d3cab7;--mj-back-light:#39a16a;--mj-back-dark:#166d43;--mj-face-light-angle:225deg;--mj-highlight-x:-1px;--mj-shadow-x:-4px;--mj-shadow-y:2px}
+.mj-solid[data-seat=north]{--mj-left-ivory:var(--mj-side-dark);--mj-right-ivory:var(--mj-side-light);--mj-top-ivory:#d8cfbb;--mj-bottom-ivory:#f5efdf;--mj-back-light:#3fa46e;--mj-back-dark:#1d794b;--mj-face-light-angle:315deg;--mj-highlight-x:-1px;--mj-highlight-y:-1px;--mj-shadow-x:-2px;--mj-shadow-y:-4px}
+.mj-solid[data-seat=west]{--mj-top-ivory:#d8cfbb;--mj-bottom-ivory:#f5efdf;--mj-back-light:#2b905a;--mj-back-dark:#105e38;--mj-face-light-angle:45deg;--mj-highlight-y:-1px;--mj-shadow-x:4px;--mj-shadow-y:-2px}
+.mj-solid::before{
+ content:'';position:absolute;inset:0;pointer-events:none;border-radius:2px;
+ background:#062e2420;box-shadow:var(--mj-shadow-x) var(--mj-shadow-y) 5px #06291f45;
+ transform:translateZ(.08px);
+}
+.mj-solid-body{
+ position:absolute;left:0;top:0;display:block;width:var(--mj-tile-w);height:var(--mj-tile-h);
+ transform-style:preserve-3d;transform-origin:50% 50% 0;pointer-events:none;
+}
+.mj-solid.is-standing .mj-solid-body{
+ top:calc(-1 * var(--mj-tile-h));transform-origin:0 100% 0;transform:rotateX(-90deg);
+}
+/* Turn an unknown flat tile face-down without ever creating its face artwork. */
+.mj-solid.is-flat.is-back .mj-solid-body{transform:translateZ(var(--mj-tile-d)) rotateY(180deg)}
+.mj-solid-face{
+ position:absolute;display:block;left:0;top:0;box-sizing:border-box;
+ backface-visibility:hidden;-webkit-backface-visibility:hidden;pointer-events:none;
+ border:.5px solid #a69f8966;
+}
+.mj-solid-face--front,.mj-solid-face--back{width:var(--mj-tile-w);height:var(--mj-tile-h);border-radius:2px}
+.mj-solid-face--front{
+ transform:translateZ(var(--mj-tile-d));
+ background:linear-gradient(var(--mj-face-light-angle),#fffdf4,var(--mj-ivory) 65%,#e5dfcf);
+ box-shadow:inset var(--mj-highlight-x) var(--mj-highlight-y) 1px #fff,inset calc(-1 * var(--mj-highlight-x)) calc(-1 * var(--mj-highlight-y)) 1px #aea79270;
+}
+.mj-solid-face--back{
+ transform:rotateY(180deg);border-color:#175b3c;
+ background:linear-gradient(135deg,var(--mj-back-light),var(--mj-back-dark));
+ box-shadow:inset 1px 1px 1px #89cca458,inset -1px -1px 2px #034c32a6;
+}
+.mj-solid-face--top,.mj-solid-face--bottom{width:var(--mj-tile-w);height:var(--mj-tile-d);transform-origin:0 0}
+.mj-solid-face--top{
+ transform:rotateX(90deg);
+ background:linear-gradient(180deg,#237d4a 0 22%,#a5b894 25%,var(--mj-top-ivory) 30% 100%);
+}
+.mj-solid-face--bottom{
+ top:var(--mj-tile-h);transform:translateZ(var(--mj-tile-d)) rotateX(-90deg);
+ background:linear-gradient(180deg,var(--mj-bottom-ivory) 0 70%,#9ca789 75%,#17633c 79% 100%);
+}
+.mj-solid-face--left,.mj-solid-face--right{width:var(--mj-tile-d);height:var(--mj-tile-h);transform-origin:0 0}
+.mj-solid-face--left{
+ transform:rotateY(-90deg);
+ background:linear-gradient(90deg,#237d4a 0 22%,#a5b894 25%,var(--mj-left-ivory) 30% 100%);
+}
+.mj-solid-face--right{
+ left:var(--mj-tile-w);transform:translateZ(var(--mj-tile-d)) rotateY(90deg);
+ background:linear-gradient(90deg,var(--mj-right-ivory) 0 70%,#9ca789 75%,#17633c 79% 100%);
+}
+/* The former top becomes the upward-facing cap when the tile stands up. */
+.mj-solid.is-standing .mj-solid-face--top{--mj-top-ivory:#fff9e9}
+.mj-solid-front-content{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:5% 6% 7%}
+.mj-solid .mj-face{width:100%;height:100%;object-fit:contain;filter:none}
+.mj-solid .tile-mark{right:-1px;top:-3px;padding:0 2px;font-size:clamp(6px,calc(var(--mj-tile-w) * .21),10px);line-height:1.25;color:#31492f;background:#e5bd61;border-color:#ffedb4}
+.mj-solid .tile-white-as{bottom:2%;left:2%;right:2%;font-size:clamp(5px,calc(var(--mj-tile-w) * .19),9px);line-height:1.05}
+.mj-solid.is-matching .mj-solid-face--front::after,.mj-solid.is-selected .mj-solid-face--front::after{
+ content:'';position:absolute;inset:0;border:1px solid #edc85e;border-radius:inherit;
+ background:#ffd96329;box-shadow:inset 0 0 0 1px #fff0ac80;pointer-events:none;
+}
+.mj-solid.is-wild .mj-solid-face--front{border-color:#b99a45}
+button.mj-solid{appearance:none;cursor:pointer;touch-action:manipulation}
+button.mj-solid:focus-visible{outline:2px solid #ffdc75;outline-offset:4px}
+
+/* UI tiles retain their existing dimensions. Only the skin moves on selection;
+ * the button remains the same accessible, stable hit target in every state.
+ * Important resets intentionally defeat the legacy .mj-tile selected paint.
+ */
+.mj-tile.mj-tile-button{
+ position:relative;background:none!important;border-color:transparent!important;
+ box-shadow:none!important;transform:none!important;overflow:visible;transition:none;
+}
+.mj-tile.mj-tile-button::before,.mj-tile.mj-tile-button::after{content:none!important}
+.mj-tile.mj-tile-button.is-selected{outline:none!important}
+.mj-tile-skin{
+ position:absolute;inset:-1px;display:flex;align-items:center;justify-content:center;
+ box-sizing:border-box;padding:inherit;border:1px solid #b8c8b8;border-radius:inherit;
+ background:linear-gradient(110deg,#fffef7 0%,#fdfbf1 62%,#eeeee3 100%);
+ box-shadow:0 4px 0 #88ae94,0 6px 6px #274d3c20,inset 1px 1px 0 white;
+ pointer-events:none;transition:transform 120ms,box-shadow 120ms;
+}
+.mj-tile-hit{position:absolute;inset:0;pointer-events:auto}
+.mj-tile-button.is-selected .mj-tile-hit{top:calc(-1 * var(--mj-selection-lift,12px))}
+.mj-tile-button.is-small .mj-tile-skin{box-shadow:0 3px 0 #8fad93,0 4px 4px #274d3c18}
+.mj-tile-button.is-back .mj-tile-skin{background:#f7f7eb}
+.mj-tile-button.is-wild .mj-tile-skin{border-color:#ba983e}
+.mj-tile-button.is-selected .mj-tile-skin{
+ transform:translateY(calc(-1 * var(--mj-selection-lift,12px)));
+ outline:2px solid #ad8b35;outline-offset:1px;
+ box-shadow:0 4px 0 #789b80,0 10px 10px #274d3c30;
+}
+.mj-tile.mj-tile-button:focus-visible{outline:3px solid #247e60!important;outline-offset:3px}
+.mj-immersive .mj-tile-button .mj-tile-skin{
+ border-color:#c6c3b6;
+ background:linear-gradient(180deg,#fffef6 0%,#f5f2e8 14%,#eeece2 82%,#e1ddd1 100%);
+ box-shadow:inset 0 2px 1px #fff,inset 2px 0 2px #ffffffb3,inset -2px -2px 2px #a9a59766,0 var(--tile-depth,5px) 0 #bdb9ab,0 calc(var(--tile-depth,5px) + 3px) 0 #207c47,1px calc(var(--tile-depth,5px) + 4px) 1px #114d32,2px calc(var(--tile-depth,5px) + 7px) 7px #052e3266;
+}
+.mj-immersive .mj-hand .mj-tile-button .mj-tile-skin::before{
+ content:'';position:absolute;inset:0 0 auto;height:7%;border-radius:4px 4px 0 0;
+ background:linear-gradient(#358950 0 18%,#d2cec1 24%,#fffdf4 85%);
+}
+.mj-immersive .mj-tile-button.is-selected .mj-tile-skin{
+ outline-color:#ffe0a0;
+ box-shadow:inset 0 2px 1px #fff,inset -2px -2px 2px #a9a59766,0 var(--tile-depth,5px) 0 #c9c2ac,0 calc(var(--tile-depth,5px) + 3px) 0 #2a8b4f,1px calc(var(--tile-depth,5px) + 4px) 1px #114d32,2px calc(var(--tile-depth,5px) + 12px) 10px #052e3280;
+}
+.mj-immersive .mj-tile.mj-tile-button:focus-visible{outline-color:#ffdb70!important}
+@media(prefers-reduced-motion:reduce){.mj-tile-skin{transition:none}}
