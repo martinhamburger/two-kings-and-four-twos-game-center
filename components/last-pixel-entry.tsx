@@ -1,6 +1,5 @@
 import {Bot,Crosshair,ExternalLink,Monitor} from 'lucide-react';
-
-export const LAST_PIXEL_URL='https://cyh29hao.github.io/last-pixel/';
+import {LAST_PIXEL_URL} from '@/lib/indie-games';
 
 export function LastPixelEntry(){
  return <section className="last-pixel-entry" aria-labelledby="last-pixel-title">
