@@ -7,7 +7,7 @@ import type {MahjongView} from '@/lib/mahjong/game';
 
 type Choice={key:string;kind:string;tiles:number[]};
 const names:Record<string,string>={chi:'吃',pong:'碰',kong:'杠',hu:'胡',concealed:'暗杠',added:'补杠'};
-export function MahjongActions({game:g,selected,forbidden,busy,connected,seconds,onAction}:{game:MahjongView;selected:number|null;forbidden:boolean;busy:boolean;connected:boolean;seconds:number;onAction:(action:string,data?:Record<string,unknown>)=>unknown}){
+export function MahjongActions({game:g,selected,forbidden,busy,connected,seconds,onAction,hideClock=false}:{hideClock?:boolean;game:MahjongView;selected:number|null;forbidden:boolean;busy:boolean;connected:boolean;seconds:number;onAction:(action:string,data?:Record<string,unknown>)=>unknown}){
  const disabled=busy||!connected;
  const o=g.options,responding=o.canPass,active=responding||o.canDiscard||o.canHu||o.kongs.length>0;
  const choices:Choice[]=responding?o.claims:o.kongs;
@@ -20,7 +20,7 @@ export function MahjongActions({game:g,selected,forbidden,busy,connected,seconds
  function choose(kind:string){const items=choices.filter(c=>c.kind===kind);if(items.length===1){submit(responding?'claim':'kong',{key:items[0].key});return;}setSelection({scope,kind,key:''});}
  return <div className={`table-action-area mj-light-actions${active?'':' is-idle'}`}>
   <div className="table-action-row">
-   {active&&<TurnClock seconds={seconds} label={responding?'请选择吃碰杠胡':'轮到你出牌'}/>}
+   {active&&!hideClock&&<TurnClock seconds={seconds} label={responding?'请选择吃碰杠胡':'轮到你出牌'}/>}
    {responding&&g.pending&&<span className="mj-response-tile" aria-label="可响应的牌"><MahjongTile tile={g.pending.tile} small wildcard={g.wildcard}/></span>}
    {[...new Set(choices.map(c=>c.kind))].map(kind=><Button key={kind} variant={kind==='hu'?'default':'outline'} disabled={disabled||seconds<=0} aria-expanded={choices.filter(c=>c.kind===kind).length>1?current.kind===kind:undefined} onClick={()=>choose(kind)}>{names[kind]??kind}</Button>)}
    {responding?<Button variant="ghost" disabled={disabled||seconds<=0} onClick={()=>submit('pass')}>跳过</Button>:<>

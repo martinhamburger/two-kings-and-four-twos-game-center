@@ -8,12 +8,13 @@ import type {MahjongView} from '@/lib/mahjong/game';
 import {chips} from '@/lib/mahjong/report';
 import {typeName} from '@/lib/mahjong/solver';
 
-export function MahjongAwards({g,seconds,busy,serverNow,onFlip}:{g:MahjongView;seconds:number;busy:boolean;serverNow:number;onFlip:(index:number)=>void}){
+export function MahjongAwards({g,seconds,busy,serverNow,onFlip,autoOpenFinished=true,onOpenChange}:{autoOpenFinished?:boolean;onOpenChange?:(open:boolean)=>void;g:MahjongView;seconds:number;busy:boolean;serverNow:number;onFlip:(index:number)=>void}){
  const [open,setOpen]=useState(false),[shown,setShown]=useState(0),[settledFace,setSettledFace]=useState(0);
  const opened=useRef(false),revealing=g.phase==='revealing',r=g.awardReveal;
  const awards=r?.awards??g.result?.awards??[],plan=r?.plan??g.result?.plan;
  const winner=g.seats[g.winner]?.name??'',canFlip=!!r?.canFlip;
- useEffect(()=>{if(!opened.current&&(revealing||(g.phase==='finished'&&awards.length===2&&g.result&&serverNow-g.result.ended<15000))){opened.current=true;setOpen(true);}},[revealing,g.phase,g.result?.id,awards.length,serverNow]);
+ useEffect(()=>{if(!opened.current&&(revealing||(autoOpenFinished&&g.phase==='finished'&&awards.length===2&&g.result&&serverNow-g.result.ended<15000))){opened.current=true;setOpen(true);}},[revealing,g.phase,g.result?.id,awards.length,serverNow]);
+ useEffect(()=>{onOpenChange?.(open);},[open,onOpenChange]);
  // A slow observer can receive both flips in one poll. Still show them in order.
  useEffect(()=>{if(shown>=awards.length)return;const timer=setTimeout(()=>setShown(n=>Math.min(n+1,awards.length)),shown?850:40);return()=>clearTimeout(timer);},[shown,awards.length]);
  useEffect(()=>{if(settledFace>=shown)return;const timer=setTimeout(()=>setSettledFace(shown),500);return()=>clearTimeout(timer);},[shown,settledFace]);

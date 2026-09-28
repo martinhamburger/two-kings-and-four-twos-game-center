@@ -143,6 +143,20 @@ try {
     assert.equal(chat.messages[1].id, acknowledged.message.id);
     await request('/api/history', undefined, player.cookie);
     await request('/api/admin', undefined, player.cookie, 403);
+    if(kind==='mahjong'){
+      let practice=(await request(endpoint,{action:'ready',code:room.code,revision:room.revision},player.cookie)).data;
+      const leaving=(await request(endpoint,{action:'leave',code:room.code,revision:practice.revision},player.cookie)).data;
+      assert.equal(leaving.departurePending,true);
+      practice=(await request(endpoint+'?room='+room.code,undefined,player.cookie)).data;
+      assert.equal(practice.game.seats.find(s=>s.id===player.data.user.id).leaving,true);
+      await request(endpoint,{action:'end_practice',code:room.code,revision:practice.revision},outsider.cookie,403);
+      const ended=(await request(endpoint,{action:'end_practice',code:room.code,revision:practice.revision},player.cookie)).data;
+      assert.equal(ended.game.phase,'closed');
+      assert.equal(ended.game.winType,'aborted');
+      const lobby=(await request('/api/lobby',undefined,player.cookie)).data;
+      assert.equal(lobby.activeRoom,null);assert.equal(lobby.departurePending,false);
+      await request(endpoint,{action:'create',mode:'practice',title:'结束测试后重新开桌'},player.cookie);
+    }
   }
   // A departing member stays accountable through settlement, then leaves atomically.
   const leavers=await Promise.all([0,1,2,3].map(i=>signup('depart'+i+Date.now().toString(36))));
@@ -156,6 +170,7 @@ try {
   assert.equal(departureRoom.game.phase,'playing');assert.equal(departureRoom.game.seats[1].leaving,true);
   assert.equal((await request('/api/lobby',undefined,leavers[1].cookie)).data.departurePending,true);
   await request('/api/mahjong',{action:'discard',tile:0,code:departureRoom.code,revision:departureRoom.revision},leavers[1].cookie,403);
+  await request('/api/mahjong',{action:'end_practice',code:departureRoom.code,revision:departureRoom.revision},leavers[1].cookie,403);
   await request('/api/mahjong',{action:'end_table',code:departureRoom.code,revision:departureRoom.revision},leavers[2].cookie,403);
   await request('/api/mahjong',{action:'create'},leavers[1].cookie,409);
   // Advance only this isolated fixture to the final timeout; the real API must commit settlement + release.
