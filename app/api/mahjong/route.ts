@@ -46,7 +46,7 @@ export async function POST(req:Request){return safe(async()=>{
  }
  const seat=g.seats.findIndex(s=>s.id===u.id);if(seat<0)throw new AppError('你不在这个房间',403);
  if(isModern(g)&&g.departedIds?.includes(u.id)&&b.action==='leave')return json({left:true});
- if(isModern(g)&&(g.departedIds?.includes(u.id)||g.leavingIds?.includes(u.id)&&b.action!=='leave'))throw new AppError('你已申请离桌，本局由系统托管，结算后退出',403);
+ if(isModern(g)&&(g.departedIds?.includes(u.id)||g.leavingIds?.includes(u.id)&&!['leave','end_practice'].includes(b.action)))throw new AppError('你已申请离桌，本局由系统托管，结算后退出',403);
  if(b.revision!==r.revision)throw new AppError('牌桌已更新，请重试',409);
  if(b.action==='add_bot'||b.action==='remove_bot'){
   if(g.host!==u.id)throw new AppError('只有房主可以调整人机座位',403);

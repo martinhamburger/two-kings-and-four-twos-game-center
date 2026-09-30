@@ -17,14 +17,14 @@
 | 好友、在线状态与邀请 | `components/friends-provider.tsx`、`friends-panel.tsx`、`app/api/friends/`、`lib/social-server.ts` |
 | 斗地主牌桌 | `components/poker-table.tsx`；规则在 `lib/game/engine.ts` |
 | 麻将离桌 | `lib/mahjong/departure.ts`；在 `lib/rooms.ts` 原子提交中结算离桌，`app/api/lobby/` 推进大厅托管 |
-| 麻将牌桌 | `components/mahjong-board.tsx`、`mahjong-tile.tsx`；规则在 `lib/mahjong/` |
+| 麻将牌桌 | `components/mahjong-board.tsx`、`mahjong-tile.tsx`、`app/mahjong/table.css`；规则在 `lib/mahjong/` |
 | 德州规则 | `lib/holdem/engine.ts`、`evaluate.ts`、`bot.ts` |
 | 房间接口 | `app/api/game/`、`app/api/mahjong/`、`app/api/holdem/` |
 | 共用提交和结算 | `lib/rooms.ts`；认证、参数和响应工具在 `lib/server.ts` |
 | 聊天与气泡 | `app/api/chat/`、`components/use-room-messages.ts`、`room-chat.tsx`、`lib/chat-bubbles.ts` |
 | 动画播放与缓存 | `lib/motion/`、`components/frame-motion.tsx`、`motion-playback.tsx` |
 | 音乐与出牌播报 | `lib/audio/`、`components/table-sound.tsx` |
-| 战报和分享 | `lib/mahjong/report*.ts`、`components/mahjong-report*.tsx`、`app/share/` |
+| 战报和分享 | `lib/reports/` 聚合三游戏分数，`components/score-report.tsx` 展示曲线与整桌成绩；麻将牌型、分享和图片仍在 `lib/mahjong/report*.ts`、`components/mahjong-report*.tsx`、`app/share/` |
 | 数据结构与迁移 | `db/schema.ts`、`drizzle/` |
 | 样式 | `app/globals.css` 与 `tables.css`、`holdem.css`、`effects.css`、`emotes.css` 等专题样式 |
 | 本地工具和发布 | `scripts/`、`config/`、`.github/workflows/` |
