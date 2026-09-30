@@ -1,6 +1,6 @@
 "use client";
 import {createPortal} from 'react-dom';
-import {useEffect,useRef,useState} from 'react';
+import {memo,useEffect,useRef,useState} from 'react';
 import {Volume2,VolumeX,ChevronDown,Music2,Mic2,MousePointerClick,Play} from 'lucide-react';
 import {Button} from './ui/button';
 import {Popover,PopoverContent,PopoverTrigger} from './ui/popover';
@@ -11,7 +11,10 @@ import {actionWindow,collectSounds,type SoundFrame} from '@/lib/audio/events';
 import {EMOTE_SOUND_EVENT,getEmote,type EmoteSoundEvent} from '@/lib/emotes';
 import {useEmotePreferences} from './emote-preferences';
 
-export function TableSound({room,userId,seconds,controlsTarget}:{room:SoundFrame|null;userId:string;seconds:number;controlsTarget?:HTMLElement|null}){
+import {useRemainingSeconds} from './deadline-clock';
+import type {RoomTiming} from '@/lib/sync/clock';
+export const TableSound=memo(function TableSound({room,userId,seconds:providedSeconds=0,timing,controlsTarget}:{room:SoundFrame|null;userId:string;seconds?:number;timing?:RoomTiming;controlsTarget?:HTMLElement|null}){
+ const liveSeconds=useRemainingSeconds(room?.game.deadline??0,timing),seconds=timing?liveSeconds:providedSeconds;
  const {prefs:emotePrefs,update:updateEmotes}=useEmotePreferences(userId);
  const [prefs,setPrefs]=useState<SoundPreferences>({...DEFAULT_SOUND}),[saved,setSaved]=useState(false),[open,setOpen]=useState(false),[status,setStatus]=useState<AudioStatus>({unlocked:false,music:'未开启',voice:'设备普通话',lastSpeech:''});
  const audio=useRef<TableAudio|null>(null),previous=useRef<SoundFrame|null>(null),warning=useRef(''),settings=useRef(prefs),currentRoom=useRef(room);settings.current=prefs;currentRoom.current=room;
@@ -38,4 +41,4 @@ export function TableSound({room,userId,seconds,controlsTarget}:{room:SoundFrame
  <details className="sound-credits"><summary>音乐来源与许可</summary><p>{TRACKS.map(t=><span key={t.id}><a href={t.source} target="_blank" rel="noreferrer">{t.title}</a><br/></span>)}Kevin MacLeod · incompetech.com<br/><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0</a> · 音频已压缩，曲目未改编。<br/>播报使用设备语音合成；操作音效为本站合成。</p></details>
  </PopoverContent></Popover></div>;
  return controlsTarget===undefined?controls:controlsTarget?createPortal(controls,controlsTarget):null;
-}
+});
