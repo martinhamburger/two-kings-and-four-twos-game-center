@@ -1,4 +1,5 @@
 "use client";
+import {PlayerAvatar} from './player-avatar';
 import {useState} from 'react';
 import {Check,Mail,UserPlus,Users} from 'lucide-react';
 import {useFriends} from './friends-provider';
@@ -7,7 +8,7 @@ import {roomInviteProblem,type SocialPerson} from '@/lib/club/social';
 import {Button} from './ui/button';
 import {Dialog,DialogContent,DialogDescription,DialogHeader,DialogTitle,DialogTrigger} from './ui/dialog';
 const gameNames={landlord:'斗地主','landlord-v3':'斗地主',mahjong:'麻将',holdem:'德州扑克'};
-function Person({person,online}:{person:SocialPerson;online?:boolean}){return <div className="friend-person"><span className="friend-avatar" aria-hidden="true">{person.name.slice(0,1)}{online!==undefined&&<i className={online?'is-online':''}/>}</span><div><b>{person.name}</b>{online!==undefined&&<small>{online?'在线':'离线'}</small>}</div></div>}
+function Person({person,online}:{person:SocialPerson;online?:boolean}){return <div className="friend-person"><span className="friend-avatar"><PlayerAvatar name={person.name} userId={person.id}/>{online!==undefined&&<i className={online?'is-online':''}/>}</span><div><b>{person.name}</b>{online!==undefined&&<small>{online?'在线':'离线'}</small>}</div></div>}
 export function FriendsPanel({all=false,roomCode,inviteDisabled=false,onJoined}:{all?:boolean;roomCode?:string;inviteDisabled?:boolean;onJoined?:()=>void}){
  const {data,ready,busy,error,send,refresh}=useFriends(),{lobby}=useClub(),{openRoom}=useRoomNavigation();
  const [notice,setNotice]=useState(''),[failure,setFailure]=useState(''),[joining,setJoining]=useState(false),[sent,setSent]=useState<string[]>([]);

@@ -1,7 +1,7 @@
 import './sites-env.mjs';
 import assert from 'node:assert/strict';
 import {DatabaseSync} from 'node:sqlite';
-import {globSync} from 'node:fs';
+import {globSync,readFileSync} from 'node:fs';
 import {timeoutModern} from '../lib/mahjong/modern.ts';
 import {hints} from '../lib/game/engine.ts';
 import { spawn, spawnSync } from 'node:child_process';
@@ -80,6 +80,26 @@ try {
   assert.equal('username' in privateFriends.friends[0],false);
   assert.equal((await request('/api/friends',undefined,outsider.cookie)).data.friends.length,0);
   socialRoom=(await request('/api/game',{action:'join',code:socialRoom.code},friendC.cookie)).data;
+  // Avatar versions and data are independent from rooms, with atomic compare-and-swap.
+  const avatarBytes=readFileSync(new URL('../tests/fixtures/avatar.jpg',import.meta.url));
+  async function avatar(method,cookie,version,bytes=avatarBytes,expected=200,extra={}){
+    const r=await fetch(origin+'/api/profile/avatar',{method,headers:{Origin:origin,Cookie:cookie,'Content-Type':'image/jpeg','If-Match':String(version),...extra},...(method==='PUT'?{body:bytes}:{})});const payload=await r.text();assert.equal(r.status,expected,payload);checks++;return JSON.parse(payload);
+  }
+  await request('/api/profile/avatar',undefined,'',401);
+  await avatar('PUT','',0,avatarBytes,401);
+  await avatar('PUT',friendA.cookie,0,avatarBytes,403,{Origin:'https://foreign.invalid'});
+  await avatar('PUT',friendA.cookie,0,Buffer.from('<svg/>'),400);
+  await avatar('PUT',friendA.cookie,0,Buffer.alloc(65537),413);
+  assert.equal((await request('/api/profile/avatar',undefined,friendA.cookie)).data.version,0,'超限请求不得写入头像');
+  await avatar('PUT',friendA.cookie,0,avatarBytes,400,{'Content-Type':'image/png'});
+  let portrait=await avatar('PUT',friendA.cookie,0);assert.equal(portrait.version,1);assert.equal(portrait.id,a);
+  const image=await fetch(origin+portrait.url,{headers:{Cookie:friendB.cookie}});assert.equal(image.status,200);assert.equal(image.headers.get('content-type'),'image/jpeg');assert((await image.arrayBuffer()).byteLength<=65536);checks++;
+  assert.equal((await fetch(origin+portrait.url)).status,401);checks++;
+  const snapshots=(await request('/api/friends',{action:'heartbeat'},friendB.cookie)).data;assert(snapshots.profiles.some(p=>p.id===a&&p.version===1));assert(snapshots.profiles.every(p=>!('image' in p)));
+  const concurrent=await Promise.all([1,2].map(()=>fetch(origin+'/api/profile/avatar',{method:'PUT',headers:{Origin:origin,Cookie:friendA.cookie,'Content-Type':'image/jpeg','If-Match':'1'},body:avatarBytes})));assert.deepEqual(concurrent.map(r=>r.status).sort(),[200,409]);checks+=2;
+  await avatar('DELETE',friendA.cookie,1,undefined,409);portrait=await avatar('DELETE',friendA.cookie,2);assert.equal(portrait.version,3);assert.equal(portrait.url,null);
+  await avatar('PUT',friendB.cookie,0);assert.equal((await request('/api/profile/avatar',undefined,friendA.cookie)).data.version,3,'其他账号只能修改自己');
+  assert.equal((await request('/api/game?room='+socialRoom.code,undefined,friendA.cookie)).data.revision,socialRoom.revision,'头像不推进牌局版本');
   await request('/api/friends',{action:'request',target:c,code:socialRoom.code},friendA.cookie);
   await request('/api/friends',{action:'decline',target:a},friendC.cookie);
   assert.equal((await request('/api/friends',undefined,friendA.cookie)).data.outgoing.length,0);

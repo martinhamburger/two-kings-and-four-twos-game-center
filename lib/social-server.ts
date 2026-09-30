@@ -1,3 +1,4 @@
+import {profileSnapshot} from './avatar/server';
 import {AppError,db} from './server';
 import {INVITE_TTL_MS,PRESENCE_TTL_MS,friendPair,roomInviteProblem,type SocialSnapshot,type RoomInvite} from './club/social';
 
@@ -5,7 +6,7 @@ type Relationship={user_low:string;user_high:string;requested_by:string;accepted
 export async function relationship(a:string,b:string){const [low,high]=friendPair(a,b);return db().prepare('SELECT * FROM friendships WHERE user_low=? AND user_high=?').bind(low,high).first<Relationship>();}
 export async function socialSnapshot(id:string):Promise<SocialSnapshot>{
  const now=Date.now();
- const [people,invitations]=await Promise.all([
+ const [people,invitations,profiles]=await Promise.all([
   db().prepare(`SELECT u.id,u.display AS name,f.requested_by,f.accepted,
    EXISTS(SELECT 1 FROM user_presence p JOIN sessions s ON s.hash=p.session_hash WHERE s.user_id=u.id AND s.expires>? AND p.seen>?) AS online
    FROM friendships f JOIN users u ON u.id=CASE WHEN f.user_low=? THEN f.user_high ELSE f.user_low END
@@ -15,11 +16,12 @@ export async function socialSnapshot(id:string):Promise<SocialSnapshot>{
    JOIN friendships f ON f.user_low=min(i.sender,i.recipient) AND f.user_high=max(i.sender,i.recipient) AND f.accepted IS NOT NULL
    JOIN members m ON m.user_id=i.sender AND m.room_code=i.room_code
    WHERE i.recipient=? AND i.expires>? AND i.dismissed=0 AND u.banned=0 ORDER BY i.created DESC LIMIT 50`).bind(id,now).all<{id:string;code:string;title:string;state:string;sender:string;name:string;expires:number}>(),
+  profileSnapshot(id),
  ]);
  const friends=people.results.filter(p=>p.accepted!==null).map(p=>({id:p.id,name:p.name,online:!!p.online}));
  const pending=people.results.filter(p=>p.accepted===null),person=(p:typeof pending[number])=>({id:p.id,name:p.name});
  const invites:RoomInvite[]=invitations.results.flatMap(i=>{const g=JSON.parse(i.state);return roomInviteProblem(g,id)?[]:[{id:i.id,code:i.code,title:i.title,game:g.kind??'landlord',from:{id:i.sender,name:i.name},expires:i.expires}];});
- return {friends,incoming:pending.filter(p=>p.requested_by!==id).map(person),outgoing:pending.filter(p=>p.requested_by===id).map(person),invites};
+ return {profiles,friends,incoming:pending.filter(p=>p.requested_by!==id).map(person),outgoing:pending.filter(p=>p.requested_by===id).map(person),invites};
 }
 export async function requestFriend(id:string,target:string,code:string){
  const [low,high]=friendPair(id,target);

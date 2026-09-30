@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import "./table-light.css";
 import "./lobby.css";
+import "./avatar.css";
+
 import "./indie.css";
 import {SiteNavigation} from "@/components/site-navigation";
 import {ClubProvider} from "@/components/club-provider";

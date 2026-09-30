@@ -1,10 +1,11 @@
+import type {AvatarProfile} from '../avatar/profile';
 export const PRESENCE_TTL_MS = 90_000;
 export const SOCIAL_POLL_MS = 30_000;
 export const INVITE_TTL_MS = 10 * 60_000;
 export type SocialPerson = {id:string;name:string};
 export type Friend = SocialPerson & {online:boolean};
 export type RoomInvite = {id:string;code:string;title:string;game:'landlord'|'landlord-v3'|'mahjong'|'holdem';from:SocialPerson;expires:number};
-export type SocialSnapshot = {friends:Friend[];incoming:SocialPerson[];outgoing:SocialPerson[];invites:RoomInvite[]};
+export type SocialSnapshot = {friends:Friend[];incoming:SocialPerson[];outgoing:SocialPerson[];invites:RoomInvite[];profiles?:AvatarProfile[]};
 export const emptySocial = ():SocialSnapshot => ({friends:[],incoming:[],outgoing:[],invites:[]});
 export function friendPair(a:string,b:string):[string,string] {
  if(!a||!b||a===b)throw Error('请选择同桌的其他玩家');
