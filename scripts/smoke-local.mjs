@@ -142,6 +142,7 @@ try {
     const room = (await request(endpoint, { action: 'create', capacity: size, mode: 'practice', title: '本机自动验收' }, player.cookie)).data;
     assert.equal(room.game.seats.length, size);
     assert.equal(room.game.seats.filter(seat => seat.bot).length, size - 1);
+    if(endpoint==='/api/game'){const sync=(await request('/api/game/sync?room='+room.code+'&revision='+room.revision,undefined,player.cookie)).data;assert.equal(sync.room,null);assert.equal(sync.revision,room.revision);}
     await request(endpoint + '?room=' + room.code, undefined, outsider.cookie, 403);
     await request('/api/chat?room=' + room.code, undefined, outsider.cookie, 403);
     const message = { code: room.code, clientId: crypto.randomUUID(), kind: 'text', text: '本地测试消息' };
@@ -163,6 +164,20 @@ try {
     assert.equal(chat.messages[1].id, acknowledged.message.id);
     await request('/api/history', undefined, player.cookie);
     await request('/api/admin', undefined, player.cookie, 403);
+    if(kind==='mahjong'){
+      let practice=(await request(endpoint,{action:'ready',code:room.code,revision:room.revision},player.cookie)).data;
+      const leaving=(await request(endpoint,{action:'leave',code:room.code,revision:practice.revision},player.cookie)).data;
+      assert.equal(leaving.departurePending,true);
+      practice=(await request(endpoint+'?room='+room.code,undefined,player.cookie)).data;
+      assert.equal(practice.game.seats.find(s=>s.id===player.data.user.id).leaving,true);
+      await request(endpoint,{action:'end_practice',code:room.code,revision:practice.revision},outsider.cookie,403);
+      const ended=(await request(endpoint,{action:'end_practice',code:room.code,revision:practice.revision},player.cookie)).data;
+      assert.equal(ended.game.phase,'closed');
+      assert.equal(ended.game.winType,'aborted');
+      const lobby=(await request('/api/lobby',undefined,player.cookie)).data;
+      assert.equal(lobby.activeRoom,null);assert.equal(lobby.departurePending,false);
+      await request(endpoint,{action:'create',mode:'practice',title:'结束测试后重新开桌'},player.cookie);
+    }
   }
   // A departing member stays accountable through settlement, then leaves atomically.
   const leavers=await Promise.all([0,1,2,3].map(i=>signup('depart'+i+Date.now().toString(36))));
@@ -176,6 +191,7 @@ try {
   assert.equal(departureRoom.game.phase,'playing');assert.equal(departureRoom.game.seats[1].leaving,true);
   assert.equal((await request('/api/lobby',undefined,leavers[1].cookie)).data.departurePending,true);
   await request('/api/mahjong',{action:'discard',tile:0,code:departureRoom.code,revision:departureRoom.revision},leavers[1].cookie,403);
+  await request('/api/mahjong',{action:'end_practice',code:departureRoom.code,revision:departureRoom.revision},leavers[1].cookie,403);
   await request('/api/mahjong',{action:'end_table',code:departureRoom.code,revision:departureRoom.revision},leavers[2].cookie,403);
   await request('/api/mahjong',{action:'create'},leavers[1].cookie,409);
   // Advance only this isolated fixture to the final timeout; the real API must commit settlement + release.
@@ -221,7 +237,7 @@ try {
   v3 = (await request('/api/game', { action: 'shop_done', code: v3.code, revision: v3.revision }, v3Player.cookie)).data;
   for (let attempt = 0; attempt < 8 && v3.game.phase !== 'bidding'; attempt++) {
     await pause(1000);
-    v3 = (await request('/api/game?room=' + v3.code, undefined, v3Player.cookie)).data;
+    v3 = (await request('/api/game/sync?room=' + v3.code, undefined, v3Player.cookie)).data.room;
     assert(['shopping', 'equipment', 'bidding'].includes(v3.game.phase), `V3 开局阶段异常：${v3.game.phase}`);
   }
   assert.equal(v3.game.phase, 'bidding');
@@ -283,6 +299,38 @@ try {
   for(let i=1;i<3;i++)extended=(await request('/api/game',{action:'join',code:extended.code},v3Humans[i].cookie)).data;
   for(let i=0;i<3;i++)extended=(await request('/api/game',{action:'ready',code:extended.code,revision:extended.revision},v3Humans[i].cookie)).data;
   assert.equal(extended.game.phase,'shopping');assert.deepEqual(extended.game.bottom,[-1,-1,-1]);
+  // Combined reads authorize even when the caller claims the current revision.
+  const syncPath='/api/game/sync?room='+extended.code;
+  await request(syncPath,undefined,'',401);
+  await request(syncPath+'&revision='+extended.revision,undefined,outsider.cookie,403);
+  await request(syncPath+'&revision=-1',undefined,v3Humans[0].cookie,400);
+  await request(syncPath+'&after=9007199254740992',undefined,v3Humans[0].cookie,400);
+  const fullSync=(await request(syncPath,undefined,v3Humans[0].cookie)).data;
+  assert.equal(fullSync.room.game.shops[0].offers.length,12);
+  assert(fullSync.room.game.shops.slice(1).every(shop=>shop.offers.length===0));
+  assert(fullSync.room.game.seats.every(seat=>seat.hand.length===0),'商店期不能泄露任何手牌');
+  const unchanged=(await request(syncPath+'&revision='+extended.revision+'&after=0',undefined,v3Humans[0].cookie)).data;
+  assert.equal(unchanged.room,null);assert.equal(unchanged.revision,extended.revision);
+  assert(JSON.stringify(unchanged).length<512,'无变化只返回小包');
+  const firstText=(await request('/api/chat',{code:extended.code,kind:'text',text:'同步甲',clientId:crypto.randomUUID()},v3Humans[0].cookie)).data;
+  const secondText=(await request('/api/chat',{code:extended.code,kind:'text',text:'同步乙',clientId:crypto.randomUUID()},v3Humans[1].cookie)).data;
+  const chatOnly=(await request(syncPath+'&revision='+extended.revision+'&after=0',undefined,v3Humans[0].cookie)).data;
+  assert.equal(chatOnly.room,null);assert.deepEqual(chatOnly.chat.messages.map(message=>message.id),[firstText.id,secondText.id]);
+  assert.equal(chatOnly.chat.cursor,secondText.id);assert.equal(chatOnly.revision,extended.revision);
+  const emptyChat=(await request(syncPath+'&revision='+extended.revision+'&after='+secondText.id,undefined,v3Humans[0].cookie)).data;
+  assert.deepEqual(emptyChat.chat.messages,[]);
+  const twoViews=await Promise.all(v3Humans.slice(0,2).map(player=>request(syncPath,undefined,player.cookie)));
+  const purchases=await Promise.all(twoViews.map(async(view,index)=>{
+    const response=await fetch(origin+'/api/game',{method:'POST',headers:{Origin:origin,'Content-Type':'application/json',Cookie:v3Humans[index].cookie},body:JSON.stringify({action:'shop_buy',code:extended.code,revision:extended.revision,offerId:view.data.room.game.shops[index].offers[0].offerId})});
+    return {status:response.status,data:await response.json(),index};
+  }));
+  assert.deepEqual(purchases.map(result=>result.status).sort(),[200,409]);checks+=2;
+  const winner=purchases.find(result=>result.status===200);
+  extended=winner.data;assert.equal(extended.game.equipment[winner.index].length,1);
+  const loser=1-winner.index;assert.equal(extended.game.coins[loser],'2');
+  const currentSync=(await request(syncPath+'&revision='+fullSync.revision,undefined,v3Humans[loser].cookie)).data;
+  assert.equal(currentSync.room.revision,extended.revision);
+  extended=(await request('/api/game',{action:'shop_sell',code:extended.code,revision:extended.revision,instanceId:extended.game.equipment[winner.index][0].instanceId},v3Humans[winner.index].cookie)).data;
   const stale=extended.revision;
   extended=(await request('/api/game',{action:'shop_done',code:extended.code,revision:extended.revision},v3Humans[0].cookie)).data;
   await request('/api/game',{action:'shop_done',code:extended.code,revision:stale},v3Humans[1].cookie,409);
@@ -295,7 +343,8 @@ try {
   for(let turn=0;extended.game.phase!=='finished';turn++){
     assert(turn<200,'V3 should finish a complete hand');
     const seat=extended.game.turn;
-    extended=(await request('/api/game?room='+extended.code,undefined,v3Humans[seat].cookie)).data;
+    extended=(await request(syncPath,undefined,v3Humans[seat].cookie)).data.room;
+    assert(extended.game.seats.filter((_,index)=>index!==seat).every(player=>player.hand.length===0),'同步只能返回本人手牌');
     const options=hints(extended.game.seats[seat].hand,extended.game.last?.combo??null);
     extended=(await request('/api/game',{action:options.length?'play':'pass',cards:options[0]??[],code:extended.code,revision:extended.revision},v3Humans[seat].cookie)).data;
   }
@@ -304,6 +353,9 @@ try {
   await request('/api/game',{action:'leave',code:extended.code,revision:extended.revision},v3Humans[1].cookie);
   for(const player of v3Humans)assert.equal((await request('/api/game',undefined,player.cookie)).data.activeRoom,null);
   await request('/api/game',{action:'join',code:extended.code},outsider.cookie,400);
+  // Historical table recovery reads immutable settlements, even after classic seats were cleared.
+  const {verifyReportApis}=await import('./smoke-reports.mjs');
+  await verifyReportApis({request,signup,state,outsider,extended,v3Humans});
   const info = (await request('/build-info.json')).data;
   assert.match(info.commit, /^[a-f0-9]{40}$/);
   writeFileSync('work/smoke-local.json', JSON.stringify({ status: 'passed', checks, commit: info.commit, state }, null, 2) + '\n');

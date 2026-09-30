@@ -1,8 +1,9 @@
 import {AppError,body,db,json,limit,requireUser,safe} from '@/lib/server';
 import {getRoom} from '@/lib/rooms';
 import {getEmote,canSendEmote,emoteText,EMOTE_COOLDOWN_MS} from '@/lib/emotes';
-import {sameMessage,CHAT_LIMIT} from '@/lib/chat-messages';
+import {sameMessage} from '@/lib/chat-messages';
 import type {ChatMessage} from '@/lib/chat-bubbles';
+import {chatColumns as columns,readRoomMessages} from '@/lib/chat-server';
 export const dynamic='force-dynamic';
 async function member(code:unknown,id:string){
  if(typeof code!=='string'||!/^\d{6}$/.test(code))throw new AppError('房间号无效');
@@ -10,16 +11,10 @@ async function member(code:unknown,id:string){
  if(!game.seats.some((s:{id:string;bot?:boolean})=>s.id===id&&!s.bot))throw new AppError('只有同桌玩家可以查看聊天',403);
  return room;
 }
-const columns='id,client_id AS clientId,author_id AS senderId,display AS name,text,kind,emote_id AS emoteId,created,author_id=? AS own';
 export async function GET(req:Request){return safe(async()=>{
  const user=await requireUser(req),params=new URL(req.url).searchParams,room=await member(params.get('room'),user.id),after=params.get('after');
  if(after!==null&&(!/^\d+$/.test(after)||!Number.isSafeInteger(Number(after))))throw new AppError('消息游标无效');
- const rows=after===null
-  ?await db().prepare(`SELECT ${columns} FROM room_messages WHERE room_code=? ORDER BY id DESC LIMIT ?`).bind(user.id,room.code,CHAT_LIMIT).all<{id:number}>()
-  :await db().prepare(`SELECT ${columns} FROM room_messages WHERE room_code=? AND id>? ORDER BY id LIMIT ?`).bind(user.id,room.code,Number(after),CHAT_LIMIT+1).all<{id:number}>();
- const messages=after===null?rows.results.reverse():rows.results.slice(0,CHAT_LIMIT),hasMore=after!==null&&rows.results.length>CHAT_LIMIT;
- const latest=await db().prepare("SELECT created FROM room_messages WHERE author_id=? AND kind='emote' ORDER BY created DESC LIMIT 1").bind(user.id).first<{created:number}>();
- return json({messages,cursor:messages.at(-1)?.id??Number(after??0),hasMore,serverNow:Date.now(),emoteReadyAt:(latest?.created??0)+EMOTE_COOLDOWN_MS,closed:room.phase==='closed'});
+ return json(await readRoomMessages(room,user.id,after));
 });}
 export async function POST(req:Request){return safe(async()=>{
  const user=await requireUser(req),b=await body(req),room=await member(b.code,user.id);

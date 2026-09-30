@@ -1,0 +1,12 @@
+.indie-game-list{display:grid;gap:22px;margin-top:30px}
+.indie-game-list .last-pixel-entry{margin-top:0}
+.minesweeper-entry{border-color:#446675;background:linear-gradient(125deg,#1b3440,#315463);box-shadow:0 12px 30px #294e601c}
+.minesweeper-entry .last-pixel-kicker{color:#c2dce2}
+.minesweeper-entry p{color:#dce8e8}
+.minesweeper-entry .last-pixel-facts{color:#c9dfe0}
+.minesweeper-entry .last-pixel-action small{color:#b4ced1}
+.minesweeper-entry .last-pixel-signal{border-color:#b8d8d733;border-radius:18px;background-image:linear-gradient(#b8d8d71f 1px,transparent 1px),linear-gradient(90deg,#b8d8d71f 1px,transparent 1px);background-size:31px 31px}
+.minesweeper-entry .last-pixel-signal:before,.minesweeper-entry .last-pixel-signal:after{display:none}
+.minesweeper-entry .last-pixel-signal span,.minesweeper-entry .last-pixel-signal i{border-radius:7px;border-color:#cfe5d84d;background:#d9e7b814}
+.minesweeper-entry .last-pixel-signal b{border-radius:4px;background:#e7edbd;box-shadow:65px 78px 0 #9ed0ca}
+@media(max-width:540px){.indie-game-list{gap:16px;margin-top:22px}.indie-game-list .last-pixel-entry{margin-top:0}}
