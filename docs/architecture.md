@@ -24,7 +24,7 @@
 | 聊天与气泡 | `app/api/chat/`、`components/use-room-messages.ts`、`room-chat.tsx`、`lib/chat-bubbles.ts` |
 | 动画播放与缓存 | `lib/motion/`、`components/frame-motion.tsx`、`motion-playback.tsx` |
 | 音乐与出牌播报 | `lib/audio/`、`components/table-sound.tsx` |
-| 战报和分享 | `lib/mahjong/report*.ts`、`components/mahjong-report*.tsx`、`app/share/` |
+| 战报和分享 | `lib/reports/` 聚合三游戏分数，`components/score-report.tsx` 展示曲线与整桌成绩；麻将牌型、分享和图片仍在 `lib/mahjong/report*.ts`、`components/mahjong-report*.tsx`、`app/share/` |
 | 数据结构与迁移 | `db/schema.ts`、`drizzle/` |
 | 样式 | `app/globals.css` 与 `tables.css`、`holdem.css`、`effects.css`、`emotes.css` 等专题样式 |
 | 本地工具和发布 | `scripts/`、`config/`、`.github/workflows/` |

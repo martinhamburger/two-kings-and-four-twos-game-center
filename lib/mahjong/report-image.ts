@@ -1,3 +1,5 @@
+import {drawScoreChart} from '../reports/score-image';
+import {mahjongScores} from '../reports/score';
 import {chips,resultName,type Report} from './report';
 import {typeName} from './solver';
 import {tileFaceSrc} from './art';
@@ -29,6 +31,8 @@ export async function createReportImage(report:Report,shareUrl=''){
  text('玩家',64,y,25,muted);text(report.scope==='table'?'初始筹码':'局前筹码',350,y,25,muted);text('净输赢',583,y,25,muted);text('结余筹码',812,y,25,muted);y+=50;
  for(const player of rows){const start=y;const ends=[wrap(player.name+(player.bot?' · 机器人':''),64,start,250,32,ink,600),wrap(chips(player.initial),350,start,200,28,muted),wrap(chips(player.delta,true),583,start,200,30,BigInt(player.delta)>=0n?green:'#ad6648',650),wrap(chips(player.balance),812,start,204,28,ink,600)];y=Math.max(...ends)+24;}
  y+=10;rule();text(`完成 ${report.stats.completed} 局　·　流局 ${report.stats.draws} 局　·　中止 ${report.stats.aborted} 局`,64,y,28,muted);y+=65;
+ const scores=report.scores??mahjongScores(report.players,report.rounds,report.title);
+ if(scores.points.length>1)y=drawScoreChart(c,scores,y,width);
  if(round){
   text(`第 ${round.number} 局 · ${resultName(round)}`,64,y,38,ink,650);y+=62;
   if(round.family==='fourWild'){y=wrap('四赖直胡 · 下方为已选牌张身份，不要求成型',64,y,952,27,muted)+15;}

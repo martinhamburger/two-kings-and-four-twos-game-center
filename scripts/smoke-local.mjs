@@ -299,6 +299,9 @@ try {
   await request('/api/game',{action:'leave',code:extended.code,revision:extended.revision},v3Humans[1].cookie);
   for(const player of v3Humans)assert.equal((await request('/api/game',undefined,player.cookie)).data.activeRoom,null);
   await request('/api/game',{action:'join',code:extended.code},outsider.cookie,400);
+  // Historical table recovery reads immutable settlements, even after classic seats were cleared.
+  const {verifyReportApis}=await import('./smoke-reports.mjs');
+  await verifyReportApis({request,signup,state,outsider,extended,v3Humans});
   const info = (await request('/build-info.json')).data;
   assert.match(info.commit, /^[a-f0-9]{40}$/);
   writeFileSync('work/smoke-local.json', JSON.stringify({ status: 'passed', checks, commit: info.commit, state }, null, 2) + '\n');
