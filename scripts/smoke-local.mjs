@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {DatabaseSync} from 'node:sqlite';
 import {globSync,readFileSync} from 'node:fs';
 import {timeoutModern} from '../lib/mahjong/modern.ts';
-import {hints} from '../lib/game/engine.ts';
+import {hints,hintsFor} from '../lib/game/engine.ts';
 import { spawn, spawnSync } from 'node:child_process';
 import { createServer } from 'node:net';
 import { mkdirSync, mkdtempSync, openSync, closeSync, writeFileSync } from 'node:fs';
@@ -97,6 +97,33 @@ try {
   feedbackFixture.prepare('UPDATE users SET banned=1 WHERE id=?').run(feedbackOther.data.user.id);
   await request('/api/feedback',{clientId:crypto.randomUUID(),content:'停用后'},feedbackOther.cookie,403);
   feedbackFixture.close();
+  // Four-player rooms reuse guarded member admission, private views and record settlement.
+  const fourPlayers=await Promise.all(Array.from({length:5},(_,i)=>signup('four'+i+Date.now().toString(36))));
+  let four=(await request('/api/game',{action:'create',rules:{id:'landlord-four-v1'}},fourPlayers[0].cookie)).data;
+  for(let i=1;i<4;i++)four=(await request('/api/game',{action:'join',code:four.code},fourPlayers[i].cookie)).data;
+  assert.equal(four.game.seats.length,4);await request('/api/game',{action:'join',code:four.code},fourPlayers[4].cookie,400);
+  for(let i=0;i<4;i++)four=(await request('/api/game',{action:'ready',code:four.code,revision:four.revision},fourPlayers[i].cookie)).data;
+  four=(await request('/api/game',{action:'bid',code:four.code,revision:four.revision,value:3},fourPlayers[four.game.turn].cookie)).data;
+  for(let i=0;i<4;i++){
+    const hiddenFour=(await request('/api/game?room='+four.code,undefined,fourPlayers[i].cookie)).data;
+    assert.equal(hiddenFour.game.bottom.length,0);assert.equal(hiddenFour.game.seats[i].hand.length,25);assert(hiddenFour.game.seats.every((s,n)=>n===i||!s.hand.length));
+    const hiddenSync=(await request('/api/game/sync?room='+four.code+'&revision=0',undefined,fourPlayers[i].cookie)).data;
+    assert.equal(hiddenSync.room.game.bottom.length,0);
+  }
+  for(let i=0;i<4;i++)four=(await request('/api/game',{action:'double',code:four.code,revision:four.revision,value:false},fourPlayers[i].cookie)).data;
+  assert.equal(four.game.bottom.length,8);assert.equal(four.game.seats[four.game.landlord].count,33);
+  await request('/api/game',{action:'play',code:four.code,revision:four.revision-1,cards:[0]},fourPlayers[four.game.turn].cookie,409);
+  let fourMoves=0;
+  while(four.game.phase==='playing'&&fourMoves++<500){
+    const actor=four.game.turn;four=(await request('/api/game?room='+four.code,undefined,fourPlayers[actor].cookie)).data;
+    const options=hintsFor(four.game,four.game.seats[actor].hand,four.game.last?.combo??null).sort((a,b)=>b.length-a.length),cards=options[0]??[];
+    four=(await request('/api/game',{action:cards.length?'play':'pass',code:four.code,revision:four.revision,cards},fourPlayers[actor].cookie)).data;
+  }
+  assert.equal(four.game.phase,'finished');assert.equal(four.game.deltas.length,4);assert.equal(four.game.deltas.reduce((a,b)=>a+b),0);
+  const fourHistory=(await request('/api/history',undefined,fourPlayers[3].cookie)).data;assert(JSON.stringify(fourHistory).includes(four.code));
+  await request('/api/game',{action:'end_table',code:four.code,revision:four.revision},fourPlayers[0].cookie);
+  for(let i=0;i<4;i++)assert.equal((await request('/api/game',undefined,fourPlayers[i].cookie)).data.activeRoom,null);
+
   // New classic rooms: neither private hands nor any HTTP view leaks bottom cards while doubling.
   const blindPlayers=[];for(let i=0;i<3;i++)blindPlayers.push(await signup('blind'+i+Date.now().toString(36)));
   let blind=(await request('/api/game',{action:'create',title:'盲加倍隐私验收'},blindPlayers[0].cookie)).data;

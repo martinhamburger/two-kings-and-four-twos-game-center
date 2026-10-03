@@ -1,4 +1,4 @@
-import {bid,play,view,doubleChoice,rank,type Game} from '../game/engine.ts';
+import {bid,play,view,doubleChoice,rank,fourPlayer,landlordCapacity,hintsFor,type Game} from '../game/engine.ts';
 import {isLandlordV3,v3BotAction,type V3Game} from '../game/landlord-v3.ts';
 import {modernSeat,modernView,moveModern,confirmWin,type ModernGame} from '../mahjong/modern.ts';
 import {BOT_DELAY_MS,BOT_NAMES,soloPractice} from './types.ts';
@@ -14,7 +14,7 @@ function rosterEditable(g:PracticeGame){
 /** Every human confirms readiness again after a roster change. Bots never ready a human. */
 export function resetRosterReady(g:PracticeGame){g.seats.forEach(s=>{s.ready=!!s.bot;});}
 export function addRoomBot(g:PracticeGame){
- rosterEditable(g);if(g.seats.length>=(mahjong(g)?4:3))throw Error('座位已满');
+ rosterEditable(g);if(g.seats.length>=(mahjong(g)?4:landlordCapacity(g)))throw Error('座位已满');
  const id='bot:'+crypto.randomUUID(),name=BOT_NAMES.find(n=>!g.seats.some(s=>s.name===n))||'陪练'+(g.seats.filter(s=>s.bot).length+1);
  if(mahjong(g))g.seats.push({...modernSeat(id,name,g.initialChips),bot:true,ready:true});
  else g.seats.push({id,name,hand:[],ready:true,plays:0,last:'',bot:true});
@@ -35,7 +35,7 @@ export function transferHumanHost(g:PracticeGame){
 export function fillBots(g:PracticeGame){
  if(g.seats.length!==1||g.phase!=='waiting')throw Error('只能在建房时选择人机测试');
  const botIds:string[]=[];
- for(let i=0;i<(mahjong(g)?3:2);i++){const id='bot:'+crypto.randomUUID(),name=BOT_NAMES[i];botIds.push(id);
+ for(let i=0;i<(mahjong(g)?3:landlordCapacity(g)-1);i++){const id='bot:'+crypto.randomUUID(),name=BOT_NAMES[i];botIds.push(id);
   if(mahjong(g))g.seats.push({...modernSeat(id,name,g.initialChips),bot:true,ready:true});
   else g.seats.push({id,name,hand:[],ready:true,plays:0,last:'',bot:true});
  }g.practice={difficulty:'advanced',botIds,nextAt:0};
@@ -68,8 +68,20 @@ export function advanceBot(g:PracticeGame,now=Date.now()){
   moveModern(g,seat,action,now);
  }else{
   const v=view(g,g.seats[seat].id),opponents=v.seats.filter((_,i)=>(i===v.landlord)!==(seat===v.landlord));
-  const next=(seat+1)%3,nextEnemy=(next===v.landlord)!==(seat===v.landlord);
-  const action=landlordDecision({hand:v.seats[seat].hand,phase:v.phase as 'bidding'|'playing',bid:v.bid,last:v.last?.combo??null,lastIsTeammate:!!v.last&&seat!==v.landlord&&v.last.seat!==v.landlord,nextOpponentCount:nextEnemy?v.seats[next].count:0,opponentMinimum:Math.min(...opponents.map(s=>s.count))});
+  const next=(seat+1)%landlordCapacity(g),nextEnemy=(next===v.landlord)!==(seat===v.landlord);
+  const action=fourPlayer(g)?fourDecision(g,seat):landlordDecision({hand:v.seats[seat].hand,phase:v.phase as 'bidding'|'playing',bid:v.bid,last:v.last?.combo??null,lastIsTeammate:!!v.last&&seat!==v.landlord&&v.last.seat!==v.landlord,nextOpponentCount:nextEnemy?v.seats[next].count:0,opponentMinimum:Math.min(...opponents.map(s=>s.count))});
   if(action.action==='bid')bid(g,seat,action.value,now);else play(g,seat,action.action==='pass'?[]:action.cards,now);
  }return true;
+}
+
+/** Four-player policy uses only own cards and public counts/actions, never other hands. */
+function fourDecision(g:Game,seat:number):{action:'bid';value:number}|{action:'play';cards:number[]}|{action:'pass'}{
+ const v=view(g,g.seats[seat].id),hand=v.seats[seat].hand;
+ if(v.phase==='bidding'){const want=hand.filter(c=>rank(c)>=15).length>=5?3:1;return {action:'bid',value:want>v.bid?want:0};}
+ const options=hintsFor(g,hand,v.last?.combo??null),finish=options.find(cs=>cs.length===hand.length);
+ if(finish)return {action:'play',cards:finish};
+ if(!options.length||v.last&&seat!==v.landlord&&v.last.seat!==v.landlord)return {action:'pass'};
+ const regular=options.filter(cs=>new Set(cs.map(rank)).size>1||cs.length<4);
+ const cards=(v.last?options:regular.length?regular:options).sort((a,b)=>v.last?a.length-b.length||rank(a[0])-rank(b[0]):b.length-a.length||rank(a[0])-rank(b[0]))[0];
+ return {action:'play',cards};
 }
