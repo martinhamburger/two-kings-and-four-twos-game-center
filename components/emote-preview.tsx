@@ -20,7 +20,7 @@ export function EmotePreview(){
  return <main className="emote-preview"><AnimationPreload/>
   <Link className="gallery-back" href="/"><ArrowLeft size={16}/>返回娱乐中心</Link>
   <header className="gallery-heading"><span className="section-tag"><BookOpen size={20}/>娱乐中心 · 图鉴</span><h1>卡牌、表情与特效</h1>
-  <p>54 张皇室卡牌、21 个经典表情与 15 种牌型特效。点一下看完整动作；这里的重播只给自己看，不会发到房间。</p></header>
+  <p>皇室卡牌、21 个经典表情与 15 种牌型特效。点一下看完整动作；这里的重播只给自己看，不会发到房间。</p></header>
   <AnimationCacheControl/><div className="gallery-tabs" role="group" aria-label="预览分类">
    <button data-category="cards" aria-pressed={kind==='cards'} onClick={()=>setKind('cards')}><Layers size={18}/>卡牌 · 54</button>
    <button data-category="emotes" aria-pressed={kind==='emotes'} onClick={()=>setKind('emotes')}><Smile size={18}/>经典表情 · {emotes.length}</button>
