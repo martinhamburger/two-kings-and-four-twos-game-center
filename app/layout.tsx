@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./table-light.css";
+import "./landlord-layout.css";
 import "./lobby.css";
 import "./avatar.css";
 import {SiteNavigation} from "@/components/site-navigation";

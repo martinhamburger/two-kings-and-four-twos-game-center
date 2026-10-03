@@ -1,0 +1,33 @@
+/* Keep the landlord's variable-length controls inside the table at every width. */
+.landlord-board .action-bar,.v3-tutorial-modal .action-bar{flex-wrap:wrap}
+.landlord-board .action-bar>button{max-width:100%;height:auto;white-space:normal;overflow-wrap:anywhere;padding-block:8px}
+.landlord-board .self-label{align-items:flex-start;flex-wrap:wrap}
+.landlord-board .self-label>div:first-child{flex:1 1 220px;flex-wrap:wrap;min-width:0}
+.landlord-board .self-label .room-chat{flex:0 0 auto;margin-left:auto}
+.landlord-board .self-label .self-identity{flex:0 1 auto;max-width:100%}
+.landlord-board .self-label .seat-score{max-width:100%;overflow-wrap:anywhere;white-space:normal}
+/* Explicit cells prevent the shared 44px table button rule overlapping grid rows. */
+.landlord-board .v3-player-equipment{grid-template-columns:repeat(4,28px);grid-template-rows:none;grid-auto-rows:28px;gap:4px;flex:0 0 auto;width:max-content;max-width:100%}
+.landlord-board .v3-player-equipment.is-compact{grid-template-columns:repeat(2,28px);grid-template-rows:none;grid-auto-rows:28px;flex-basis:auto}
+.landlord-board .v3-player-equipment>button{width:28px;height:28px;min-height:28px;min-width:0;font-size:12px}
+.landlord-board .v3-player-equipment i{font-size:7px}
+.landlord-board .v3-equipment-heading{color:#3f604b;overflow-wrap:anywhere}
+.landlord-board .v3-equipment-heading b{color:#72541f}
+.v3-catalog-list h4{color:#3f604b}
+.v3-catalog-list article{background:#edf3e8;border-color:#c6d7bc}
+.v3-catalog-list strong{color:#304d3b}
+.v3-catalog-list p{color:#50634e}
+.v3-catalog-list strong em{color:#73541e;background:#fff5d5;border-color:#c7ae6b}
+.v3-catalog-list article.is-held{border-color:#a88735}
+/* Radix measures available space again on resize; both desktop and landscape scroll. */
+.sound-panel,.emote-picker{max-height:min(calc(100dvh - 24px),calc(var(--radix-popover-content-available-height,100dvh) - 4px))!important;overflow-y:auto;overscroll-behavior:contain}
+@media(max-width:580px){
+ .emote-picker{max-height:75dvh!important}
+ .landlord-board .self-label>div:first-child{flex-basis:100%}
+}
+.landlord-board .v3-shop{background:#edf3e8;border-color:#c6d7bc}
+.landlord-board .v3-shop h3{color:#304d3b}
+.landlord-board .v3-shop p{color:#50634e}
+.landlord-board .v3-shop-heading{flex-wrap:wrap;gap:8px}
+.landlord-board .v3-tutorial-hint{background:#edf3e8;color:#3f604b;border-color:#c6d7bc}
+.v3-catalog-modal{max-width:min(760px,calc(100vw - 32px));max-height:min(82dvh,calc(100dvh - 32px))}

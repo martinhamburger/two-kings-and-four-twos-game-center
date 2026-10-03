@@ -152,8 +152,26 @@ export default function Home(){
  const [houseRules,setHouseRules]=useClubState('landlord:houseRules',{...DEFAULT_LANDLORD_RULES});
  const [variant,setVariant]=useClubState<'v2'|'v3'>('landlord:variant','v2');
  // 新手教程：第一次进 v3 房间自动弹一次，之后从工具栏随时可重看；情境提示可单独关掉。
- const [tutorialSeen,setTutorialSeen]=useClubState('landlord:v3TutorialSeen',false),[tutorialOpen,setTutorialOpen]=useState(false),[tutorialHints,setTutorialHints]=useClubState('landlord:v3TutorialHints',true);
- const closeTutorial=useCallback(()=>{setTutorialOpen(false);setTutorialSeen(true);},[setTutorialSeen]);
+ const [tutorialPreference,setTutorialPreference]=useState<{userId:string;seen:boolean;hints:boolean}|null>(null),[tutorialOpen,setTutorialOpen]=useState(false);
+ useEffect(()=>{
+  setTutorialOpen(false);
+  if(!user?.id){setTutorialPreference(null);return;}
+  let seen=false,hints=true;
+  try{const saved=JSON.parse(localStorage.getItem(`landlord:tutorial:${user.id}`)||'null');seen=saved?.seen===true;hints=saved?.hints!==false;}catch{}
+  setTutorialPreference({userId:user.id,seen,hints});
+ },[user?.id]);
+ const tutorialReady=tutorialPreference?.userId===user?.id&&!!user;
+ const tutorialSeen=tutorialReady&&tutorialPreference?.seen,tutorialHints=tutorialReady?!!tutorialPreference?.hints:true;
+ const saveTutorialPreference=useCallback((patch:{seen?:boolean;hints?:boolean})=>{
+  if(!user?.id)return;
+  setTutorialPreference(current=>{
+   const next={userId:user.id,seen:false,hints:true,...(current?.userId===user.id?current:{}),...patch};
+   try{localStorage.setItem(`landlord:tutorial:${user.id}`,JSON.stringify({seen:next.seen,hints:next.hints}));}catch{}
+   return next;
+  });
+ },[user?.id]);
+ const setTutorialHints=(hints:boolean)=>saveTutorialPreference({hints});
+ const closeTutorial=useCallback(()=>{setTutorialOpen(false);saveTutorialPreference({seen:true});},[saveTutorialPreference]);
  const {bubbles,onSnapshot}=useChatBubbles(room?.code,user?.id);
  const [effectsConnected,setEffectsConnected]=useState(true);
  const requestPending=useRef(false);
@@ -216,7 +234,7 @@ export default function Home(){
  const g=room?.game,v3=g?.kind==='landlord-v3',seat=g?.seats.findIndex((s:any)=>s.id===user.id)??-1,me=g?.seats[seat],myTurn=g&&g.turn===seat,legal=combo&&beats(combo,g?.last?.combo??null);
  const solo=soloPractice(g||{}),botControls=g?.phase==='waiting'&&g.host===user.id&&!solo?{busy,add:()=>doAct('add_bot'),remove:(botId:string)=>doAct('remove_bot',{botId})}:undefined;
  // 新手教程：v3 房间第一次进（开局前）自动弹出；关掉后记在本地，工具栏按钮随时可重看。
- const tutorialVisible=tutorialOpen||(!!room&&v3&&!tutorialSeen&&['waiting','shopping'].includes(g?.phase));
+ const tutorialVisible=tutorialOpen||(!!room&&v3&&tutorialReady&&!tutorialSeen&&['waiting','shopping'].includes(g?.phase));
  // 情境提示：只教「现在该做什么」，规则细节仍放在玩法规则与新手教程里。
  const phaseHint=!v3?'':g.phase==='waiting'?'等人齐：把房间号发给朋友，或者直接开「人机测试」自己练一局。':g.phase==='shopping'?'先买 1--2 件一级装备（1 金币），买完点「完成购买」。':g.phase==='bidding'?'叫地主会托管金币，抢地主每次 +1 金币；牌好再叫。':g.phase==='equipment'?(g.pendingEffect?.seat===seat?'装备结算：选好牌再按上方按钮确认，或者点跳过。':'对手正在结算装备，你的手牌保持可见。'):g.phase==='playing'?(myTurn?(g.last?'要压过上一手（同牌型更大或用炸弹）；压不过就点「不出」。':'你领出：出什么牌型都可以。'):'等对手出牌，注意他还剩几张。'):g.phase==='finished'?(g.champion>=0?'整桌赛制已结束，可查看战报或离桌。':'点「准备下一局」继续；金币和装备会保留到整桌结束。'):'';
  return <TableEffectsProvider room={room} userId={user.id} connected={effectsConnected}><div className="app-shell"><Toaster theme="light" position="top-center"/><div className="club-game-tools">{room&&g&&<RoomFriends code={room.code} game={g}/>}<TableSound room={room} userId={user.id} timing={timing}/>{v3&&<EquipmentCatalog game={g} seat={seat}/>}{!room&&<Rules/>}{v3&&<Button variant="ghost" size="sm" aria-label="新手教程" onClick={()=>setTutorialOpen(true)}><BookOpen size={16}/><span className="hide-small">新手教程</span></Button>}</div>
