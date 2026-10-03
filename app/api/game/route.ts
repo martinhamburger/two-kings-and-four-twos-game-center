@@ -40,6 +40,15 @@ export async function POST(req:Request){return safe(async()=>{
   try{if(b.action==='add_bot')addRoomBot(g);else removeRoomBot(g,b.botId);}catch(e){throw new AppError((e as Error).message);}
   r=await commit(r,g);return json(await roomView(r,g,u.id));
  }
+ if(b.action==='end_table'){
+  if(g.host!==u.id)throw new AppError('只有房主可以结束整桌',403);
+  if(soloPractice(g))throw new AppError('请使用结束测试');
+  if(!['waiting','finished'].includes(g.phase))throw new AppError('请在两局之间结束整桌');
+  g.phase='closed';g.deadline=0;
+  if(isLandlordV3(g)){g.pending=[];g.pendingEffect=undefined;}
+  g.log.push({text:'房主结束整桌，已完成的对局记录保留',at:Date.now()});
+  r=await commit(r,g,(guard,op)=>[db().prepare(`DELETE FROM members WHERE room_code=? AND ${guard}`).bind(r.code,r.code,op)]);return json({left:true});
+ }
  if(b.action==='end_practice'){
   if(!soloPractice(g)||g.host!==u.id)throw new AppError('只有个人测试房的房主可以使用结束测试',403);
   g.phase='closed';g.deadline=0;g.log.push({text:'房主结束人机测试，未完成对局不计分',at:Date.now()});

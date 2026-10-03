@@ -58,6 +58,36 @@ try {
   assert.equal((await request('/api/auth')).data.user, null);
   await request('/api/history', undefined, '', 401);
   const signup = async name => request('/api/auth', { action: 'register', username: name, name: '本地验收', password: crypto.randomUUID() });
+  // New classic rooms: neither private hands nor any HTTP view leaks bottom cards while doubling.
+  const blindPlayers=[];for(let i=0;i<3;i++)blindPlayers.push(await signup('blind'+i+Date.now().toString(36)));
+  let blind=(await request('/api/game',{action:'create',title:'盲加倍隐私验收'},blindPlayers[0].cookie)).data;
+  for(let i=1;i<3;i++)blind=(await request('/api/game',{action:'join',code:blind.code},blindPlayers[i].cookie)).data;
+  for(let i=0;i<3;i++)blind=(await request('/api/game',{action:'ready',code:blind.code,revision:blind.revision},blindPlayers[i].cookie)).data;
+  assert.equal(blind.game.rules.id,'landlord-v4');
+  blind=(await request('/api/game',{action:'bid',code:blind.code,revision:blind.revision,value:3},blindPlayers[blind.game.turn].cookie)).data;
+  const hidden=(snapshot,index)=>{assert.equal(snapshot.game.phase,'doubling');assert.deepEqual(snapshot.game.bottom,[]);assert(snapshot.game.seats.every(s=>s.count===17));assert.equal(snapshot.game.seats[index].hand.length,17);assert(snapshot.game.seats.filter((_,i)=>i!==index).every(s=>s.hand.length===0));};
+  hidden(blind,blind.game.landlord);
+  for(let i=0;i<3;i++){
+    hidden((await request('/api/game?room='+blind.code,undefined,blindPlayers[i].cookie)).data,i);
+    hidden((await request('/api/game/sync?room='+blind.code,undefined,blindPlayers[i].cookie)).data.room,i);
+  }
+  for(let i=0;i<2;i++){blind=(await request('/api/game',{action:'double',code:blind.code,revision:blind.revision,value:!!i},blindPlayers[i].cookie)).data;hidden(blind,i);}
+  const beforeReveal=blind.revision;
+  blind=(await request('/api/game',{action:'double',code:blind.code,revision:beforeReveal,value:true},blindPlayers[2].cookie)).data;
+  assert.equal(blind.game.phase,'playing');assert.equal(blind.game.bottom.length,3);assert.equal(blind.game.seats[blind.game.landlord].count,20);
+  await request('/api/game',{action:'double',code:blind.code,revision:beforeReveal,value:true},blindPlayers[2].cookie,409);
+  for(let i=0;i<3;i++){const revealed=(await request('/api/game?room='+blind.code,undefined,blindPlayers[i].cookie)).data;assert.deepEqual(revealed.game.bottom,blind.game.bottom);assert.equal(revealed.game.seats[i].hand.length,i===blind.game.landlord?20:17);}
+  await request('/api/game',{action:'end_table',code:blind.code,revision:blind.revision},blindPlayers[1].cookie,403);
+  await request('/api/game',{action:'end_table',code:blind.code,revision:blind.revision},blindPlayers[0].cookie,400);
+  const closeOwner=await signup('endtable'+Date.now().toString(36));
+  let closeRoom=await request('/api/game',{action:'create',title:'菜单结束验收'},closeOwner.cookie);
+  const closeGuest=await signup('endguest'+Date.now().toString(36));
+  closeRoom=await request('/api/game',{action:'join',code:closeRoom.data.code},closeGuest.cookie);
+  await request('/api/game',{action:'end_table',code:closeRoom.data.code,revision:closeRoom.data.revision-1},closeOwner.cookie,409);
+  const closing=(await request('/api/game',{action:'end_table',code:closeRoom.data.code,revision:closeRoom.data.revision},closeOwner.cookie)).data;
+  assert.equal(closing.left,true);
+  assert.equal((await request('/api/game',undefined,closeOwner.cookie)).data.activeRoom,null);
+  assert.equal((await request('/api/game',undefined,closeGuest.cookie)).data.activeRoom,null);
   const outsider = await signup('outside' + Date.now().toString(36));
   // Friend requests are mutual and restricted to actual same-table human members.
   await request('/api/friends',undefined,'',401);

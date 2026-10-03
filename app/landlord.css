@@ -1,0 +1,155 @@
+/* Royal table is deliberately scoped: other games keep their own geometry and palette. */
+.playing-card>span>svg,.playing-card>i>svg{display:block;width:1em;height:1em;fill:currentColor}
+.copy-card-label{font:9px/1 sans-serif;font-style:normal;position:absolute;right:5px;bottom:4px;color:#645887}
+.royal-app{max-width:none!important;padding:0!important;min-height:100dvh;background:#20294f;color:#fff5e0;isolation:isolate}
+.royal-room{--royal-ink:#fff5e3;position:relative;max-width:none!important;margin:0!important;padding:0!important;min-height:100dvh;overflow:clip;color:var(--royal-ink)}
+.royal-background{position:absolute;inset:0;z-index:-1;background:linear-gradient(#aaa6cf,#444575 44%,#1b234b)}
+.royal-background>img{width:100%;height:100%;object-fit:cover;object-position:center top}
+.royal-background:after{content:"";position:absolute;inset:0;background:linear-gradient(#111a4230,transparent 25%,#19245142 55%,#121b4699)}
+.royal-room .room-toolbar{height:64px;min-height:64px;box-sizing:border-box;padding:8px 20px;margin:0;border-bottom:1px solid #e8dcff20;background:#1623498f;backdrop-filter:blur(12px);position:relative;z-index:35;color:#f9eddd;gap:12px}
+.royal-room .room-toolbar h2{font-size:16px;color:inherit;margin:0 0 2px;max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.royal-room .room-toolbar>div>div>span{font-size:11px;color:#c4cbde}
+.royal-room .room-toolbar>div{min-width:0}.royal-room .room-toolbar>div>div>span{display:flex;align-items:center;gap:4px;height:24px}.royal-room .room-toolbar>button{margin-right:340px}
+.royal-app>.club-game-tools{position:absolute;top:10px;right:68px;z-index:40;display:flex;align-items:center;gap:4px;margin:0;padding:0;color:#fff1d5}
+.royal-app>.club-game-tools button,.royal-room .room-toolbar button,.royal-room .room-footnote button{background:#1b2d5780;color:#f9efd9;border:1px solid #c3d3ff30;border-radius:12px;min-height:40px;box-shadow:none}
+.royal-app>.club-game-tools button:hover,.royal-room .room-toolbar button:hover{background:#385183}
+.royal-app>.club-game-tools .hide-small{display:none}
+.royal-room .room-footnote{position:absolute;right:16px;top:10px;z-index:40;margin:0}
+.royal-room .game-table{display:grid;grid-template-columns:1fr;grid-template-rows:68px minmax(240px,1fr) auto;min-height:calc(100dvh - 64px);padding:0 12px 0;border:0;border-radius:0;box-shadow:none;background:none;overflow:visible;color:#fff5df}
+.royal-room .table-hud{grid-column:1;grid-row:1;justify-content:center;align-self:start;gap:18px;min-height:54px;padding-top:12px;z-index:3;color:#fff0ce}
+.royal-game-label{position:absolute;left:24px;font-size:12px;letter-spacing:.16em;color:#d9dcf4a8}
+.royal-stakes{background:#263363b3;border:1px solid #d6b47055;box-shadow:0 4px 16px #131a3726;border-radius:13px;padding:7px 16px;white-space:nowrap;font-size:13px;gap:7px!important}
+.royal-stakes b{color:#ffda75;font-size:22px;font-weight:750;font-variant-numeric:tabular-nums}.royal-stakes i{height:18px;border-left:1px solid #c5bdd459;margin:0 5px}
+.royal-room .bottom-cards{gap:5px;transition:transform .35s ease}
+.royal-room .bottom-cards .playing-card{width:34px;height:47px;border-radius:5px;padding:3px;box-shadow:0 2px 4px #12193440}
+.royal-room .bottom-cards .playing-card b{font-size:17px}.royal-room .bottom-cards .playing-card>span{font-size:12px}.royal-room .bottom-cards .playing-card>i{display:none}
+.royal-room .card-back{width:76px;height:108px;border:3px solid #f9e5b8;border-radius:10px;background:repeating-linear-gradient(45deg,#416eb820 0 5px,#14285530 5px 10px),linear-gradient(135deg,#538ecc,#214b90);box-shadow:0 3px 0 #8582a2,0 8px 20px #14244a50;position:relative;color:#f4d88e}
+.royal-room .card-back:before{content:"";position:absolute;inset:5px;border:1px solid #f4d88e8a;border-radius:5px}.royal-room .card-back svg{width:33px;height:33px;stroke-width:1.3}
+.royal-room :is(.phase-bidding,.phase-doubling) .bottom-cards{position:absolute;top:84px;left:50%;transform:translateX(-50%);gap:13px}
+.royal-room :is(.phase-bidding,.phase-doubling) .bottom-cards .playing-card{width:76px;height:108px;padding:8px}.royal-room :is(.phase-bidding,.phase-doubling) .bottom-cards .playing-card b{font-size:30px}.royal-room :is(.phase-bidding,.phase-doubling) .bottom-cards .playing-card>span{font-size:23px}
+.royal-room .phase-waiting .bottom-cards{display:none}
+.royal-room .landlord-opponents{grid-column:1;grid-row:2;display:grid;grid-template-columns:1fr 1fr;gap:80px;margin:0;align-items:start;align-self:start;padding-top:15px;min-width:0;z-index:4;pointer-events:none}
+.royal-room .landlord-seat{display:grid;grid-template-columns:clamp(100px,15vw,210px) minmax(0,1fr);gap:4px;align-items:center;min-width:0;pointer-events:auto}
+.royal-room .landlord-seat.side-right{grid-template-columns:minmax(0,1fr) clamp(100px,15vw,210px)}
+.royal-room .opponent{gap:4px;position:relative;min-height:180px}
+.royal-room .opponent>.chat-avatar{position:absolute;left:2px;top:2px}
+.royal-room .opponent>.royal-character~.chat-avatar .avatar{width:28px;height:28px;font-size:16px}
+.royal-room .opponent .avatar{width:66px;height:66px;border-radius:18px;border:2px solid #e6ce9a;box-shadow:0 5px 16px #111a4660}
+.royal-room .opponent.active-seat .avatar{border-color:#ffe8a3;box-shadow:0 0 0 3px #f2b94440,0 0 24px #fdd5683d}
+.royal-room .opponent strong{font-size:14px;color:#fff4df;font-weight:650;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-shadow:0 2px 3px #141b48}
+.royal-room .opponent .bot-label{font-size:9px;color:#dde2f7;background:#314a7966;border:0;padding:1px 4px;margin:2px auto}
+.royal-room :is(.seat-role,.landlord-label,.dealer-label){font-size:11px;color:#f8de9e;background:#27356099;border:1px solid #d1c3ad2e;padding:2px 9px;border-radius:10px;line-height:1.4}
+.royal-room .landlord-label{background:#795d22bd;color:#ffe6a3;border-color:#e2b85570}
+.royal-room .seat-score{font-size:15px;color:#ffe07d;font-weight:650;text-shadow:0 1px 3px #19234c}
+.royal-room .card-count{font-size:12px;color:#ecf0ff;padding:4px 11px;border-radius:9px;background:#173767a8;border:1px solid #8ab4e84a}
+.royal-double{font-size:10px;color:#f8dba2;white-space:nowrap}.royal-room .opponent .royal-double{position:absolute;right:0;top:38px;background:#27355b99;border-radius:6px;padding:2px 5px}
+.royal-character{position:relative;width:clamp(130px,16vw,235px);height:clamp(130px,16vw,235px);margin:-8px -15px -12px;pointer-events:none;filter:drop-shadow(0 9px 8px #17214666)}
+.royal-character .frame-motion{display:block;width:100%;height:100%}.royal-character .frame-motion>img,.royal-character .frame-motion>canvas{width:100%;height:100%;object-fit:contain}
+.royal-room .side-right .royal-character{transform:scaleX(-1)}
+.royal-room .seat-action{min-height:104px;gap:5px;color:#fff4dd;position:relative;min-width:0}
+.royal-room .seat-played-cards{background:none;border:0;box-shadow:none;padding:10px 22px 10px 0;gap:10px 0;justify-content:flex-start;max-width:100%}
+.royal-room .side-right .seat-played-cards{justify-content:flex-end}
+.royal-room .seat-played-cards>.playing-card{width:61px;flex-basis:61px;height:88px;margin-right:-28px;border-radius:6px;padding:5px;box-shadow:0 2px 0 #b8b5b2,0 4px 7px #1823474d}
+.royal-room .seat-played-cards>.playing-card b{font-size:28px}.royal-room .seat-played-cards>.playing-card>span{font-size:22px}.royal-room .seat-played-cards>.playing-card>i{font-size:27px;right:4px;bottom:5px}
+.royal-room .seat-pass{font-size:22px;font-weight:650;color:#ffe1a2;text-shadow:0 2px 4px #16214b;letter-spacing:.08em;white-space:nowrap}
+.royal-room .table-stage{grid-column:1;grid-row:2;align-self:center;justify-self:center;width:44%;padding:6px;color:#f6e9cd;min-height:0;z-index:5;pointer-events:none}
+.royal-room .table-stage button{pointer-events:auto}.royal-room .table-stage h2{color:#fff0d5;font-size:25px;text-shadow:0 2px 8px #152345}.royal-room .table-stage p{color:#ced9ef;font-size:13px}.royal-room .table-stamp{color:#f5d99355}
+.royal-room .table-stage .landlord-phase-note{color:#dee5ffb8;font-size:12px;letter-spacing:.06em;line-height:1.6;background:#26376180;padding:5px 12px;border-radius:20px}
+.royal-room :is(.phase-bidding,.phase-doubling) .table-stage{align-self:end;margin-bottom:76px}
+.royal-room .landlord-self-action{grid-column:1;grid-row:2;align-self:end;width:min(500px,45%);margin:0 auto 8px;z-index:5}
+.royal-room .landlord-self-action .seat-action{min-height:58px}.royal-room .landlord-self-action .seat-played-cards{justify-content:center}
+.royal-room .table-clock{width:58px;height:58px;padding:0;justify-content:center;background:radial-gradient(circle at 35% 30%,#ffdf83,#e5a934 70%);color:#fffbed!important;border:3px solid #ffe5a7;border-radius:50%;box-shadow:inset 0 0 0 3px #e9ad486b,0 4px 0 #9e702c,0 6px 14px #10214755;position:relative}
+.royal-room .table-clock:before,.royal-room .table-clock:after{content:"";position:absolute;width:13px;height:7px;background:#fadd99;border-radius:8px;top:-6px;transform:rotate(-32deg);left:-1px}.royal-room .table-clock:after{left:auto;right:-1px;transform:rotate(32deg)}
+.royal-room .table-clock>b{font-size:26px;line-height:1;font-weight:800;text-shadow:0 2px 2px #b87e35}.royal-room .table-clock>svg{display:none}.royal-room .table-clock.is-urgent{background:radial-gradient(circle at 35% 30%,#ffb36f,#ed613a 75%);border-color:#ffdc91;box-shadow:0 4px 0 #a4472c,0 0 18px #ee713d5c}
+.royal-room .self-area{grid-column:1;grid-row:3;position:relative;margin:0;padding:0 0 8px;border:0;background:none;box-shadow:none;z-index:10;min-width:0}
+.royal-room .self-label{position:absolute;bottom:calc(100% + 8px);left:4px;width:155px;display:block;margin:0;border:0;color:#f6e9ce;z-index:2}
+.royal-room .self-label>div{display:flex;flex-direction:column;gap:4px;align-items:center}.royal-room .self-label .royal-character{width:150px;height:150px;margin:0 -12px -22px}
+.royal-room .self-label .royal-character~.chat-avatar{position:absolute;top:0;left:0}.royal-room .self-label .avatar{width:38px;height:38px;border:2px solid #f3dab0;border-radius:12px}
+.royal-room .self-label strong{color:#fff6e5;font-size:13px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.royal-room .self-label .self-identity{display:flex;flex-direction:column;align-items:center;gap:4px}
+.royal-room .self-label>div>span:last-child{font-size:11px;color:#ebddba;display:flex;gap:6px;align-items:center}
+.royal-room .self-label .room-chat--compact{position:fixed;right:18px;bottom:16px;z-index:42;display:flex;gap:7px}
+.royal-room .self-label .room-chat--compact :is(.chat-launch,.emote-picker-trigger){background:#263a6cdc;color:#eee6cd;border:1px solid #c4cbea55;border-radius:13px}
+.royal-room .action-bar{display:flex;align-items:center;justify-content:center;gap:12px;margin:0 100px 12px 170px;min-height:56px;flex-wrap:wrap}
+.royal-room .action-bar button{min-height:48px;min-width:92px;border-radius:24px;padding:9px 24px;font-size:18px;font-weight:650;letter-spacing:.04em;background:linear-gradient(#ffe09a,#ecb447);border:1px solid #fff0ba;color:#5c3e1b;box-shadow:inset 0 1px 0 #fff9df,0 3px 0 #a56e25,0 5px 13px #15234640;transition:transform .12s,filter .12s}
+.royal-room .action-bar button:hover:not(:disabled){filter:brightness(1.06);transform:translateY(-2px)}.royal-room .action-bar button:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 #a56e25}
+.royal-room .action-bar button[data-variant=secondary],.royal-room .action-bar button[data-variant=outline]{background:linear-gradient(#f5dfb3,#d4b786);color:#56492d;border-color:#eadac3;box-shadow:0 3px 0 #968464,0 5px 13px #15234640}
+.royal-room .action-bar button[data-variant=ghost]{background:#20356380;color:#e1d7c2;border:1px solid #b8c9f040;font-size:13px;min-width:60px;padding:8px 14px;box-shadow:none}
+.royal-room .action-bar button.play-button,.royal-room .action-bar button.ready-button{background:linear-gradient(#8be0b3,#38ac84)!important;color:#103c32!important;border-color:#c2ffe0;box-shadow:inset 0 1px 0 #e3ffed,0 3px 0 #237258,0 5px 13px #15234640}
+.royal-room .action-bar button:disabled{opacity:.45;filter:saturate(.5)}.royal-room .action-bar p{font-size:14px;color:#e4e8f6;text-shadow:0 1px 4px #12214c;margin:0}
+.royal-room .playing-card{background:linear-gradient(110deg,#fffef9,#f1eee7);color:#202733;border:1px solid #cccbd0;text-shadow:none;font-family:"Microsoft YaHei","微软雅黑","PingFang SC",Arial,sans-serif}.royal-room .playing-card.red{color:#ba292f}
+.royal-room .playing-card b{font-weight:700;letter-spacing:-.045em}.royal-room .playing-card>span{line-height:1}.royal-room .playing-card>i{opacity:1;font-style:normal}
+.royal-room .royal-hand{display:block;box-sizing:border-box;width:100%;max-width:none;margin:0;padding:22px 0 0;border:0;border-radius:0;background:none;box-shadow:none;touch-action:pan-y}
+.royal-room .royal-hand-row{display:flex;justify-content:center;flex-wrap:nowrap;padding-right:calc(var(--card-width) - var(--step));margin-bottom:3px}
+.royal-room .royal-hand-row+.royal-hand-row{margin-top:20px}
+.royal-room .hand-slot{flex:0 0 var(--step);width:var(--step);height:calc(var(--card-width)*1.46)}
+.royal-room .hand-slot .hand-card{width:var(--card-width);height:calc(var(--card-width)*1.46);border-radius:11px;padding:10px 7px;box-shadow:-1px 0 2px #9895a54f,0 3px 8px #101d4640;overflow:hidden;align-items:flex-start}
+.royal-room .hand-slot .hand-card b{font-size:var(--rank-size);line-height:1}.royal-room .hand-slot .hand-card>span{font-size:calc(var(--rank-size)*.72);margin-top:7px}.royal-room .hand-slot .hand-card>i{font-size:calc(var(--card-width)*.38);right:13%;bottom:15%}
+.royal-room .hand-slot .hand-card.selected{transform:translateY(-19px);border-color:#e7b64e;box-shadow:0 0 0 2px #f1c45d,0 9px 20px #101d4680}
+.royal-room .hand-slot .hand-card:focus-visible{outline:3px solid #ffd879;outline-offset:2px}
+.royal-room .playing-card.joker b{writing-mode:vertical-rl;font-family:inherit;font-size:18px;letter-spacing:.15em;line-height:1.25}.royal-room .playing-card.joker>span{display:none}.royal-room .playing-card.joker>i{font-size:26px}
+.royal-room .hand-caption{font-size:11px;color:#c2cce4;margin:7px 75px 0;min-height:17px;line-height:1.5}
+.royal-room .v3-tutorial-hint{max-width:660px;margin:0 auto 8px;background:#1f345dbd;border-color:#c0cae332;color:#e3e9f6;font-size:11px}
+.royal-room .v3-player-equipment{justify-content:center;max-width:170px;flex-wrap:wrap;gap:3px}.royal-room .v3-player-equipment button{min-height:26px!important;width:27px!important;height:27px!important;border:1px solid #b3bed870;background:#2b426e;color:#f4deae;border-radius:6px}.royal-room .v3-player-equipment button b{font-size:11px}.royal-room .v3-player-equipment button i{font-size:8px}
+.royal-room .v3-shop{max-width:900px;margin:0 auto 14px;background:#15254be8;border:1px solid #bdc8e54a;border-radius:20px;padding:20px;color:#eee8dc}.royal-room .v3-shop :is(h3,p){color:inherit}.royal-room .v3-equipment-tile{color:#fff4d6;background:#344a77;border-color:#7283a3}.royal-room .v3-owned-equipment button{background:#263962;color:#f9e8be;border:1px solid #c8d5ed50}
+.royal-room .v3-equipment-actions{background:#20315bbd;border:1px solid #b9c9e43d;border-radius:16px;max-width:850px;margin:5px auto 12px;padding:10px;color:#e6eafb}.royal-room .v3-equipment-actions .action-bar{margin:8px 0}.royal-room .v3-equipment-heading{color:#efe4c9}.royal-room .v3-equipment-actions .hand-caption{margin:8px}
+.royal-room .phase-shopping .self-label{position:relative;bottom:auto;left:auto;width:auto;margin-bottom:12px}.royal-room .phase-shopping .self-label>div{flex-direction:row;justify-content:center}.royal-room .phase-shopping .action-bar{margin:0 0 16px}.royal-room .phase-shopping .landlord-opponents{padding-top:0}.royal-room .phase-shopping{grid-template-rows:68px 170px auto}
+.royal-room .phase-finished .table-stage{align-self:center}.royal-room .table-round-summary h2{color:#fff0c8;font-size:26px}.royal-room .table-round-summary p{color:#d6def1}.royal-room .table-round-summary strong{color:#ffdc78}
+.royal-room .seat-final-hand{background:none;border:0;border-radius:0;color:#eef3ff;padding:9px;max-height:250px;overflow:auto}.royal-room .seat-final-label{color:#d6e2f6}.royal-room .self-area>.seat-final-hand{max-width:none;margin:0 auto 14px;padding:0;max-height:none;overflow:visible}.royal-room .phase-finished .landlord-seat .seat-final-hand{grid-column:2;grid-row:1}.royal-room .phase-finished .side-right .seat-final-hand{grid-column:1}
+.royal-room .phase-finished .self-area .self-label{bottom:calc(100% + 8px)}.royal-room .room-code-controls{pointer-events:auto}.royal-room .mj-room-code{background:#23376199;color:#ffe2a6;border-color:#e8c88755}.royal-room .empty-seat{color:#ebddb7;border-color:#d8ccad88}.royal-room .empty-bot-seat strong{color:#e1e6f8}
+.royal-app .connection-error{position:fixed;top:65px;left:50%;transform:translateX(-50%);z-index:90;max-width:90vw;background:#fff2d5;color:#7c3524}
+@media(min-width:1400px){.royal-room .game-table{padding-left:18px;padding-right:18px;grid-template-rows:80px minmax(320px,1fr) auto}.royal-room .self-label{width:175px}.royal-room .self-label .royal-character{width:180px;height:180px}.royal-room .seat-played-cards>.playing-card{width:76px;height:110px;flex-basis:76px;margin-right:-36px}.royal-room .seat-played-cards>.playing-card b{font-size:34px}.royal-room .seat-played-cards>.playing-card>span{font-size:27px}}
+@media(max-height:560px) and (min-width:641px){.royal-room .game-table{min-height:calc(100dvh - 52px);grid-template-rows:48px minmax(130px,1fr) auto;padding:0 12px}.royal-room .room-toolbar{height:52px;min-height:52px;padding:4px 12px}.royal-app>.club-game-tools{top:5px}.royal-room .room-footnote{top:5px}.royal-room .table-hud{padding-top:5px}.royal-room .royal-game-label{display:none}.royal-room .royal-character{width:105px;height:105px;margin-top:-7px}.royal-room .opponent{min-height:120px;gap:2px}.royal-room .landlord-opponents{padding:4px 0 0;gap:35px}.royal-room .landlord-seat{grid-template-columns:100px minmax(0,1fr)}.royal-room .landlord-seat.side-right{grid-template-columns:minmax(0,1fr) 100px}.royal-room .opponent strong{font-size:11px}.royal-room .opponent .bot-label{display:none}.royal-room .card-count{font-size:10px;padding:2px 7px}.royal-room .self-label{width:105px;bottom:calc(100% - 15px)}.royal-room .self-label .royal-character{display:none}.royal-room .royal-hand{width:100%;margin:0;padding-top:18px}.royal-room .hand-slot,.royal-room .hand-slot .hand-card{height:112px}.royal-room .hand-caption{margin-left:0;margin-right:75px;font-size:10px}.royal-room .action-bar{margin:0 40px 0 110px;gap:8px;min-height:44px}.royal-room .action-bar button{min-height:44px;font-size:15px;min-width:78px;padding:6px 17px}.royal-room .table-clock{width:42px;height:42px;border-width:2px}.royal-room .table-clock>b{font-size:21px}.royal-room .landlord-self-action{margin-bottom:0}.royal-room .landlord-self-action .seat-action{min-height:44px}.royal-room :is(.phase-bidding,.phase-doubling) .bottom-cards{top:55px;gap:8px}.royal-room .card-back,.royal-room :is(.phase-bidding,.phase-doubling) .bottom-cards .playing-card{width:48px;height:68px}.royal-room :is(.phase-bidding,.phase-doubling) .table-stage{margin-bottom:47px}.royal-room .seat-played-cards>.playing-card{width:44px;height:64px;flex-basis:44px;margin-right:-21px;padding:3px}.royal-room .seat-played-cards>.playing-card b{font-size:23px}.royal-room .seat-played-cards>.playing-card>span{font-size:16px}.royal-room .seat-played-cards>.playing-card>i{font-size:22px}.royal-room .seat-score{font-size:12px}.royal-room .table-stage h2{font-size:18px}.royal-room .table-stage p{font-size:11px;margin:3px}.royal-room .table-stamp{display:none}.royal-room .phase-shopping{grid-template-rows:48px 145px auto}}
+@media(max-width:900px){.royal-room .room-toolbar>button{margin-right:240px;font-size:12px}.royal-room .room-toolbar h2{max-width:160px}.royal-app>.club-game-tools{right:59px}.royal-app>.club-game-tools button{padding:7px}.royal-game-label{display:none}.royal-room .table-hud{gap:10px}.royal-room .landlord-opponents{gap:35px}.royal-room .action-bar{gap:8px}.royal-room .action-bar button{padding:8px 18px;min-width:78px;font-size:16px}.royal-room .v3-player-equipment{max-width:125px}}
+@media(max-width:640px){
+ .royal-room .room-toolbar{height:62px;min-height:62px;padding:5px 10px;align-items:center}.royal-room .room-toolbar h2{font-size:13px;max-width:138px}.royal-room .room-toolbar>div>div>span{font-size:9px}.royal-room .room-toolbar>button{margin:0;padding:7px 9px;min-width:40px;font-size:11px}.royal-app>.club-game-tools{position:absolute;top:69px;right:10px;gap:3px}.royal-app>.club-game-tools button{min-height:34px;width:34px;padding:6px;border-radius:10px}.royal-room .room-footnote{top:69px;left:10px;right:auto}.royal-room .room-footnote button{width:34px;height:34px;min-height:34px}.royal-room .room-toolbar .room-code-copy{display:none}
+ .royal-room .game-table{grid-template-rows:112px minmax(230px,1fr) auto;min-height:calc(100dvh - 62px);padding:0 8px}.royal-room .table-hud{padding-top:53px;gap:10px;min-height:100px}.royal-stakes{font-size:10px;padding:5px 10px;gap:4px!important;border-radius:9px}.royal-stakes b{font-size:17px}.royal-stakes i{margin:0 2px;height:14px}.royal-room .bottom-cards .playing-card{width:26px;height:36px;padding:2px}.royal-room .bottom-cards .playing-card b{font-size:14px}.royal-room .bottom-cards .playing-card>span{font-size:10px}
+ .royal-room .landlord-opponents{gap:20px;padding-top:0;align-self:start}.royal-room .landlord-seat,.royal-room .landlord-seat.side-right{display:flex;flex-direction:column;align-items:stretch;gap:3px}.royal-room .opponent{min-height:125px;gap:3px}.royal-room .opponent strong{font-size:12px;max-width:135px}.royal-room .royal-character{width:115px;height:115px;margin:-8px auto -8px}.royal-room .opponent .avatar{width:50px;height:50px;border-radius:14px}.royal-room .opponent .bot-label{display:none}.royal-room .opponent>.royal-character~.chat-avatar .avatar{width:23px;height:23px}.royal-room .card-count{font-size:10px;padding:2px 8px}.royal-room .seat-score{font-size:12px}.royal-room :is(.seat-role,.landlord-label,.dealer-label){font-size:9px;padding:1px 7px}.royal-room .seat-action{min-height:66px}.royal-room .seat-pass{font-size:18px}.royal-room .opponent .royal-double{font-size:9px;right:0;top:28px}
+ .royal-room .seat-played-cards{padding:8px 17px 6px 0;row-gap:8px;justify-content:center}.royal-room .side-right .seat-played-cards{justify-content:center}.royal-room .seat-played-cards>.playing-card{width:40px;height:59px;flex-basis:40px;margin-right:-18px;padding:3px;border-radius:5px}.royal-room .seat-played-cards>.playing-card b{font-size:20px}.royal-room .seat-played-cards>.playing-card>span{font-size:16px}.royal-room .seat-played-cards>.playing-card>i{font-size:21px}
+ .royal-room .table-stage{width:52%;align-self:end;margin-bottom:59px;padding:0}.royal-room .table-stage .landlord-phase-note{font-size:10px;padding:3px 7px}.royal-room .table-stage h2{font-size:18px}.royal-room .table-stage p{font-size:11px;margin:4px}.royal-room .table-stamp{display:none}.royal-room .phase-waiting .table-stage,.royal-room .phase-closed .table-stage{align-self:center;width:50%;margin:0}.royal-room :is(.phase-bidding,.phase-doubling) .table-stage{margin-bottom:55px}.royal-room .landlord-self-action{width:50%;margin-bottom:5px}.royal-room .landlord-self-action .seat-action{min-height:43px}
+ .royal-room :is(.phase-bidding,.phase-doubling) .bottom-cards{top:122px;gap:5px}.royal-room .card-back,.royal-room :is(.phase-bidding,.phase-doubling) .bottom-cards .playing-card{width:35px;height:52px;border-width:2px;border-radius:6px}.royal-room .card-back svg{width:20px}.royal-room :is(.phase-bidding,.phase-doubling) .bottom-cards .playing-card{padding:3px}.royal-room :is(.phase-bidding,.phase-doubling) .bottom-cards .playing-card b{font-size:19px}.royal-room :is(.phase-bidding,.phase-doubling) .bottom-cards .playing-card>span{font-size:13px}
+ .royal-room .table-clock{width:42px;height:42px;border-width:2px}.royal-room .table-clock>b{font-size:20px}
+ .royal-room .self-label{position:relative;bottom:auto!important;left:auto;width:100%;margin:0 0 8px;min-height:32px}.royal-room .self-label>div{flex-direction:row;justify-content:flex-start;gap:6px;padding-right:0;flex-wrap:wrap}.royal-room .self-label .royal-character{display:none}.royal-room .self-label .royal-character~.chat-avatar{position:relative}.royal-room .self-label .avatar{width:28px;height:28px;border-radius:9px}.royal-room .self-label .self-identity{align-items:flex-start}.royal-room .self-label strong{font-size:11px;max-width:125px}.royal-room .self-label .seat-score{font-size:11px}.royal-room .self-label>div>span:last-child{font-size:10px}
+ .royal-room .action-bar{margin:0 0 5px;gap:6px;min-height:49px}.royal-room .action-bar button{font-size:14px;min-height:44px;min-width:62px;padding:7px 13px;border-radius:19px}.royal-room .action-bar button[data-variant=ghost]{min-width:47px;padding:7px 9px;font-size:11px}.royal-room .action-bar p{font-size:12px}
+ .royal-room .royal-hand{width:100%;margin:0;padding:20px 0 0}.royal-room .hand-slot,.royal-room .hand-slot .hand-card{height:calc(var(--card-width)*1.48)}.royal-room .hand-slot .hand-card{padding:7px 4px;border-radius:6px}.royal-room .hand-slot .hand-card>span{margin-top:3px}.royal-room .hand-slot .hand-card>i{font-size:26px;right:7px;bottom:8px}.royal-room .royal-hand-row+.royal-hand-row{margin-top:20px}.royal-room .hand-caption{font-size:9px;margin:7px 0 0;text-align:left;padding-right:75px;min-height:26px}.royal-room .hand-slot .hand-card.selected{transform:translateY(-16px)}
+ .royal-room .self-label .room-chat--compact{bottom:10px;right:10px;gap:5px}.royal-room .self-label .room-chat--compact :is(.chat-launch,.emote-picker-trigger){width:34px;height:34px;min-height:34px;padding:7px;border-radius:10px}.royal-room .self-area{padding-bottom:8px}
+ .royal-room .v3-tutorial-hint{font-size:10px;margin:0 0 6px;line-height:1.5}.royal-room .v3-player-equipment{max-width:130px;gap:2px}.royal-room .v3-player-equipment button{width:24px!important;height:24px!important;min-height:24px!important}.royal-room .v3-equipment-actions{padding:8px}.royal-room .v3-equipment-actions .action-bar{gap:6px}.royal-room .v3-equipment-actions button{font-size:12px}.royal-room .v3-shop{padding:12px}.royal-room .phase-shopping{grid-template-rows:110px 180px auto}.royal-room .phase-shopping .self-label>div{justify-content:flex-start}
+ .royal-room .phase-finished .landlord-seat .seat-final-hand{max-height:200px}.royal-room .phase-finished .table-stage{align-self:end;margin-bottom:8px;width:90%}.royal-room .phase-finished .landlord-opponents{padding-bottom:90px}.royal-room .phase-finished .table-round-summary h2{font-size:20px}.royal-room .phase-finished{grid-template-rows:110px minmax(350px,1fr) auto}.royal-room .seat-final-label{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){.royal-room .bottom-cards,.royal-room .hand-slot .hand-card,.royal-room .action-bar button{transition:none}}
+
+/* Each visible index is self-contained, including a two-digit ten and both jokers. */
+.royal-room .playing-card.rank-ten b{letter-spacing:-.08em;transform:scaleX(.78);transform-origin:left center}
+.royal-room .hand-card.rank-ten b{font-size:calc(var(--rank-size)*.84)}
+.royal-room .hand-card.joker b{font-size:calc(var(--rank-size)*.52);line-height:1.15;letter-spacing:.15em}
+.royal-room .hand-card.joker>i{font-size:calc(var(--card-width)*.3);color:inherit}
+.royal-room .self-area>.seat-final-hand .royal-hand{padding-top:4px}
+.royal-room .seat-final-hand .round-poker-cards{gap:10px 0;padding-right:20px;background:none;border:0}
+.royal-room .seat-final-hand .round-poker-cards>.playing-card{width:58px;flex-basis:58px;height:85px;margin-right:-24px;padding:5px;border-radius:6px}
+.royal-room .seat-final-hand .round-poker-cards>.playing-card b{font-size:27px}
+.royal-room .seat-final-hand .round-poker-cards>.playing-card>span{font-size:21px}
+.royal-room .seat-final-hand .round-poker-cards>.playing-card>i{font-size:25px;right:6px;bottom:7px}
+.royal-room .seat-final-hand .round-poker-cards>.joker b{font-size:15px}
+.royal-room .room-footnote{padding:0}
+@media(max-width:640px){.royal-room .seat-final-hand .round-poker-cards>.playing-card{width:40px;flex-basis:40px;height:59px;margin-right:-15px;padding:3px}.royal-room .seat-final-hand .round-poker-cards>.playing-card b{font-size:21px}.royal-room .seat-final-hand .round-poker-cards>.playing-card>span{font-size:16px}.royal-room .seat-final-hand .round-poker-cards>.playing-card>i{display:none}.royal-room .seat-final-hand .round-poker-cards>.joker b{font-size:12px}}
+@media(min-width:641px){
+ .royal-room .self-label,.royal-room .phase-finished .self-area .self-label{top:0;bottom:auto;left:2px;width:230px;height:64px}
+ .royal-room .self-label>div{align-items:flex-start;gap:2px;padding-left:92px}
+ .royal-room .self-label .royal-character{position:absolute;left:0;top:-18px;width:92px;height:92px;margin:0}
+ .royal-room .self-label .royal-character~.chat-avatar{left:64px;top:35px}
+ .royal-room .self-label .avatar{width:26px;height:26px}
+ .royal-room .self-label .self-identity{align-items:flex-start}
+ .royal-room .self-label strong{font-size:11px;max-width:130px}
+ .royal-room .self-label>div>span:last-child{padding:0;background:none}
+ .royal-room .phase-finished .self-label{top:-75px}
+ .royal-room .phase-shopping .self-label{position:relative;width:100%;height:auto}
+ .royal-room .phase-shopping .self-label>div{padding:0;align-items:center}
+}
+@media(max-height:560px) and (min-width:641px){.royal-room .self-label{width:115px;height:44px}.royal-room .self-label>div{padding-left:0}.royal-room .self-label .chat-avatar{display:none}.royal-room .self-label .seat-score{display:none}.royal-room .self-label strong{max-width:110px}.royal-room .self-label>div>span:last-child{font-size:9px}}
+/* The Page artwork keeps its transparent frame and 2:3 canvas within the royal rack. */
+.royal-room .royal-hand{padding-right:0}
+.royal-room .hand-slot,.royal-room .hand-slot .hand-card.royal-card{height:calc(var(--card-width)*1.5)}
+.royal-room .hand-slot .hand-card.royal-card{overflow:visible;align-items:stretch}
+.royal-room .bottom-cards .royal-card{width:46px;height:69px}
+.royal-room .seat-played-cards>.royal-card{height:auto;aspect-ratio:2/3}
+@media(max-height:560px) and (min-width:641px){.royal-room .royal-hand{--card-width:75px!important}.royal-room .royal-hand-row{padding-right:0}.royal-room .hand-slot{flex-basis:min(var(--step),75px);width:min(var(--step),75px)}}
+@media(min-width:1400px){.royal-room .game-table{grid-template-rows:80px minmax(180px,1fr) auto}}
