@@ -15,7 +15,7 @@ export function roomInviteProblem(g:{kind?:string;phase:string;seats:{id:string;
  if(g.phase==='closed')return '这个房间已结束';
  if(g.practice&&g.practice.roomType!=='mixed')return '人机测试房不能邀请其他玩家';
  if(recipient&&g.seats.some(s=>s.id===recipient))return '好友已经在这桌了';
- const capacity=g.kind==='holdem'?g.rules?.capacity??4:g.kind==='mahjong'?4:3;
+ const capacity=g.kind==='holdem'?g.rules?.capacity??4:g.kind==='mahjong'||g.rules?.id==='landlord-four-v1'?4:3;
  if(g.phase!=='waiting'||g.fixed||g.fixedIds?.length||g.kind==='landlord-v3'&&(g.roundNumber??0)>0)return '这桌已经开局，暂不能邀请入座';
  if(g.seats.length>=capacity)return '这桌已满，请先留一个空位';
  return null;

@@ -9,7 +9,7 @@ import {Button} from './ui/button';
 import {Input} from './ui/input';
 type Game='landlord'|'mahjong'|'holdem';
 const copy={
- landlord:{number:'01',name:'斗地主',subtitle:'三人成局，默契加倍。',tags:['3 人好友桌','普通模式 / 技能模式'],footer:'叫分 · 配合 · 出牌'},
+ landlord:{number:'01',name:'斗地主',subtitle:'一起叫地主，默契加倍。',tags:['3–4 人好友桌','普通模式 / 欢乐三打一 / 技能模式'],footer:'叫分 · 配合 · 出牌'},
  mahjong:{number:'02',name:'麻将',subtitle:'四个人，按自己的规矩玩。',tags:['4 人好友桌','136 张 · 无花牌'],footer:'吃 · 碰 · 杠 · 胡'},
  holdem:{number:'03',name:'德州扑克',subtitle:'一份好牌，一桌朋友。',tags:['4–10 人好友桌','无限注 · 独立筹码'],footer:'跟注 · 加注 · 摊牌'},
 };

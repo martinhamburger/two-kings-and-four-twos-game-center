@@ -27,5 +27,5 @@ test('suit colours follow the user approved mapping, including A and 2',()=>{
  assert.equal(royalCardArt(48)!.point,'2');
 });
 test('virtual skill cards and invalid IDs never resolve ordinary artwork',()=>{
- for(const id of [virtualCard(14,1),-1,54,0.5,NaN,Infinity])assert.equal(royalCardArt(id),null);
+ for(const id of [virtualCard(14,1),-1,108,0.5,NaN,Infinity])assert.equal(royalCardArt(id),null);
 });
