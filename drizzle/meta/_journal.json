@@ -50,6 +50,13 @@
       "when": 1790411861545,
       "tag": "0006_fast_pestilence",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1791030134515,
+      "tag": "0007_wide_mesmero",
+      "breakpoints": true
     }
   ]
 }
