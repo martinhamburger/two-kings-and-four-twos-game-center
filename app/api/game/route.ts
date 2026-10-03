@@ -1,6 +1,6 @@
 import {AppError,body,config,db,json,limit,publicUser,requireUser,safe} from '@/lib/server';
 import {advance,commit,getRoom,roomView,isMahjong,isHoldem} from '@/lib/rooms';
-import {bid,deal,newGame,play,doubleChoice,landlordRules,type Game} from '@/lib/game/engine';
+import {bid,deal,newGame,play,doubleChoice,landlordRules,landlordCapacity,type Game} from '@/lib/game/engine';
 import {bidV3,buyV3Equipment,clearanceV3,connectionsV3,declareV3NoBid,finishShopping,isLandlordV3,newLandlordV3,peekV3Bottom,placeV3Bet,playV3,readyV3,refreshV3Shop,resolveV3Equipment,sellV3Equipment,skipV3Bet,skipV3OpeningEquipment,useV3OpeningEquipment,V3_EQUIPMENT_CATALOG,type V3Game} from '@/lib/game/landlord-v3';
 import {fillBots,addRoomBot,removeRoomBot,resetRosterReady,transferHumanHost} from '@/lib/practice/room';
 import {practiceMode,soloPractice} from '@/lib/practice/types';
@@ -29,7 +29,7 @@ export async function POST(req:Request){return safe(async()=>{
  if(g.phase==='closed')throw new AppError('该房间已关闭');
  if(g.seats.some(s=>s.id===u.id))return json(await roomView(r,g,u.id));
  if(soloPractice(g))throw new AppError('这是个人的人机测试房，不能加入其他玩家',403);
- if(g.phase!=='waiting'||isLandlordV3(g)&&g.roundNumber>0||g.seats.length>=3)throw new AppError('该房间已满或正在对局');
+ if(g.phase!=='waiting'||isLandlordV3(g)&&g.roundNumber>0||g.seats.length>=landlordCapacity(g))throw new AppError('该房间已满或正在对局');
  if((await config()).maintenance)throw new AppError('暂时暂停加入新桌');
  g.seats.push({id:u.id,name:u.display,hand:[],ready:false,plays:0,last:''});resetRosterReady(g);r=await commit(r,g,(guard,op)=>[db().prepare(`INSERT INTO members (user_id,room_code) SELECT ?,? WHERE ${guard}`).bind(u.id,r.code,r.code,op)]);return json(await roomView(r,g,u.id));
  }
@@ -67,7 +67,7 @@ export async function POST(req:Request){return safe(async()=>{
   }else if(b.action==='v3_bid')bidV3(g,seat,b.call);else if(b.action==='v3_no_bid')declareV3NoBid(g,seat);else if(b.action==='v3_peek')peekV3Bottom(g,seat,b.index);else if(b.action==='v3_bet')placeV3Bet(g,seat,b.side,Date.now(),b.betKind==='hold'?'hold':'side');else if(b.action==='v3_bet_skip')skipV3Bet(g,seat,g.landlord>=0?'playing':'shopping');else if(b.action==='play'){if(!Array.isArray(b.cards))throw Error('请选择手牌');playV3(g,seat,b.cards,Date.now(),b.mapping);}else if(b.action==='pass')playV3(g,seat,[]);else throw Error('未知操作');}catch(e){throw new AppError((e as Error).message)}
   r=await commit(r,g);return json(await roomView(r,g,u.id));
  }
- if(b.action==='ready'){if(!['waiting','finished'].includes(g.phase))throw new AppError('对局中不能修改准备状态');g.seats[seat].ready=!g.seats[seat].ready;if(g.seats.length===3&&g.seats.every(s=>s.ready))deal(g);}
+ if(b.action==='ready'){if(!['waiting','finished'].includes(g.phase))throw new AppError('对局中不能修改准备状态');g.seats[seat].ready=!g.seats[seat].ready;if(g.seats.length===landlordCapacity(g)&&g.seats.every(s=>s.ready))deal(g);}
  else if(b.action==='double'){try{doubleChoice(g,seat,b.value)}catch(e){throw new AppError((e as Error).message)}}
  else if(b.action==='bid'){try{bid(g,seat,b.value)}catch(e){throw new AppError((e as Error).message)}}
  else if(b.action==='play'){if(!Array.isArray(b.cards))throw new AppError('请选择手牌');try{play(g,seat,b.cards)}catch(e){throw new AppError((e as Error).message)}}

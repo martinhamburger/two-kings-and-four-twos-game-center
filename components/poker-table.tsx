@@ -5,16 +5,16 @@ import {royalHandLayout} from '@/lib/game/royal-layout';
 import {TurnClock} from './table-ui';
 import {DeadlineClock} from './deadline-clock';
 import type {RoomTiming} from '@/lib/sync/clock';
-import {face,isVirtualCard,suit,type TableAction} from '@/lib/game/engine';
+import {face,isVirtualCard,suit,physicalCard,type TableAction} from '@/lib/game/engine';
 import {crossedCards,brushSelection,type HitRegion} from '@/lib/game/selection';
 import {DDZ_EFFECTS} from '@/lib/motion/events';
 import {EffectBadge} from './table-effects';
 
 export function Card({card,selected=false,onClick,small=false,appearance='classic',className=''}:{card:number;selected?:boolean;onClick?:()=>void;small?:boolean;appearance?:CardAppearance;className?:string}){
  const art=appearance==='royal'?royalCardArt(card):null,[failedSrc,setFailedSrc]=useState(''),showArt=!!art&&failedSrc!==art.src;
- const red=!isVirtualCard(card)&&(card===53||(card<52&&[1,3].includes(card%4)));
+ const base=physicalCard(card),red=!isVirtualCard(card)&&(base===53||(base<52&&[1,3].includes(base%4)));
  const content=showArt?<img className="royal-card-image" src={art.src} alt="" width={384} height={576} draggable={false} onError={()=>setFailedSrc(art.src)}/>:<><b>{face(card)}</b><span>{suit(card)}</span><i>{suit(card)}</i></>;
- const style=`playing-card ${red?'red':''} ${!isVirtualCard(card)&&card>=52?'joker':''}${showArt?' royal-card':''}`;
+ const style=`playing-card ${red?'red':''} ${!isVirtualCard(card)&&base>=52?'joker':''}${showArt?' royal-card':''}`;
  const label=art?.label??`${suit(card)}${face(card)}`;
  return onClick?<button type="button" data-card={card} onClick={onClick} aria-pressed={selected} aria-label={label} className={`${style} hand-card ${selected?'selected':''}`}>{content}</button>:<div aria-label={label} className={`${style} ${small?'mini-card':''} ${className}`}>{content}</div>;
 }
