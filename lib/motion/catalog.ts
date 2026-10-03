@@ -2,11 +2,12 @@ import { EMOTES, type Emote } from '../emotes.ts';
 import { TABLE_EFFECTS, type TableEffect } from './effects.ts';
 import { validMotion } from './timeline.ts';
 import { MOTION_CACHE_POLICY } from './cache-policy.ts';
+import { ROYAL_ASSETS, type RoyalAsset } from './royal.ts';
 
 export type MotionAsset = { src: string; active: boolean; role: 'cover' | 'sheet' };
 
 /** One registration point feeds validation, fingerprints and browser preloading. */
-export function collectMotionAssets(emotes: readonly Emote[], effects: readonly TableEffect[]): MotionAsset[] {
+export function collectMotionAssets(emotes: readonly Emote[], effects: readonly TableEffect[], royal:readonly RoyalAsset[]=[]): MotionAsset[] {
   const assets = new Map<string, MotionAsset>();
   const ids = new Set<string>();
   function add(src: string, active: boolean, role: MotionAsset['role']) {
@@ -33,10 +34,23 @@ export function collectMotionAssets(emotes: readonly Emote[], effects: readonly 
       }
     }
   }
+  // Room artwork is registered and fingerprinted, but not globally prefetched in other games.
+  for(const item of royal){
+    const id=`royal:${item.id}`;if(ids.has(id))throw new Error(`重复动画编号：${id}`);ids.add(id);
+    add(item.src,false,'cover');
+    if(item.motion){
+      if(!validMotion(item.motion))throw new Error(`动画帧定义无效：${id}`);
+      add(item.motion.poster,false,'cover');
+      for(const sheet of item.motion.sheets){
+        if(sheet.columns*sheet.rows*sheet.cellWidth*sheet.cellHeight>MOTION_CACHE_POLICY.maxSheetPixels)throw new Error(`动画图集解码尺寸过大，请拆分：${id}`);
+        add(sheet.src,false,'sheet');
+      }
+    }
+  }
   return [...assets.values()].sort((a, b) => Number(a.role === 'sheet') - Number(b.role === 'sheet') || a.src.localeCompare(b.src, 'en'));
 }
 
-export const MOTION_CATALOG = collectMotionAssets(EMOTES, TABLE_EFFECTS);
+export const MOTION_CATALOG = collectMotionAssets(EMOTES, TABLE_EFFECTS, ROYAL_ASSETS);
 
 /** Lightweight DOM feedback: no downloaded assets or separate cache are needed. */
 export const TABLE_FEEDBACK_MOTIONS = {

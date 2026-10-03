@@ -1,7 +1,9 @@
 import type {Practice} from '../practice/types.ts';
 import {emitVisual,publicVisuals,DDZ_EFFECTS,type VisualEvent} from '../motion/events.ts';
-export type LandlordRules={id:'landlord-v2';allowDouble:boolean;bombDouble:boolean;springDouble:boolean};
-export const DEFAULT_LANDLORD_RULES:LandlordRules={id:'landlord-v2',allowDouble:true,bombDouble:true,springDouble:true};
+export type LandlordRules={id:'landlord-v2'|'landlord-v4';allowDouble:boolean;bombDouble:boolean;springDouble:boolean};
+export const DEFAULT_LANDLORD_RULES:LandlordRules={id:'landlord-v4',allowDouble:true,bombDouble:true,springDouble:true};
+/** Saved v2 and unversioned rooms keep their original deal and reveal timing. */
+export const blindDouble=(g:Pick<Game,'rules'>)=>g.rules?.id==='landlord-v4';
 export function landlordRules(v:unknown):LandlordRules{if(v===undefined)return {...DEFAULT_LANDLORD_RULES};if(!v||typeof v!=='object'||Array.isArray(v))throw Error('房间规则无效');const r={...DEFAULT_LANDLORD_RULES};for(const key of ['allowDouble','bombDouble','springDouble'] as const){if(key in v){const value=(v as Record<string,unknown>)[key];if(typeof value!=='boolean')throw Error('规则开关必须为是或否');r[key]=value;}}return r;}
 export type Combo = {kind:string; rank:number; size:number; chain:number};
 export type Seat = {id:string; name:string; hand:number[]; ready:boolean; plays:number; last:string;bot?:boolean};
@@ -56,7 +58,7 @@ export function bid(g:Game,seat:number,value:number,now=Date.now()){
  const s=g.seats[seat];const actions=tableActions(g);actions[seat]={kind:'bid',value};s.last=value?`${value} 分`:'不叫';note(g,`${s.name} ${s.last}`,now);
  if(value){g.bid=value;g.landlord=seat;g.bidPasses=0;}else g.bidPasses++;
  if(g.bid===0&&g.bidPasses===3){deal(g,now);note(g,'无人叫分，重新发牌',now);return;}
- if(value===3||(g.bid>0&&g.bidPasses===2)){g.phase=g.rules?.allowDouble?'doubling':'playing';g.turn=g.landlord;g.seats[g.landlord].hand=sorted([...g.seats[g.landlord].hand,...g.bottom]);g.seats.forEach(s=>s.last='');note(g,`${g.seats[g.landlord].name} 成为地主`,now);}else g.turn=(seat+1)%3;
+ if(value===3||(g.bid>0&&g.bidPasses===2)){g.phase=g.rules?.allowDouble?'doubling':'playing';g.turn=g.landlord;if(g.phase==='playing'||!blindDouble(g))g.seats[g.landlord].hand=sorted([...g.seats[g.landlord].hand,...g.bottom]);g.seats.forEach(s=>s.last='');note(g,`${g.seats[g.landlord].name} 成为地主`,now);}else g.turn=(seat+1)%3;
  if(g.phase==='playing'||g.phase==='doubling')actions.fill(null);else actions[g.turn]=null;g.tableActions=actions;g.deadline=now+g.seconds*1000;
 }
 /** Only reconstruct information that was already public in pre-layout rooms. */
@@ -72,6 +74,6 @@ export function play(g:Game,seat:number,cards:number[],now=Date.now()){
  if(!s.hand.length){g.phase='finished';g.winner=seat;const won=seat===g.landlord;g.spring=g.rules?.springDouble!==false&&(won?g.seats.every((s,i)=>i===g.landlord||s.plays===0):g.seats[g.landlord].plays===1);if(g.spring){g.multiplier*=2;emitVisual(g,seat,won?'spring':'anti-spring',now);}const unit=g.bid*g.multiplier;g.deltas=g.seats.map((_,i)=>i===g.landlord?0:-unit*(won?1:-1)*(g.doubles?.[g.landlord]?2:1)*(g.doubles?.[i]?2:1));g.deltas[g.landlord]=-g.deltas.reduce((a,b)=>a+b,0);note(g,`${won?'地主':'农民'}获胜${g.spring?' · 春天翻倍':''}`,now);}else g.turn=(seat+1)%3;
  }if(g.phase!=='finished')actions[g.turn]=null;g.tableActions=actions;g.deadline=g.phase==='finished'?0:now+g.seconds*1000;
 }
-export function doubleChoice(g:Game,seat:number,value:boolean,now=Date.now()){if(g.phase!=='doubling'||!g.rules?.allowDouble||seat<0||seat>=3||typeof value!=='boolean'||g.doubles?.[seat]!==null)throw Error('当前不能选择加倍');g.doubles![seat]=value;g.tableActions![seat]={kind:'double',value};g.seats[seat].last=value?'加倍 ×2':'不加倍';note(g,g.seats[seat].name+' '+g.seats[seat].last,now);if(g.doubles!.every(v=>v!==null)){g.phase='playing';g.turn=g.landlord;g.deadline=now+g.seconds*1000;g.tableActions=[null,null,null];}else g.turn=g.doubles!.findIndex(v=>v===null);}
+export function doubleChoice(g:Game,seat:number,value:boolean,now=Date.now()){if(g.phase!=='doubling'||!g.rules?.allowDouble||seat<0||seat>=3||typeof value!=='boolean'||g.doubles?.[seat]!==null)throw Error('当前不能选择加倍');g.doubles![seat]=value;g.tableActions![seat]={kind:'double',value};g.seats[seat].last=value?'加倍 ×2':'不加倍';note(g,g.seats[seat].name+' '+g.seats[seat].last,now);if(g.doubles!.every(v=>v!==null)){if(blindDouble(g))g.seats[g.landlord].hand=sorted([...g.seats[g.landlord].hand,...g.bottom]);g.phase='playing';g.turn=g.landlord;g.deadline=now+g.seconds*1000;g.tableActions=[null,null,null];}else g.turn=g.doubles!.findIndex(v=>v===null);}
 export function timeout(g:Game,now=Date.now()){if(g.deadline>now||!['bidding','doubling','playing'].includes(g.phase))return false;if(g.phase==='doubling'){for(let i=0;i<3;i++)if(g.doubles?.[i]===null)doubleChoice(g,i,false,now);}else if(g.phase==='bidding')bid(g,g.turn,0,now);else play(g,g.turn,g.last?[]:[sorted(g.seats[g.turn].hand).at(-1)!],now);return true;}
-export function view(g:Game,id:string){return {...g,visualEvents:publicVisuals(g),tableActions:tableActions(g),seats:g.seats.map(s=>({...s,count:s.hand.length,hand:s.id===id||g.phase==='finished'?s.hand:[]})),bottom:g.phase==='bidding'?[]:g.bottom};}
+export function view(g:Game,id:string){return {...g,visualEvents:publicVisuals(g),tableActions:tableActions(g),seats:g.seats.map(s=>({...s,count:s.hand.length,hand:s.id===id||g.phase==='finished'?s.hand:[]})),bottom:g.phase==='bidding'||blindDouble(g)&&g.phase==='doubling'?[]:g.bottom};}

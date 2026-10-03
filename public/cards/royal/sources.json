@@ -1,0 +1,282 @@
+{
+  "page": "https://chatgpt.com/space/page_4cfd4aabf3208191bd2556a6fd4eeec0",
+  "sourceSequence": 921,
+  "suits": {
+    "♣": 0,
+    "♦": 1,
+    "♥": 2,
+    "♠": 3
+  },
+  "cards": [
+    {
+      "rank": "A",
+      "rarity": 0,
+      "reference": "library-file:fde1_bGliZmlsZV9PbXVtajR5emgwUEpDSmVxcFpYZGxR_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "A",
+      "rarity": 1,
+      "reference": "library-file:fde1_bGliZmlsZV9ELVBTaEx2bWRwMEpaZFpJQi1mbmVn_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "A",
+      "rarity": 2,
+      "reference": "library-file:fde1_bGliZmlsZV92QjZoNXhuVmk5ejMtR0lpT3FQbHR3_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "A",
+      "rarity": 3,
+      "reference": "library-file:fde1_bGliZmlsZV9ERXdOVkh6T2FPcXBMV3p0WTNSb2Jn_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "2",
+      "rarity": 0,
+      "reference": "library-file:fde1_bGliZmlsZV9veU1Wa0hnRWtvVUFpanczZTBPYmxn_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "2",
+      "rarity": 1,
+      "reference": "library-file:fde1_bGliZmlsZV9TaW1IR0lFUU9RY0dNRFlIZ1RHS3Rn_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "2",
+      "rarity": 2,
+      "reference": "library-file:fde1_bGliZmlsZV9GS2h2dXZMS21XMEY0OFczV09GSkZn_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "2",
+      "rarity": 3,
+      "reference": "library-file:fde1_bGliZmlsZV8xUGxjeVVwX050Z0ZBclItVU12ZVFB_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "3",
+      "rarity": 0,
+      "reference": "library-file:fde1_bGliZmlsZV9BS3JGdGlvejlDanlhNEJIUXUyNU1n_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "3",
+      "rarity": 1,
+      "reference": "library-file:fde1_bGliZmlsZV9SWDFZclJ5bEZQUFZueW5iWFhIMDJn_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "3",
+      "rarity": 2,
+      "reference": "library-file:fde1_bGliZmlsZV9rOUdQOGFrb3JpZXpBMTFReVRfUHVB_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "3",
+      "rarity": 3,
+      "reference": "library-file:fde1_bGliZmlsZV9PLUw4Um9WTV91Q0JRazlIbDFhOVJR_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "4",
+      "rarity": 0,
+      "reference": "library-file:fde1_bGliZmlsZV9pdDNXWDV3RGxWeHZNRDZKcTVkWXpB_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "4",
+      "rarity": 1,
+      "reference": "library-file:fde1_bGliZmlsZV82U1pwSldWdVRvTXJfSWNSS19UUzVn_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "4",
+      "rarity": 2,
+      "reference": "library-file:fde1_bGliZmlsZV9vYVU5UnlfRG5OdnpYMGNRSmVGODBB_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "4",
+      "rarity": 3,
+      "reference": "library-file:fde1_bGliZmlsZV9QMGh5NjlQTjhhRGQ0c3FuU3k0X3d3_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "5",
+      "rarity": 0,
+      "reference": "library-file:fde1_bGliZmlsZV9waUk3ellkZzZoYjkteHVKUERNVVlB_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "5",
+      "rarity": 1,
+      "reference": "library-file:fde1_bGliZmlsZV9WOXBrNGlKWGlGZVF2T2dhSFd4TzJn_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "5",
+      "rarity": 2,
+      "reference": "library-file:fde1_bGliZmlsZV8zUmNkNXVhZUVRQkMxUDZnZFRHRHln_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "5",
+      "rarity": 3,
+      "reference": "library-file:fde1_bGliZmlsZV9KMnFkOTJaYmo3SHRTdjBGS2ZLYVpn_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "6",
+      "rarity": 0,
+      "reference": "library-file:fde1_bGliZmlsZV9SZWJMQzl2Vk13QW10MWVJUVo3Wl9n_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "6",
+      "rarity": 1,
+      "reference": "library-file:fde1_bGliZmlsZV8wTlhyVnNZcUtNMjJ5U0Zia3ltMDZR_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "6",
+      "rarity": 2,
+      "reference": "library-file:fde1_bGliZmlsZV9DOHhpcGo4N2hkNkpoY3JiLVY1STVn_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "6",
+      "rarity": 3,
+      "reference": "library-file:fde1_bGliZmlsZV92cVlYNWJqYnB4cTliWVMyQUQwSXVB_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "7",
+      "rarity": 0,
+      "reference": "library-file:fde1_bGliZmlsZV9sbmhNWVQ4RWNIWVh3NWEtWXNHcEdR_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "7",
+      "rarity": 1,
+      "reference": "library-file:fde1_bGliZmlsZV9DYmpUdURfUG5SRHNGdTk1M0dvbUhR_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "7",
+      "rarity": 2,
+      "reference": "library-file:fde1_bGliZmlsZV83Z3MtT0xqREVLQnhtRHJEOE5MaGNR_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "7",
+      "rarity": 3,
+      "reference": "library-file:fde1_bGliZmlsZV9lQXRWSzBpbF9ubDd1RG5qMXdjU1dn_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "8",
+      "rarity": 0,
+      "reference": "library-file:fde1_bGliZmlsZV9tdzRVX1Vqb3NzN0NDU0dYWlN5aWln_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "8",
+      "rarity": 1,
+      "reference": "library-file:fde1_bGliZmlsZV9SMExfMTFIUDJRbUFVbkN1eEdpNF9n_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "8",
+      "rarity": 2,
+      "reference": "library-file:fde1_bGliZmlsZV8taGttNlFXa2JxN1hSTlZjUDJ2NXdn_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "8",
+      "rarity": 3,
+      "reference": "library-file:fde1_bGliZmlsZV9ucUVFVmFpRGVveUV1Tm1DbE1OejNR_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "9",
+      "rarity": 0,
+      "reference": "library-file:fde1_bGliZmlsZV82S0FCanh1Y0hSUHJrX0ZsUlpNNWNR_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "9",
+      "rarity": 1,
+      "reference": "library-file:fde1_bGliZmlsZV9xVXMzR2dYNjFRT0dEdXYzQUczSEdB_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "9",
+      "rarity": 2,
+      "reference": "library-file:fde1_bGliZmlsZV9GSWVialo0dEJfRmtZMFJZNUZjQjRn_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "9",
+      "rarity": 3,
+      "reference": "library-file:fde1_bGliZmlsZV9QUFV4NTZwRlhkT3BjbzdiRkYzdTV3_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "10",
+      "rarity": 0,
+      "reference": "library-file:fde1_bGliZmlsZV83eVhLcTR6X1pYWHZ6VllDcm92VUR3_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "10",
+      "rarity": 1,
+      "reference": "library-file:fde1_bGliZmlsZV9rV2RqM2c2X0pPLXRsdlpWVnd1aGN3_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "10",
+      "rarity": 2,
+      "reference": "library-file:fde1_bGliZmlsZV9kZFU3dzYtQ3ZHVmFFb3BreWk5VXVn_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "10",
+      "rarity": 3,
+      "reference": "library-file:fde1_bGliZmlsZV9BbjJqd1pZUjcwQ2Y5UUZUOVNJcTdR_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "J",
+      "rarity": 0,
+      "reference": "library-file:fde1_bGliZmlsZV9qVGRSc2tKbW1rNnJRYzRkTmdJQXZ3_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "J",
+      "rarity": 1,
+      "reference": "library-file:fde1_bGliZmlsZV9WUUl1VWQxSVRvQUNLOTZUekQ0cVpB_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "J",
+      "rarity": 2,
+      "reference": "library-file:fde1_bGliZmlsZV8xczJQT1VyQ2JPNWx2cHNmMXMzYWdn_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "J",
+      "rarity": 3,
+      "reference": "library-file:fde1_bGliZmlsZV82STBwT1VxYlJ2cEZ3RWwxeXpkNE13_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "Q",
+      "rarity": 0,
+      "reference": "library-file:fde1_bGliZmlsZV82eDdHb0hud0Y3dS01TTdWaGRBcy1B_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "Q",
+      "rarity": 1,
+      "reference": "library-file:fde1_bGliZmlsZV9QZ05oQlRwT1BJR21hNWhyNEFEc3Nn_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "Q",
+      "rarity": 2,
+      "reference": "library-file:fde1_bGliZmlsZV9aUnY0TUUtUWRwN0NlM3Q4ektpby13_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "Q",
+      "rarity": 3,
+      "reference": "library-file:fde1_bGliZmlsZV9mTHFSaEFVNEhCN2xRWU1FZkNEZmhR_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "K",
+      "rarity": 0,
+      "reference": "library-file:fde1_bGliZmlsZV9JRHFJOWJZdHdzSFVqTncxdDlLRFVR_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "K",
+      "rarity": 1,
+      "reference": "library-file:fde1_bGliZmlsZV9zX1pqbk9TUTRoOVMwQnA2MFNkZ2dR_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "K",
+      "rarity": 2,
+      "reference": "library-file:fde1_bGliZmlsZV9uanFXT0dEdEVMODRlamZ2eFdWclp3_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "K",
+      "rarity": 3,
+      "reference": "library-file:fde1_bGliZmlsZV9BYTliMmtGbk52SVhaVzI4QnRBRGNn_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "小王",
+      "rarity": 3,
+      "reference": "library-file:fde1_bGliZmlsZV8tRHRBdE5tMG5zQWdMQlBqaHU3Y3p3_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    },
+    {
+      "rank": "大王",
+      "rarity": 3,
+      "reference": "library-file:fde1_bGliZmlsZV9WMzlMUEdVZXFTVHZFVTlnSENrV3BR_FileDrive_42d193e857bc8191a2b9e672a517a618"
+    }
+  ]
+}

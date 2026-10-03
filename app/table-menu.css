@@ -1,0 +1,13 @@
+.table-menu-toggle{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;color:#e7f3d8;font-size:11px;width:48px;min-height:48px;padding:5px;border:1px solid #a7cfc36b;border-radius:50%;background:#153f47a6;flex-shrink:0}
+.table-menu-drawer[data-slot=sheet-content]{width:min(340px,calc(100vw - 40px));max-width:none;background:#f6f4e6;color:#325349;border-right:1px solid #d2c99d;gap:0}
+.table-menu-panel{padding:24px 20px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;height:100%}
+.table-menu-panel header{position:relative;display:flex;flex-direction:column;gap:6px;border-bottom:1px solid #385d4926;padding:0 30px 12px 0;overflow-wrap:anywhere}
+.table-menu-panel header span{display:flex;align-items:center;gap:8px;font-size:13px}.table-menu-panel header small{font-size:11px}
+.table-menu-panel button{justify-content:start;min-height:40px}.table-menu-panel .sound-control{justify-content:start}.table-menu-panel p{font-size:12px;margin:0}
+.table-menu-drawer [data-slot=sheet-title]{font-size:20px;color:#244e46}.table-menu-drawer [data-slot=sheet-description]{color:#64786a}
+.table-menu-close{position:absolute;right:0;top:0;display:grid;place-items:center;width:40px;height:40px;border-radius:8px}
+.table-menu-settings{display:flex;flex-direction:column;gap:14px;padding:14px 0;border-block:1px solid #385d4926;font-size:13px}.table-menu-settings label{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.table-menu-drawer [data-slot=button][data-variant=outline]{background:#fff8e6;color:#244e46;border-color:#c3b47e}.table-menu-drawer button:focus-visible{outline:3px solid #2a7769;outline-offset:3px}.table-menu-drawer [data-slot=button]:disabled{background:#dce2d9;color:#52604f;opacity:1}
+.royal-room .room-toolbar>.table-menu-toggle{margin-right:0;background:#153f47a6;border-radius:50%;width:48px;min-height:48px}
+.royal-room .room-toolbar{justify-content:flex-start}.royal-room .room-toolbar>button:last-child{margin-right:0;margin-left:auto}
+@media(prefers-reduced-motion:reduce){.table-menu-drawer[data-slot=sheet-content]{animation:none!important;transition:none!important}}
