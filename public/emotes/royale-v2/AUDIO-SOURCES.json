@@ -1,0 +1,67 @@
+{
+  "repository": "Henrylq/Clash-Royale-SFX",
+  "commit": "c2d7d67271113cb9fe3ad896d9d03dd7f49eed52",
+  "items": [
+    {
+      "id": "royale-v2-king-laugh",
+      "sourcePath": "Emotes/King/laughter_01.ogg",
+      "blob": "40f214419c77dcb89824338cd400152621f46b13",
+      "local": "/emotes/royale-v2/king-laugh/sound.mp3",
+      "sourceUrl": "https://raw.githubusercontent.com/Henrylq/Clash-Royale-SFX/c2d7d67271113cb9fe3ad896d9d03dd7f49eed52/Emotes/King/laughter_01.ogg",
+      "sha256": "8632d41851f03217895c502332f10db0471d2969caeef76505419d1dbff79c46",
+      "bytes": 11329,
+      "duration": 0.98898
+    },
+    {
+      "id": "royale-v2-king-cry",
+      "sourcePath": "Emotes/King/crying_01.ogg",
+      "blob": "07051401025fc8145e62642d5ab721300980cf8d",
+      "local": "/emotes/royale-v2/king-cry/sound.mp3",
+      "sourceUrl": "https://raw.githubusercontent.com/Henrylq/Clash-Royale-SFX/c2d7d67271113cb9fe3ad896d9d03dd7f49eed52/Emotes/King/crying_01.ogg",
+      "sha256": "faca75a8eafc170f34fb23f4d42ae3580f518acccce4c1ba40669f2da7a6b51a",
+      "bytes": 11325,
+      "duration": 1.135918
+    },
+    {
+      "id": "royale-v2-king-angry",
+      "sourcePath": "Emotes/King/mad_01.ogg",
+      "blob": "b74b579613b9cc903235390ae04725fabf230242",
+      "local": "/emotes/royale-v2/king-angry/sound.mp3",
+      "sourceUrl": "https://raw.githubusercontent.com/Henrylq/Clash-Royale-SFX/c2d7d67271113cb9fe3ad896d9d03dd7f49eed52/Emotes/King/mad_01.ogg",
+      "sha256": "a99543af195f6ba57ba5fb479a541f576c052f482938726062b22b622ef598af",
+      "bytes": 9577,
+      "duration": 0.922268
+    },
+    {
+      "id": "royale-v2-king-thumbs-up",
+      "sourcePath": "Emotes/King/happy_01.ogg",
+      "blob": "20201c959fa4f16ebe3186f5851d5f76441c33ad",
+      "local": "/emotes/royale-v2/king-thumbs-up/sound.mp3",
+      "sourceUrl": "https://raw.githubusercontent.com/Henrylq/Clash-Royale-SFX/c2d7d67271113cb9fe3ad896d9d03dd7f49eed52/Emotes/King/happy_01.ogg",
+      "sha256": "b51dca1156ebe89a2a334584aafbb88e28c78a9d21d2838bf675d30de4a2b97b",
+      "bytes": 8308,
+      "duration": 0.760045
+    },
+    {
+      "id": "royale-v2-chicken",
+      "sourcePath": "Emotes/Chicken/01.ogg",
+      "blob": "ac1cc929d38121c1c6906871536fc4f90b609ce6",
+      "local": "/emotes/royale-v2/chicken/sound.mp3",
+      "sourceUrl": "https://raw.githubusercontent.com/Henrylq/Clash-Royale-SFX/c2d7d67271113cb9fe3ad896d9d03dd7f49eed52/Emotes/Chicken/01.ogg",
+      "sha256": "3ced26dd35995e0d4347e9e5d490947699d66cab3c758a286b1353925270def4",
+      "bytes": 17786,
+      "duration": 2.124172
+    },
+    {
+      "id": "royale-v2-skeleton-dance",
+      "sourcePath": "Emotes/Skeleton/dancing.ogg",
+      "blob": "cf823fe934e28ffd327f7cb16e21d99f2a2024d8",
+      "local": "/emotes/royale-v2/skeleton-dance/sound.mp3",
+      "sourceUrl": "https://raw.githubusercontent.com/Henrylq/Clash-Royale-SFX/c2d7d67271113cb9fe3ad896d9d03dd7f49eed52/Emotes/Skeleton/dancing.ogg",
+      "sha256": "06d4956a882c8b19857b75c8b04a4861fd50f8f7837635fe1b4a53f4a39142d3",
+      "bytes": 26095,
+      "duration": 2.453333
+    }
+  ],
+  "notice": "原版音轨来自游戏素材档案；角色与音轨归 Supercell。本记录不声称官方授权。仅转为兼容浏览器的 MP3，未替换声音。"
+}

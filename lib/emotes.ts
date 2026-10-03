@@ -10,7 +10,8 @@ export const LEGACY_EMOTES:readonly Emote[] = [
  ['think','思考','tilt'],['like','点赞','bounce'],['clap','鼓掌','clap'],
  ['salute','抱拳','bow'],['celebrate','庆祝','celebrate'],['sigh','无奈','sigh'],
 ].map(([id,name,motion])=>({id,name,motion,src:`/emotes/royale-v1/${id}.webp`,enabled:true,sendable:false}));
-export const EMOTES:readonly Emote[]=[...LEGACY_EMOTES,...EMOTE_PACK_V2];
+const ORIGINAL_AUDIO_IDS = new Set(['king-laugh','king-cry','king-angry','king-thumbs-up','chicken','skeleton-dance'].map(id=>'royale-v2-'+id));
+export const EMOTES:readonly Emote[]=[...LEGACY_EMOTES,...EMOTE_PACK_V2.map(e=>({...e,...(ORIGINAL_AUDIO_IDS.has(e.id)?{audio:`/emotes/royale-v2/${e.id.slice('royale-v2-'.length)}/sound.mp3`}:{})}))];
 export const canSendEmote=(id:unknown)=>{const e=getEmote(id);return !!e?.enabled&&e.sendable!==false;};
 export function getEmote(id:unknown):Emote|undefined{return typeof id==='string'?EMOTES.find(e=>e.id===id):undefined;}
 export function emoteText(id:unknown){return `[表情：${getEmote(id)?.name??'暂不可用'}]`;}
