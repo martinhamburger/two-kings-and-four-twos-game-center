@@ -6,6 +6,7 @@ import {useFriends} from './friends-provider';
 import {useClub,useRoomNavigation} from './club-provider';
 import {roomInviteProblem,type SocialPerson} from '@/lib/club/social';
 import {Button} from './ui/button';
+import {Popover,PopoverContent,PopoverTrigger} from './ui/popover';
 import {Dialog,DialogContent,DialogDescription,DialogHeader,DialogTitle,DialogTrigger} from './ui/dialog';
 const gameNames={landlord:'斗地主','landlord-v3':'斗地主',mahjong:'麻将',holdem:'德州扑克'};
 function Person({person,online}:{person:SocialPerson;online?:boolean}){return <div className="friend-person"><span className="friend-avatar"><PlayerAvatar name={person.name} userId={person.id}/>{online!==undefined&&<i className={online?'is-online':''}/>}</span><div><b>{person.name}</b>{online!==undefined&&<small>{online?'在线':'离线'}</small>}</div></div>}
@@ -26,7 +27,11 @@ export function FriendsPanel({all=false,roomCode,inviteDisabled=false,onJoined}:
  {data.outgoing.length>0&&<details className="social-outgoing"><summary>已发送的申请 · {data.outgoing.length}</summary>{data.outgoing.map(p=><div className="friend-row" key={p.id}><Person person={p}/><Button variant="ghost" size="sm" disabled={disabled} aria-label={`撤回给 ${p.name} 的申请`} onClick={()=>void act({action:'cancel',target:p.id},'已撤回申请')}>撤回</Button></div>)}</details>}
  </>}</section>;
 }
-export function FriendsMenu(){const [open,setOpen]=useState(false);const {data}=useFriends();const count=data.incoming.length+data.invites.length;return <Dialog open={open} onOpenChange={setOpen}><DialogTrigger asChild><Button size="sm" variant="ghost" className="club-friends-link" aria-label={`好友${count?`，${count} 条待处理消息`:''}`}><Users size={17}/><span>好友</span>{count>0&&<b className="social-count">{count}</b>}</Button></DialogTrigger><DialogContent className="social-modal"><DialogHeader><DialogTitle>好友与邀请</DialogTitle><DialogDescription>同意申请后成为好友，接受房间邀请后才会入座。</DialogDescription></DialogHeader><FriendsPanel all onJoined={()=>setOpen(false)}/></DialogContent></Dialog>}
+export function FriendsMenu(){const [open,setOpen]=useState(false);const {data,refresh}=useFriends();const count=data.incoming.length+data.invites.length;return <Popover open={open} onOpenChange={next=>{setOpen(next);if(next)void refresh()}}><PopoverTrigger asChild><Button size="sm" variant="ghost" className="club-friends-link" aria-label={`好友${count?`，${count} 条待处理消息`:''}`}><Users size={19}/><span>好友</span>{count>0&&<b className="social-count">{count}</b>}</Button></PopoverTrigger><PopoverContent align="end" sideOffset={10} collisionPadding={16} className="club-friends-popover" aria-label="好友与邀请"><header><span className="friends-menu-icon"><Users size={23}/></span><div><h2>好友与邀请</h2><p>约上牌搭子，一起开桌</p></div></header><FriendsPanel all onJoined={()=>setOpen(false)}/></PopoverContent></Popover>}
+export function OnlineFriends(){
+ const {data,ready,error}=useFriends(),online=data.friends.filter(friend=>friend.online);
+ return <section className="lobby-online-friends" aria-label="在线好友"><h3><Users size={17}/>在线好友 <span>{ready?online.length:'—'}</span></h3>{error?<p role="status">好友暂时连接不上</p>:!ready?<p>正在看看谁在线…</p>:online.length?<div className="online-avatar-row">{online.map(friend=><div key={friend.id} className="online-avatar-person" title={friend.name}><span className="friend-avatar"><PlayerAvatar name={friend.name} userId={friend.id}/><i className="is-online"/></span><span>{friend.name}</span></div>)}</div>:<p>朋友暂时不在线</p>}</section>;
+}
 type TableGame={kind?:string;phase:string;seats:{id:string;name:string;bot?:boolean}[];fixed?:boolean;fixedIds?:string[];roundNumber?:number;rules?:{id?:string;capacity?:number}};
 export function RoomFriends({code,game}:{code:string;game:TableGame}){
  const {user}=useClub(),{data,busy,ready,send,refresh}=useFriends(),[error,setError]=useState(''),[open,setOpen]=useState(false);
