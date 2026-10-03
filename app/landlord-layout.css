@@ -31,3 +31,9 @@
 .landlord-board .v3-shop-heading{flex-wrap:wrap;gap:8px}
 .landlord-board .v3-tutorial-hint{background:#edf3e8;color:#3f604b;border-color:#c6d7bc}
 .v3-catalog-modal{max-width:min(760px,calc(100vw - 32px));max-height:min(82dvh,calc(100dvh - 32px))}
+
+/* Large finite emotes stay inside edge seats and never intercept cards or controls. */
+.mj-portrait.portrait-north .seat-emote-bubble{bottom:auto;top:0;left:auto;right:calc(100% + 12px);transform:none;max-width:none}
+.royal-room .opponent .seat-emote-bubble{bottom:auto;top:0;left:calc(100% + 8px);right:auto;transform:none}
+.royal-room .side-right .opponent .seat-emote-bubble{left:auto;right:calc(100% + 8px)}
+@media(max-width:580px){.mj-portrait .seat-chat-bubble.seat-emote-bubble{max-width:none}.th-seat .seat-emote-bubble{width:124px;height:124px}}

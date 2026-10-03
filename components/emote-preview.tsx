@@ -31,7 +31,8 @@ export function EmotePreview(){
     {kind==='emotes'?<EmoteImage id={selected} animate eager/>:art.motion?<MotionPlayback motion={art.motion} animate/>:<MotionImage className="gallery-symbol effect-enter" src={art.src} alt={art.label} draggable={false}/>}
    </div>
    <div><strong>{kind==='emotes'?emotes.find(e=>e.id===selected)?.name:art.label}</strong><button className="gallery-replay" onClick={()=>setReplay(n=>n+1)}><RotateCcw size={15}/>再看一次</button></div>
-   <small>播放一次后停留 · 本版表情无声</small>
+   <small>{kind==='emotes'?(emotes.find(e=>e.id===selected)?.audio?'原版声音 · 点下方播放试听':'此表情音轨待核对'): '播放一次后停留'}</small>
+   {kind==='emotes'&&emotes.find(e=>e.id===selected)?.audio&&<audio key={selected} className="gallery-emote-audio" aria-label="试听原版表情声音" controls preload="none" src={emotes.find(e=>e.id===selected)?.audio} onPlay={()=>setReplay(n=>n+1)}/>}
   </section>
   <div className="emote-preview-grid">{kind==='emotes'?emotes.map(e=><button aria-pressed={selected===e.id} key={e.id} onPointerEnter={()=>e.frames?.sheets.forEach(s=>warmMotionSheet(s.src))} onFocus={()=>e.frames?.sheets.forEach(s=>warmMotionSheet(s.src))} onClick={()=>{setSelected(e.id);setReplay(n=>n+1)}}><EmoteImage id={e.id}/><b>{e.name}</b></button>):TABLE_EFFECTS.map(e=><button aria-pressed={effect===e.id} key={e.id} onPointerEnter={()=>e.motion?.sheets.forEach(s=>warmMotionSheet(s.src))} onFocus={()=>e.motion?.sheets.forEach(s=>warmMotionSheet(s.src))} onClick={()=>{setEffect(e.id);setReplay(n=>n+1)}}><MotionImage src={e.src} alt="" loading="lazy" draggable={false}/><b>{e.label}</b></button>)}</div>
   </>}<p className="gallery-note">经典角色的非官方重绘，动作参考不代表官方授权。<a href="/emotes/royale-v2/SOURCES.json" target="_blank" rel="noreferrer">查看素材来源</a>。哥布林嘘、暗夜女巫鼓掌、野猪骑士飞吻待补。</p>
