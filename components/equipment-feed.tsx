@@ -14,8 +14,8 @@ export const EquipmentFeed=memo(function EquipmentFeed({game,timing}:{game:V3Gam
   };
   const unsubscribe=timing.subscribe(update);update();return()=>{clearTimeout(timer);unsubscribe();};
  },[game,timing]);
- const feed=game.log.filter(entry=>entry.kind==='equipment'&&entry.at>now+timing.offset()-6000).slice(-3);
+ const feed=game.log.filter(entry=>entry.kind==='equipment'&&entry.at>now+timing.offset()-6000).slice(-1);
  if(!feed.length)return null;
  const names=new Map(game.rules.equipmentCatalog.map(item=>[item.id,item.name]));
- return <div className="v3-equipment-feed" role="status" aria-live="polite">{feed.map((entry,index)=><p key={`${entry.at}-${index}`}>{entry.id&&names.get(entry.id)&&<b>{names.get(entry.id)}</b>}{entry.text}</p>)}</div>;
+ return <div className="v3-equipment-feed" role="status" aria-live="polite">{feed.map((entry,index)=><p key={`${entry.at}-${index}`}>{entry.id&&names.get(entry.id)&&<b>{names.get(entry.id)}</b>}{entry.id?'发动':entry.text}</p>)}</div>;
 });
