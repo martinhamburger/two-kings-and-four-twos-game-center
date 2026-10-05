@@ -37,7 +37,9 @@ export const HandStrip=memo(function HandStrip({hand,selected=[],onChange=()=>{}
  const [size,setSize]=useState({width:800,height:164});
  const {width,height}=size;
  useEffect(()=>{if((!royal&&!layoutMode)||!root.current)return;const element=root.current,update=()=>setSize({width:element.clientWidth,height:element.parentElement?.clientHeight??164});update();const observer=new ResizeObserver(update);observer.observe(element);if(element.parentElement)observer.observe(element.parentElement);return()=>observer.disconnect();},[royal,layoutMode]);
- const layout=layoutMode?landlordHandLayout(hand.length,width,layoutMode,height):royalHandLayout(hand.length,width);
+ const fixed=layoutMode?landlordHandLayout(hand.length,width,layoutMode,height):null;
+ const layout=fixed??royalHandLayout(hand.length,width);
+ const reservedHeight=fixed?20+Math.ceil(fixed.capacity/fixed.perRow)*(fixed.cardHeight+8):0;
  const gesture=useRef<{id:number;select:boolean;visited:Set<number>;x:number;y:number;rects:HitRegion[]}|null>(null);
  const suppressClick=useRef(false),signature=hand.join(',');
  const stop=()=>{const g=gesture.current;gesture.current=null;if(g&&root.current?.hasPointerCapture(g.id))root.current.releasePointerCapture(g.id);};
@@ -59,7 +61,7 @@ export const HandStrip=memo(function HandStrip({hand,selected=[],onChange=()=>{}
   g.x=e.clientX;g.y=e.clientY;paint(ids);
  }
  const renderCard=(c:number)=><div className="hand-slot" key={c}><Card card={c} appearance={appearance} hideSuit={hideSuit} instanceLabel={layoutMode?`，第 ${hand.indexOf(c)+1} 张`:undefined} className={readOnly?'hand-card':''} selected={selected.includes(c)} onClick={readOnly?undefined:()=>onChange(selection.current.includes(c)?selection.current.filter(x=>x!==c):[...selection.current,c])}/></div>;
- return <div ref={root} className={`hand-strip${royal?' royal-hand':''}${layoutMode?' fixed-landlord-hand':''}`} role="group" aria-label={readOnly?'本局剩余手牌':'你的手牌，可拖动选择'} onPointerDown={down} onPointerMove={move} onPointerUp={stop} onPointerCancel={stop} onLostPointerCapture={()=>{gesture.current=null;}} onClickCapture={e=>{if(suppressClick.current&&e.detail>0){e.preventDefault();e.stopPropagation();}suppressClick.current=false;}} style={{'--cards':hand.length,...((royal||layoutMode)?{'--card-width':`${layout.cardWidth}px`,'--card-height':`${'cardHeight' in layout?layout.cardHeight:layout.cardWidth*1.5}px`,'--step':`${layout.step}px`,'--rank-size':`${layout.rankSize}px`}:{})} as CSSProperties}>
+ return <div ref={root} className={`hand-strip${royal?' royal-hand':''}${layoutMode?' fixed-landlord-hand':''}`} role="group" aria-label={readOnly?'本局剩余手牌':'你的手牌，可拖动选择'} onPointerDown={down} onPointerMove={move} onPointerUp={stop} onPointerCancel={stop} onLostPointerCapture={()=>{gesture.current=null;}} onClickCapture={e=>{if(suppressClick.current&&e.detail>0){e.preventDefault();e.stopPropagation();}suppressClick.current=false;}} style={{'--cards':hand.length,...((royal||layoutMode)?{'--card-width':`${layout.cardWidth}px`,'--card-height':`${'cardHeight' in layout?layout.cardHeight:layout.cardWidth*1.5}px`,'--step':`${layout.step}px`,'--rank-size':`${layout.rankSize}px`,...(layoutMode?{'--hand-reserved-height':`${reservedHeight}px`}:{})}:{})} as CSSProperties}>
   {(royal||layoutMode)?Array.from({length:Math.ceil(hand.length/layout.perRow)},(_,row)=><div className="royal-hand-row" key={row}>{hand.slice(row*layout.perRow,(row+1)*layout.perRow).map(renderCard)}</div>):hand.map(renderCard)}
  </div>;
 });

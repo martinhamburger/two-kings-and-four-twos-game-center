@@ -7,7 +7,7 @@ export type V3Offer={offerId:string;id:string;level:1|2|3|4;price:string;bought:
 export type V3Shop={offers:V3Offer[]};
 export type V3Family='copy'|'precision'|'bomb'|'less';
 export type V3CatalogEntry={id:string;level:1|2|3|4;price:string;name:string;effect:string;family?:V3Family;tableOnce?:boolean;stake?:boolean;map?:number;exclusive?:string[]};
-export type LandlordV3Rules={id:'landlord-v3';equipmentCatalog:V3CatalogEntry[];catalogVersion:number};
+export type LandlordV3Rules={id:'landlord-v3';equipmentCatalog:V3CatalogEntry[];catalogVersion:number;noCallPolicy?:'dealer-free'};
 export type V3Loss={id:string;level:number};
 export type V3Effect=
  |{seat:number;kind:'opening'}
@@ -85,7 +85,7 @@ export const V3_EQUIPMENT_CATALOG:V3CatalogEntry[]=[
  item('copy-4',4,'搞四张','发牌后自选 2 张、随机 2 张，共复制 4 张。',{family:'copy'}),
  item('rocket-win',4,'王炸！！！','打出王炸立即获胜；常规局胜利点翻倍。')
 ];
-export const DEFAULT_LANDLORD_V3_RULES:LandlordV3Rules={id:'landlord-v3',catalogVersion:V3_CATALOG_VERSION,equipmentCatalog:V3_EQUIPMENT_CATALOG.map(x=>({...x}))};
+export const DEFAULT_LANDLORD_V3_RULES:LandlordV3Rules={id:'landlord-v3',catalogVersion:V3_CATALOG_VERSION,noCallPolicy:'dealer-free',equipmentCatalog:V3_EQUIPMENT_CATALOG.map(x=>({...x}))};
 const coin=(value:string)=>BigInt(value);
 const setCoin=(g:V3Game,seat:number,value:bigint)=>{if(value<0n)throw Error('金币不能为负数');g.coins[seat]=value.toString();};
 const addCoin=(g:V3Game,seat:number,value:bigint)=>setCoin(g,seat,coin(g.coins[seat])+value);
@@ -435,6 +435,7 @@ function appointLandlord(g:V3Game,seat:number,stake:bigint,now:number,forced=fal
  nextEffect(g,now);
 }
 function forceLandlord(g:V3Game,now:number){
+ if(g.rules.noCallPolicy==='dealer-free'){note(g,'全员不叫，庄家免费成为地主（托管 0 金币）',now);appointLandlord(g,g.dealer,0n,now,true);return;}
  const amounts=g.coins.map(coin),maximum=amounts.reduce((a,b)=>a>b?a:b,0n);
  if(maximum===0n){appointLandlord(g,g.dealer,0n,now,true);return;}
  const seat=order(g,g.dealer).find(index=>amounts[index]===maximum)!;setCoin(g,seat,amounts[seat]-1n);appointLandlord(g,seat,1n,now,true);

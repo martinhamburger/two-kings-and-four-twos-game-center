@@ -1,5 +1,5 @@
 "use client";
-import {useState,type ReactNode} from 'react';
+import {useState,useRef,useEffect,type ReactNode} from 'react';
 import {Eye,Copy,Bomb,Coins,RefreshCw,HandCoins,ArrowLeftRight,Scissors,Sparkles,DoorOpen,Crosshair,ShoppingBag,Gift,Users,Rocket,Shuffle,Backpack,ChevronLeft,ChevronRight} from 'lucide-react';
 import {equipmentIcon,equipmentLevel} from '@/lib/game/equipment-presentation';
 import {equipmentAvailable,type V3CatalogEntry,type V3Equipment} from '@/lib/game/landlord-v3';
@@ -14,8 +14,11 @@ export function EquipmentInfo({entry,level=entry.level,children,className=''}:{e
 }
 export function EquipmentRack({game,items}:{game:any;items:V3Equipment[]}){
  const [open,setOpen]=useState(false),catalog:V3CatalogEntry[]=game.rules.equipmentCatalog;
+ const rack=useRef<HTMLDivElement>(null),[capacity,setCapacity]=useState(4);
+ useEffect(()=>{const el=rack.current;if(!el)return;const update=()=>{const style=getComputedStyle(el),size=parseFloat(style.getPropertyValue('--equipment-size'))||24,gap=parseFloat(style.columnGap)||4;setCapacity(Math.max(1,Math.floor((el.clientWidth+gap)/(size+gap))));};update();const observer=new ResizeObserver(update);observer.observe(el);return()=>observer.disconnect();},[]);
+ const visible=items.length<=capacity?items.length:Math.max(0,capacity-1);
  const entry=(item:V3Equipment)=>catalog.find(e=>e.id===item.id)??{id:item.id,name:'装备',level:item.level,price:item.price??'0',effect:'查看本桌装备记录。'};
- return <><div className="equipment-rack" aria-label={`持有 ${items.length} 件装备`}>{items.slice(0,4).map((item,i)=><EquipmentInfo key={item.instanceId??`${item.id}-${i}`} entry={entry(item)} level={item.level}/>)}{items.length>4&&<button type="button" className="equipment-more" onClick={()=>setOpen(true)} aria-label={`展开全部 ${items.length} 件装备`}>+{items.length-4}</button>}</div><Dialog open={open} onOpenChange={setOpen}><DialogContent className="equipment-grid-modal"><DialogHeader><DialogTitle>持有装备</DialogTitle><DialogDescription>{items.length} / 8 · 点击图标查看说明</DialogDescription></DialogHeader><div className="equipment-expanded-grid">{items.map((item,i)=><EquipmentInfo key={item.instanceId??`${item.id}-${i}`} entry={entry(item)} level={item.level}><EquipmentIcon id={item.id}/><span>{entry(item).name}</span><i>{equipmentLevel(item.level)}</i></EquipmentInfo>)}</div></DialogContent></Dialog></>;
+ return <><div ref={rack} className="equipment-rack" aria-label={`持有 ${items.length} 件装备`}>{items.slice(0,visible).map((item,i)=><EquipmentInfo key={item.instanceId??`${item.id}-${i}`} entry={entry(item)} level={item.level}/>)}{items.length>visible&&<button type="button" className="equipment-more" onClick={()=>setOpen(true)} aria-label={`展开全部 ${items.length} 件装备`}>+{items.length-visible}</button>}</div><Dialog open={open} onOpenChange={setOpen}><DialogContent className="equipment-grid-modal"><DialogHeader><DialogTitle>持有装备</DialogTitle><DialogDescription>{items.length} / 8 · 点击图标查看说明</DialogDescription></DialogHeader><div className="equipment-expanded-grid">{items.map((item,i)=><EquipmentInfo key={item.instanceId??`${item.id}-${i}`} entry={entry(item)} level={item.level}><EquipmentIcon id={item.id}/><span>{entry(item).name}</span><i>{equipmentLevel(item.level)}</i></EquipmentInfo>)}</div></DialogContent></Dialog></>;
 }
 export function EquipmentCatalog({game,seat}:{game:any;seat:number}){
  const [open,setOpen]=useState(false),[level,setLevel]=useState(1),[page,setPage]=useState(0),catalog:V3CatalogEntry[]=game.rules.equipmentCatalog;
