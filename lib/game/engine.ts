@@ -1,10 +1,17 @@
 import type {Practice} from '../practice/types.ts';
 import {emitVisual,publicVisuals,DDZ_EFFECTS,type VisualEvent} from '../motion/events.ts';
-export type LandlordRules={id:'landlord-v2'|'landlord-v4';allowDouble:boolean;bombDouble:boolean;springDouble:boolean};
+import {classifyFour,beatsFour,hintsFour} from './four-player.ts';
+export type LandlordRules={id:'landlord-v2'|'landlord-v4'|'landlord-four-v1';allowDouble:boolean;bombDouble:boolean;springDouble:boolean};
 export const DEFAULT_LANDLORD_RULES:LandlordRules={id:'landlord-v4',allowDouble:true,bombDouble:true,springDouble:true};
+export const DEFAULT_FOUR_RULES:LandlordRules={...DEFAULT_LANDLORD_RULES,id:'landlord-four-v1'};
+export const fourPlayer=(g:{rules?:{id?:string}})=>g.rules?.id==='landlord-four-v1';
+export const landlordCapacity=(g:{rules?:{id?:string}})=>fourPlayer(g)?4:3;
+export const classifyFor=(g:{rules?:{id?:string}},cards:number[])=>fourPlayer(g)?classifyFour(cards):classify(cards);
+export const beatsFor=(g:{rules?:{id?:string}},a:Combo,b:Combo|null)=>fourPlayer(g)?beatsFour(a,b):beats(a,b);
+export const hintsFor=(g:{rules?:{id?:string}},hand:number[],last:Combo|null)=>fourPlayer(g)?hintsFour(hand,last):hints(hand,last);
 /** Saved v2 and unversioned rooms keep their original deal and reveal timing. */
-export const blindDouble=(g:Pick<Game,'rules'>)=>g.rules?.id==='landlord-v4';
-export function landlordRules(v:unknown):LandlordRules{if(v===undefined)return {...DEFAULT_LANDLORD_RULES};if(!v||typeof v!=='object'||Array.isArray(v))throw Error('房间规则无效');const r={...DEFAULT_LANDLORD_RULES};for(const key of ['allowDouble','bombDouble','springDouble'] as const){if(key in v){const value=(v as Record<string,unknown>)[key];if(typeof value!=='boolean')throw Error('规则开关必须为是或否');r[key]=value;}}return r;}
+export const blindDouble=(g:Pick<Game,'rules'>)=>g.rules?.id==='landlord-v4'||fourPlayer(g);
+export function landlordRules(v:unknown):LandlordRules{if(v===undefined)return {...DEFAULT_LANDLORD_RULES};if(!v||typeof v!=='object'||Array.isArray(v))throw Error('房间规则无效');const r={...((v as {id?:string}).id==='landlord-four-v1'?DEFAULT_FOUR_RULES:DEFAULT_LANDLORD_RULES)};for(const key of ['allowDouble','bombDouble','springDouble'] as const){if(key in v){const value=(v as Record<string,unknown>)[key];if(typeof value!=='boolean')throw Error('规则开关必须为是或否');r[key]=value;}}return r;}
 export type Combo = {kind:string; rank:number; size:number; chain:number};
 export type Seat = {id:string; name:string; hand:number[]; ready:boolean; plays:number; last:string;bot?:boolean};
 export type TableAction={kind:'play';cards:number[];label:string;eventId?:string}|{kind:'pass'}|{kind:'bid';value:number}|{kind:'double';value:boolean};
@@ -13,9 +20,10 @@ export type Game = {visualEvents?:VisualEvent[];rules?:LandlordRules;doubles?:(b
 export const VIRTUAL_CARD_BASE=100000;
 export const virtualCard=(value:number,serial:number)=>VIRTUAL_CARD_BASE+serial*32+value;
 export const isVirtualCard=(c:number)=>c>=VIRTUAL_CARD_BASE;
-export const rank=(c:number)=>isVirtualCard(c)?c%32:c<52?Math.floor(c/4)+3:c===52?16:17;
+export const physicalCard=(c:number)=>c>=54&&c<108?c-54:c;
+export const rank=(c:number)=>isVirtualCard(c)?c%32:physicalCard(c)<52?Math.floor(physicalCard(c)/4)+3:physicalCard(c)===52?16:17;
 export const face=(c:number)=>({11:'J',12:'Q',13:'K',14:'A',15:'2',16:'小王',17:'大王'}[rank(c)]||String(rank(c)));
-export const suit=(c:number)=>isVirtualCard(c)?'◇':c>=52?'★':['♠','♥','♣','♦'][c%4];
+export const suit=(c:number)=>isVirtualCard(c)?'◇':physicalCard(c)>=52?'★':['♠','♥','♣','♦'][physicalCard(c)%4];
 export const sorted=(cards:number[])=>[...cards].sort((a,b)=>rank(b)-rank(a)||a-b);
 function groups(cards:number[]){const g=new Map<number,number[]>();for(const c of cards)g.set(rank(c),[...(g.get(rank(c))||[]),c]);return [...g.entries()].sort((a,b)=>a[0]-b[0]);}
 const sequential=(r:number[])=>r.length>0&&r.at(-1)!<=14&&r.every((v,i)=>i===0||v===r[i-1]+1);
@@ -48,17 +56,19 @@ export function newGame(host:string,name:string,seconds=30):Game{return{phase:'w
 function rand(n:number){const max=Math.floor(0x100000000/n)*n;let v;do{v=crypto.getRandomValues(new Uint32Array(1))[0];}while(v>=max);return v%n;}
 function note(g:Game,text:string,now:number){g.log.push({text,at:now});g.log=g.log.slice(-250);}
 export function deal(g:Game,now=Date.now()){
- if(g.seats.length!==3)throw Error('需要三人入座');
- const deck=Array.from({length:54},(_,i)=>i);for(let i=53;i>0;i--){const j=rand(i+1);[deck[i],deck[j]]=[deck[j],deck[i]];}
- g.seats.forEach((s,i)=>{s.hand=sorted(deck.slice(i*17,i*17+17));s.plays=0;s.last='';s.ready=false;});g.tableActions=[null,null,null];g.doubles=[null,null,null];g.bottom=deck.slice(51);g.phase='bidding';g.turn=rand(3);g.landlord=-1;g.bid=0;g.bidPasses=0;g.passes=0;g.last=null;g.multiplier=1;g.round=crypto.randomUUID();g.visualEvents=[];g.winner=-1;g.spring=false;g.deltas=[];g.deadline=now+g.seconds*1000;g.log=[];note(g,'发牌完成，开始叫分',now);
+ const capacity=landlordCapacity(g),count=fourPlayer(g)?25:17,total=fourPlayer(g)?108:54;
+ if(g.seats.length!==capacity)throw Error(`需要 ${capacity} 人入座`);
+ const deck=Array.from({length:total},(_,i)=>i);for(let i=total-1;i>0;i--){const j=rand(i+1);[deck[i],deck[j]]=[deck[j],deck[i]];}
+ g.seats.forEach((s,i)=>{s.hand=sorted(deck.slice(i*count,i*count+count));s.plays=0;s.last='';s.ready=false;});g.tableActions=g.seats.map(()=>null);g.doubles=g.seats.map(()=>null);g.bottom=deck.slice(capacity*count);g.phase='bidding';g.turn=rand(capacity);g.landlord=-1;g.bid=0;g.bidPasses=0;g.passes=0;g.last=null;g.multiplier=1;g.round=crypto.randomUUID();g.visualEvents=[];g.winner=-1;g.spring=false;g.deltas=[];g.deadline=now+g.seconds*1000;g.log=[];note(g,'发牌完成，开始叫分',now);
 }
 export function bid(g:Game,seat:number,value:number,now=Date.now()){
  if(g.phase!=='bidding'||g.turn!==seat)throw Error('还没轮到你叫分');
  if(!Number.isInteger(value)||value<0||value>3||(value!==0&&value<=g.bid))throw Error('叫分必须高于当前分数');
  const s=g.seats[seat];const actions=tableActions(g);actions[seat]={kind:'bid',value};s.last=value?`${value} 分`:'不叫';note(g,`${s.name} ${s.last}`,now);
- if(value){g.bid=value;g.landlord=seat;g.bidPasses=0;}else g.bidPasses++;
- if(g.bid===0&&g.bidPasses===3){deal(g,now);note(g,'无人叫分，重新发牌',now);return;}
- if(value===3||(g.bid>0&&g.bidPasses===2)){g.phase=g.rules?.allowDouble?'doubling':'playing';g.turn=g.landlord;if(g.phase==='playing'||!blindDouble(g))g.seats[g.landlord].hand=sorted([...g.seats[g.landlord].hand,...g.bottom]);g.seats.forEach(s=>s.last='');note(g,`${g.seats[g.landlord].name} 成为地主`,now);}else g.turn=(seat+1)%3;
+ if(value){g.bid=value;g.landlord=seat;if(!fourPlayer(g))g.bidPasses=0;}
+ if(fourPlayer(g)||!value)g.bidPasses++;
+ if(g.bid===0&&g.bidPasses===landlordCapacity(g)){deal(g,now);note(g,'无人叫分，重新发牌',now);return;}
+ if(value===3||(g.bid>0&&g.bidPasses===(fourPlayer(g)?4:2))){g.phase=g.rules?.allowDouble?'doubling':'playing';g.turn=g.landlord;if(g.phase==='playing'||!blindDouble(g))g.seats[g.landlord].hand=sorted([...g.seats[g.landlord].hand,...g.bottom]);g.seats.forEach(s=>s.last='');note(g,`${g.seats[g.landlord].name} 成为地主`,now);}else g.turn=(seat+1)%landlordCapacity(g);
  if(g.phase==='playing'||g.phase==='doubling')actions.fill(null);else actions[g.turn]=null;g.tableActions=actions;g.deadline=now+g.seconds*1000;
 }
 /** Only reconstruct information that was already public in pre-layout rooms. */
@@ -69,11 +79,11 @@ export function tableActions(g:Game):(TableAction|null)[]{
 }
 export function play(g:Game,seat:number,cards:number[],now=Date.now()){
  if(g.phase!=='playing'||g.turn!==seat)throw Error('还没轮到你出牌');const s=g.seats[seat];const actions=tableActions(g);
- if(!cards.length){if(!g.last||g.last.seat===seat)throw Error('新一轮必须出牌');s.last='不出';actions[seat]={kind:'pass'};note(g,`${s.name} 不出`,now);g.passes++;if(g.passes===2){g.turn=g.last.seat;g.last=null;g.passes=0;g.seats.forEach(s=>s.last='');actions.fill(null);}else g.turn=(seat+1)%3;}
- else{if(cards.some(c=>!s.hand.includes(c)))throw Error('只能出自己手中的牌');const combo=classify(cards);if(!combo)throw Error('这些牌不能组成合法牌型');if(!beats(combo,g.last?.combo??null))throw Error('需要出相同牌型中更大的牌，或使用炸弹');s.hand=s.hand.filter(c=>!cards.includes(c));s.plays++;s.last=combo.kind;actions[seat]={kind:'play',cards:sorted(cards),label:combo.kind,...(DDZ_EFFECTS[combo.kind]?{eventId:emitVisual(g,seat,DDZ_EFFECTS[combo.kind],now)}:{})};g.last={seat,cards:sorted(cards),combo};g.passes=0;if(g.rules?.bombDouble!==false&&(combo.kind==='炸弹'||combo.kind==='王炸'))g.multiplier*=2;note(g,`${s.name}：${combo.kind} ${sorted(cards).map(face).join(' ')}`,now);
- if(!s.hand.length){g.phase='finished';g.winner=seat;const won=seat===g.landlord;g.spring=g.rules?.springDouble!==false&&(won?g.seats.every((s,i)=>i===g.landlord||s.plays===0):g.seats[g.landlord].plays===1);if(g.spring){g.multiplier*=2;emitVisual(g,seat,won?'spring':'anti-spring',now);}const unit=g.bid*g.multiplier;g.deltas=g.seats.map((_,i)=>i===g.landlord?0:-unit*(won?1:-1)*(g.doubles?.[g.landlord]?2:1)*(g.doubles?.[i]?2:1));g.deltas[g.landlord]=-g.deltas.reduce((a,b)=>a+b,0);note(g,`${won?'地主':'农民'}获胜${g.spring?' · 春天翻倍':''}`,now);}else g.turn=(seat+1)%3;
+ if(!cards.length){if(!g.last||g.last.seat===seat)throw Error('新一轮必须出牌');s.last='不出';actions[seat]={kind:'pass'};note(g,`${s.name} 不出`,now);g.passes++;if(g.passes===landlordCapacity(g)-1){g.turn=g.last.seat;g.last=null;g.passes=0;g.seats.forEach(s=>s.last='');actions.fill(null);}else g.turn=(seat+1)%landlordCapacity(g);}
+ else{if(cards.some(c=>!s.hand.includes(c)))throw Error('只能出自己手中的牌');const combo=classifyFor(g,cards);if(!combo)throw Error('这些牌不能组成合法牌型');if(!beatsFor(g,combo,g.last?.combo??null))throw Error('需要出相同牌型中更大的牌，或使用炸弹');s.hand=s.hand.filter(c=>!cards.includes(c));s.plays++;s.last=combo.kind;actions[seat]={kind:'play',cards:sorted(cards),label:combo.kind,...(DDZ_EFFECTS[combo.kind]?{eventId:emitVisual(g,seat,DDZ_EFFECTS[combo.kind],now)}:{})};g.last={seat,cards:sorted(cards),combo};g.passes=0;if(g.rules?.bombDouble!==false&&(combo.kind==='炸弹'||combo.kind==='王炸'))g.multiplier*=2;note(g,`${s.name}：${combo.kind} ${sorted(cards).map(face).join(' ')}`,now);
+ if(!s.hand.length){g.phase='finished';g.winner=seat;const won=seat===g.landlord;g.spring=g.rules?.springDouble!==false&&(won?g.seats.every((s,i)=>i===g.landlord||s.plays===0):g.seats[g.landlord].plays===1);if(g.spring){g.multiplier*=2;emitVisual(g,seat,won?'spring':'anti-spring',now);}const unit=g.bid*g.multiplier;g.deltas=g.seats.map((_,i)=>i===g.landlord?0:-unit*(won?1:-1)*(g.doubles?.[g.landlord]?2:1)*(g.doubles?.[i]?2:1));g.deltas[g.landlord]=-g.deltas.reduce((a,b)=>a+b,0);note(g,`${won?'地主':'农民'}获胜${g.spring?' · 春天翻倍':''}`,now);}else g.turn=(seat+1)%landlordCapacity(g);
  }if(g.phase!=='finished')actions[g.turn]=null;g.tableActions=actions;g.deadline=g.phase==='finished'?0:now+g.seconds*1000;
 }
-export function doubleChoice(g:Game,seat:number,value:boolean,now=Date.now()){if(g.phase!=='doubling'||!g.rules?.allowDouble||seat<0||seat>=3||typeof value!=='boolean'||g.doubles?.[seat]!==null)throw Error('当前不能选择加倍');g.doubles![seat]=value;g.tableActions![seat]={kind:'double',value};g.seats[seat].last=value?'加倍 ×2':'不加倍';note(g,g.seats[seat].name+' '+g.seats[seat].last,now);if(g.doubles!.every(v=>v!==null)){if(blindDouble(g))g.seats[g.landlord].hand=sorted([...g.seats[g.landlord].hand,...g.bottom]);g.phase='playing';g.turn=g.landlord;g.deadline=now+g.seconds*1000;g.tableActions=[null,null,null];}else g.turn=g.doubles!.findIndex(v=>v===null);}
-export function timeout(g:Game,now=Date.now()){if(g.deadline>now||!['bidding','doubling','playing'].includes(g.phase))return false;if(g.phase==='doubling'){for(let i=0;i<3;i++)if(g.doubles?.[i]===null)doubleChoice(g,i,false,now);}else if(g.phase==='bidding')bid(g,g.turn,0,now);else play(g,g.turn,g.last?[]:[sorted(g.seats[g.turn].hand).at(-1)!],now);return true;}
+export function doubleChoice(g:Game,seat:number,value:boolean,now=Date.now()){if(g.phase!=='doubling'||!g.rules?.allowDouble||seat<0||seat>=landlordCapacity(g)||typeof value!=='boolean'||g.doubles?.[seat]!==null)throw Error('当前不能选择加倍');g.doubles![seat]=value;g.tableActions![seat]={kind:'double',value};g.seats[seat].last=value?'加倍 ×2':'不加倍';note(g,g.seats[seat].name+' '+g.seats[seat].last,now);if(g.doubles!.every(v=>v!==null)){if(blindDouble(g))g.seats[g.landlord].hand=sorted([...g.seats[g.landlord].hand,...g.bottom]);g.phase='playing';g.turn=g.landlord;g.deadline=now+g.seconds*1000;g.tableActions=g.seats.map(()=>null);}else g.turn=g.doubles!.findIndex(v=>v===null);}
+export function timeout(g:Game,now=Date.now()){if(g.deadline>now||!['bidding','doubling','playing'].includes(g.phase))return false;if(g.phase==='doubling'){for(let i=0;i<landlordCapacity(g);i++)if(g.doubles?.[i]===null)doubleChoice(g,i,false,now);}else if(g.phase==='bidding')bid(g,g.turn,0,now);else play(g,g.turn,g.last?[]:[sorted(g.seats[g.turn].hand).at(-1)!],now);return true;}
 export function view(g:Game,id:string){return {...g,visualEvents:publicVisuals(g),tableActions:tableActions(g),seats:g.seats.map(s=>({...s,count:s.hand.length,hand:s.id===id||g.phase==='finished'?s.hand:[]})),bottom:g.phase==='bidding'||blindDouble(g)&&g.phase==='doubling'?[]:g.bottom};}

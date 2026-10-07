@@ -449,7 +449,7 @@ test('v3 escrow refunds a replaced bidder and no-call handling selects the riche
  const g=game();begin(g);bids(g);g.dealer=0;g.turn=0;g.coins=['3','3','0'];
  bidV3(g,0,true,1200);assert.equal(g.coins[0],'2');bidV3(g,1,true,1201);assert.equal(g.coins[0],'3');assert.equal(g.coins[1],'1');bidV3(g,2,false,1202);bidV3(g,0,false,1203);
  assert.equal(g.phase,'playing');assert.equal(g.landlord,1);assert.equal(g.stake,'2');
- const allPass=game();begin(allPass);bids(allPass);allPass.dealer=1;allPass.turn=1;allPass.coins=['5','5','1'];
+ const allPass=game();delete allPass.rules.noCallPolicy;begin(allPass);bids(allPass);allPass.dealer=1;allPass.turn=1;allPass.coins=['5','5','1'];
  for(let n=0;n<3;n++)bidV3(allPass,allPass.turn,false,1300+n);assert.equal(allPass.landlord,1);assert.equal(allPass.stake,'1');assert.equal(allPass.coins[1],'4');
  const zero=game();begin(zero);bids(zero);zero.dealer=2;zero.turn=2;zero.coins=['0','0','0'];
  for(let n=0;n<3;n++)bidV3(zero,zero.turn,false,1400+n);assert.equal(zero.landlord,2);assert.equal(zero.stake,'0');
@@ -513,7 +513,7 @@ test('v3 no-bid auto-passes every bid and pays only when someone else takes the 
  bidV3(other,0,true,1251);bidV3(other,1,false,1252);bidV3(other,2,false,1253);
  assert.equal(other.landlord,0);assert.equal(other.coins[2],'6');
 
- const forced=game();give(forced,1,'no-bid');begin(forced);bids(forced);
+ const forced=game();delete forced.rules.noCallPolicy;give(forced,1,'no-bid');begin(forced);bids(forced);
  declareV3NoBid(forced,1,1300);
  forced.dealer=0;forced.turn=0;forced.coins=['2','5','2'];
  for(let n=0;n<3;n++)bidV3(forced,forced.turn,false,1301+n);
@@ -950,4 +950,17 @@ test('v3 seeded complete tables terminate with legal bots, private views and non
   }
   assert(g.champion>=0,`table ${table} stalled after ${turns} steps`);assert(g.roundNumber<=13);
  }
+});
+
+ test('new skill rooms give all-pass landlord to the dealer for free, including a poor dealer',()=>{
+ for(const dealer of [0,1,2])for(const coins of [['0','9','2'],['5','5','5'],['0','0','0']]){
+ const g=game();begin(g);bids(g);g.dealer=dealer;g.turn=dealer;g.coins=[...coins];const count=g.seats[dealer].hand.length;
+ for(let i=0;i<3;i++)bidV3(g,g.turn,false,1500+i);
+ assert.equal(g.landlord,dealer);assert.equal(g.turn,dealer);assert.equal(g.stake,'0');assert.equal(g.bid,'0');assert.deepEqual(g.coins,coins);assert.equal(g.seats[dealer].hand.length,count+3);
+ }
+ });
+
+test('free dealer preserves no-bid equipment payout only for other declarers',()=>{
+ for(const dealer of [0,1]){const g=game();give(g,1,'no-bid');begin(g);bids(g);declareV3NoBid(g,1,1400);g.dealer=dealer;g.turn=dealer;g.coins=['2','5','2'];
+ for(let n=0;n<3;n++)bidV3(g,g.turn,false,1500+n);assert.equal(g.landlord,dealer);assert.equal(g.stake,'0');assert.deepEqual(g.coins,['2',dealer===1?'5':'6','2']);}
 });

@@ -31,3 +31,267 @@
 .landlord-board .v3-shop-heading{flex-wrap:wrap;gap:8px}
 .landlord-board .v3-tutorial-hint{background:#edf3e8;color:#3f604b;border-color:#c6d7bc}
 .v3-catalog-modal{max-width:min(760px,calc(100vw - 32px));max-height:min(82dvh,calc(100dvh - 32px))}
+
+/* Large finite emotes stay inside edge seats and never intercept cards or controls. */
+.mj-portrait.portrait-north .seat-emote-bubble{bottom:auto;top:0;left:auto;right:calc(100% + 12px);transform:none;max-width:none}
+.royal-room .opponent .seat-emote-bubble{bottom:auto;top:0;left:calc(100% + 8px);right:auto;transform:none}
+.royal-room .side-right .opponent .seat-emote-bubble{left:auto;right:calc(100% + 8px)}
+@media(max-width:580px){.mj-portrait .seat-chat-bubble.seat-emote-bubble{max-width:none}.th-seat .seat-emote-bubble{width:124px;height:124px}}
+
+/* Shared landlord frame. Only the arena consumes spare height. */
+.landlord-layout.landlord-layout{--hand-height:164px;--table-ink:#fff3dd;width:100%;max-width:none!important;height:100dvh;min-height:0;margin:0!important;padding:0!important;overflow:visible;box-sizing:border-box}
+.landlord-layout.landlord-layout.skill-room{--table-ink:#28394c}
+.landlord-layout.landlord-layout .room-toolbar{height:48px;min-height:48px;margin:0;padding:4px 16px;gap:12px;display:flex;align-items:center;border-radius:0}
+.landlord-layout.landlord-layout .room-toolbar>div>div{display:flex;align-items:center;gap:12px;min-width:0}
+.landlord-layout.landlord-layout .room-toolbar h2{font-size:14px;margin:0;white-space:nowrap;max-width:240px;overflow:hidden;text-overflow:ellipsis}
+.landlord-layout.landlord-layout .room-toolbar>div>div>span{font-size:11px;white-space:nowrap;display:flex;align-items:center;gap:5px}
+.landlord-layout.landlord-layout .room-toolbar>.table-menu-toggle{margin:0;min-height:34px;height:34px;width:auto;border-radius:10px;flex-direction:row;padding:4px 10px;gap:5px}
+.landlord-connection{margin-left:auto;display:flex;align-items:center}
+.landlord-layout.landlord-layout .game-table{height:calc(100dvh - 48px);min-height:0;padding:0 16px 8px;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:var(--hud-height,36px) minmax(0,1fr) calc(var(--controls-height,56px) + var(--hand-height));gap:0;border:0;border-radius:0;box-shadow:none;overflow:visible}
+.landlord-layout.landlord-layout .table-hud{position:relative;grid-area:1/1;display:flex;justify-content:center;align-items:center;align-self:stretch;height:var(--hud-height,36px);min-height:0;margin:0;padding:0;gap:18px;font-size:14px;z-index:5;white-space:nowrap;color:var(--table-ink)}
+.landlord-layout.landlord-layout .table-hud .bottom-cards{position:static!important;transform:none!important;display:flex;gap:3px!important;align-items:center}
+.landlord-layout.landlord-layout .table-hud .bottom-cards :is(.playing-card,.card-back){width:20px!important;height:30px!important;min-height:0;padding:1px!important;border-width:1px;border-radius:3px}
+.landlord-layout.landlord-layout .bottom-cards .playing-card b{font-size:12px}.landlord-layout.landlord-layout .bottom-cards .playing-card i{display:none}.landlord-layout.landlord-layout .card-back svg{width:12px;height:12px}
+.landlord-layout.landlord-layout .table-hud .table-clock{width:auto;height:28px;min-height:0;padding:2px 8px;border-radius:8px;border-width:1px;display:flex;gap:5px;box-shadow:none;margin:0;background:#ffffffd9;color:#364638}
+.landlord-layout.landlord-layout .table-clock>b{font-size:20px;line-height:1;width:2ch;text-align:center}
+.landlord-layout.landlord-layout .landlord-arena{grid-area:2/1;position:relative;min-height:0;display:grid;grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) 90px;padding:8px 0 4px;gap:6px}
+.landlord-layout.landlord-layout .landlord-opponents{grid-area:1/1;position:static;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;align-self:stretch;gap:24px;margin:0;padding:0;min-height:0}
+.landlord-layout.landlord-layout.four-player-room .landlord-opponents{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.landlord-layout.landlord-layout .landlord-seat,.landlord-layout.landlord-layout .landlord-seat.side-right{position:relative;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:86px minmax(0,1fr);gap:4px;align-items:start;min-width:0;width:100%;height:100%}
+.landlord-layout.landlord-layout .opponent{position:relative;grid-area:1/1;display:grid;grid-template-columns:48px minmax(0,1fr) auto;grid-template-rows:26px 24px 24px;align-items:center;text-align:left;gap:1px 8px;width:min(340px,100%);height:86px;min-height:0;padding:6px 10px;margin:0 auto;background:#18284dc9;border:1px solid #e2daba45;border-radius:14px;box-shadow:none;color:var(--table-ink)}
+.landlord-layout.landlord-layout.skill-room .opponent{background:#f8fffa;border-color:#9bbdb2}
+.landlord-layout.landlord-layout .opponent.active-seat{border-color:#edbb51;box-shadow:0 0 0 2px #edbb5140}
+.landlord-layout.landlord-layout .opponent>.royal-character{position:absolute;left:0;top:0;width:50px;height:65px;margin:0;pointer-events:none}
+.landlord-layout.landlord-layout .opponent>.chat-avatar{position:relative;grid-column:1;grid-row:1/4;align-self:center;justify-self:center;margin:0;inset:auto}
+.landlord-layout.landlord-layout .opponent>.royal-character~.chat-avatar{align-self:end;justify-self:end}
+.landlord-layout.landlord-layout .opponent .avatar{width:36px;height:36px;border-radius:10px}.landlord-layout.landlord-layout .opponent>.royal-character~.chat-avatar .avatar{width:24px;height:24px}
+.landlord-layout.landlord-layout .opponent>strong{grid-area:1/2;max-width:100%;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0}
+.landlord-layout.landlord-layout .opponent .bot-label{display:none}
+.landlord-layout.landlord-layout .opponent>.equipment-rack{grid-area:2/2;justify-content:start}
+.landlord-layout.landlord-layout .opponent>.seat-score{grid-area:3/2;font-size:12px;display:flex;gap:10px;white-space:nowrap}
+.landlord-layout.landlord-layout .seat-score>span{display:inline-flex;align-items:center;gap:4px}
+.landlord-layout.landlord-layout .opponent>.card-count{grid-area:2/3/4/4;align-self:center;display:flex;align-items:center;gap:4px;font-size:23px;font-weight:800;line-height:1;padding:7px;background:#e6edff;color:#243552;border-radius:8px;min-height:32px}
+.landlord-layout.landlord-layout .opponent>.card-count[data-low=true]{color:#992919;background:#ffe1b0}
+.landlord-layout.landlord-layout :is(.seat-role,.landlord-label){position:absolute;top:8px;right:8px;margin:0;font-size:10px;padding:1px 5px;line-height:1.2}
+.landlord-layout.landlord-layout .dealer-label{position:absolute;right:0;top:-8px;font-size:10px;background:#ffe584;color:#28394c;padding:1px 5px;border-radius:5px}
+.landlord-layout.landlord-layout .royal-double{position:absolute;left:9px;bottom:4px;right:auto;top:auto;font-size:9px;padding:1px 4px;line-height:1;background:#284173;color:#ffe4ab}
+.landlord-layout.landlord-layout .landlord-seat>.seat-action{grid-area:2/1;min-height:0;height:100%;width:100%;padding:0;display:flex;align-items:center;justify-content:center}
+.landlord-layout.landlord-layout .landlord-seat>.is-summary{grid-area:2/1;align-self:center;justify-self:center}
+.landlord-layout.landlord-layout .landlord-self-action{grid-area:2/1;position:relative;align-self:center;justify-self:center;width:48%;min-height:0;margin:0;padding:0;height:84px}
+.landlord-layout.landlord-layout .landlord-self-action>.seat-action{min-height:0;height:100%;padding:0}
+.landlord-layout.landlord-layout .seat-pass{font-size:17px;margin:0}
+.landlord-layout.landlord-layout .table-stage{position:absolute;inset:auto 25% 16px;width:50%;height:62px;min-height:0;margin:0;padding:0;display:flex;align-items:center;justify-content:center;text-align:center;pointer-events:none;z-index:2}
+.landlord-layout.landlord-layout .table-stage button{pointer-events:auto}.landlord-layout.landlord-layout .table-stage h2{font-size:20px;margin:0}.landlord-layout.landlord-layout .landlord-phase-note{font-size:12px;padding:3px 10px}
+.landlord-layout.landlord-layout :is(.phase-playing,.phase-equipment) .table-stage{display:none}
+.landlord-layout.landlord-layout .table-round-summary h2{font-size:19px;color:var(--table-ink)}.landlord-layout.landlord-layout .table-round-summary p{font-size:13px;margin:4px;color:var(--table-ink)}.landlord-layout.landlord-layout .table-round-summary strong{font-size:18px}
+.landlord-layout.landlord-layout .self-label,.landlord-layout.landlord-layout .phase-finished .self-label{grid-area:2/1;position:relative;top:auto;bottom:auto;left:auto;align-self:center;width:100%;height:80px;min-height:0;margin:0;padding:0;display:flex;align-items:center;justify-content:space-between;pointer-events:none}
+.landlord-layout.landlord-layout .self-label>div:first-child{position:relative;flex:0 0 220px;width:220px;min-width:0;height:76px;display:flex;flex-wrap:wrap;align-content:center;align-items:center;justify-content:start;gap:4px 8px;padding:0 0 0 48px;pointer-events:auto;font-size:11px}
+.landlord-layout.landlord-layout .self-label .royal-character{position:absolute;top:0;left:0;width:45px;height:62px;margin:0}
+.landlord-layout.landlord-layout .self-label .chat-avatar,.landlord-layout.landlord-layout .self-label .royal-character~.chat-avatar{position:absolute;top:36px;left:15px;margin:0;pointer-events:none}
+.landlord-layout.landlord-layout .self-label .avatar{width:26px;height:26px}
+.landlord-layout.landlord-layout .self-label .self-identity{flex:1 0 100%;display:flex;flex-direction:row;align-items:center;gap:6px}
+.landlord-layout.landlord-layout .self-label strong{font-size:12px;max-width:80px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.landlord-layout.landlord-layout .self-label .seat-score{font-size:11px;display:flex;gap:8px;padding:0;background:none;color:var(--table-ink);white-space:nowrap}
+.landlord-layout.landlord-layout .self-label .room-chat--compact{position:static;inset:auto;pointer-events:auto;flex:0 0 auto;display:flex;gap:8px;margin:0;padding:0}
+.landlord-layout.landlord-layout .self-area{grid-area:3/1;position:relative;display:grid;grid-template-columns:minmax(0,1fr);min-width:0;grid-template-rows:var(--controls-height,56px) var(--hand-height);min-height:0;margin:0;padding:0;border:0}
+.landlord-layout.landlord-layout .self-area>.action-bar{grid-area:1/1;display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;height:var(--controls-height,56px);min-height:0;gap:8px;margin:0;padding:0;position:relative;z-index:3}
+.landlord-layout.landlord-layout .action-bar>button{height:36px;min-height:36px;min-width:54px;font-size:13px;padding:5px 13px;border-radius:10px;white-space:nowrap;box-shadow:0 2px 0 #14274e55}
+.landlord-layout.landlord-layout .action-bar p{font-size:12px;margin:0}.selection-status{font-size:11px;max-width:180px;white-space:nowrap;color:inherit}
+.landlord-layout.landlord-layout .landlord-hand-zone{grid-area:2/1;min-height:0;min-width:0;width:100%;position:relative;padding:0;display:flex;align-items:start;justify-content:center}
+.landlord-layout.landlord-layout .fixed-landlord-hand{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;max-width:100%;min-height:0;margin:0;padding:20px 0 0;overflow:visible;box-sizing:border-box}
+.landlord-layout.landlord-layout .fixed-landlord-hand .royal-hand-row{display:flex;justify-content:flex-start;flex-wrap:nowrap;margin:0;padding:0 calc(var(--card-width) - var(--step)) 0 0}
+.landlord-layout.landlord-layout .fixed-landlord-hand .hand-slot{width:var(--step);flex:0 0 var(--step);height:var(--card-height)}
+.landlord-layout.landlord-layout .fixed-landlord-hand .hand-card{width:var(--card-width);height:var(--card-height);margin:0;padding:4px;border-radius:7px}
+.landlord-layout.landlord-layout .fixed-landlord-hand .hand-card b{font-size:var(--rank-size)}
+.landlord-layout.landlord-layout .fixed-landlord-hand .hand-card.selected{transform:translateY(-12px)}
+.landlord-layout.landlord-layout .fixed-landlord-hand .hand-card:focus-visible{outline:3px solid #e3a72c;outline-offset:1px}
+.suitless-card{color:#25374e;background:#fffdf5}.suitless-card>i{font-style:normal;font-size:20px;opacity:.2}.suitless-card.joker b{font-size:12px!important}.generated-card{position:absolute;bottom:3px;right:3px;color:#7650a5}
+.card-group-preview{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;height:100%;width:100%;min-width:0;background:transparent;border:0;padding:2px;cursor:pointer;color:inherit;border-radius:8px;outline-offset:2px}
+.card-group-preview:hover,.equipment-info:hover{background:#ffffff20;outline:1px solid #c7a952;transition:background 120ms,outline-color 120ms}
+.card-group-preview.is-summary{width:auto;display:flex;gap:5px;align-items:center;font-size:12px;padding:8px;background:#ffffff20}
+.fixed-played-cards{flex-shrink:0;display:flex;flex-direction:column;gap:4px;width:100%;align-items:center;pointer-events:none}
+.fixed-played-row{display:flex;flex-wrap:nowrap;padding-right:calc(var(--card-width) - var(--step))}
+.fixed-played-row .hand-slot{width:var(--step);flex:0 0 var(--step);height:calc(var(--card-width)*1.5)}
+.fixed-played-row .playing-card{width:var(--card-width)!important;height:calc(var(--card-width)*1.5)!important;min-height:0;margin:0;padding:2px;font-size:12px}
+.fixed-played-row .playing-card b{font-size:14px}.fixed-played-row .playing-card i{display:none}
+.landlord-cards-modal{width:min(700px,calc(100vw - 24px));max-width:none;background:#fffaf0;color:#28394c}
+.expanded-card-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:7px}
+.expanded-card-grid .playing-card{width:100%;height:auto;aspect-ratio:2/3;padding:3px}.expanded-card-grid .playing-card b{font-size:18px}.expanded-card-grid .playing-card i{display:none}
+.expanded-card-controls{display:flex;align-items:center;justify-content:end;gap:10px}
+.landlord-layout.landlord-layout .table-effect{width:70px;height:70px;top:0;left:50%;z-index:2;pointer-events:none}.landlord-layout.landlord-layout .table-effect.effect-at-result{position:absolute;left:-75px;top:0;transform:none}
+.landlord-layout.landlord-layout .landlord-arena .v3-equipment-feed{top:4px;z-index:8;max-width:70%;pointer-events:none}.landlord-layout.landlord-layout .v3-equipment-feed p{font-size:11px;padding:3px 9px;white-space:nowrap}
+.landlord-layout.landlord-layout .seat-emote-bubble{top:0!important;bottom:auto!important;left:calc(100% + 8px)!important;right:auto!important;transform:none!important;width:100px;height:100px;max-width:none;pointer-events:none;z-index:7}
+.landlord-layout.landlord-layout .side-right .seat-emote-bubble{left:auto!important;right:calc(100% + 8px)!important}
+.landlord-layout.landlord-layout .v3-equipment-actions{position:absolute;left:25%;right:12%;bottom:6px;max-width:none;margin:0;padding:8px 12px;border:1px solid #9b83bf;border-radius:12px;background:#f3eaff;box-shadow:0 2px 0 #9b83bf;z-index:4;color:#28394c}
+.landlord-layout.landlord-layout .v3-equipment-heading{font-size:12px;display:inline;margin:0}.landlord-layout.landlord-layout .v3-equipment-actions .action-bar{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0;padding:0;min-height:0}.landlord-layout.landlord-layout .v3-equipment-actions button{font-size:11px;height:30px;min-height:30px;padding:3px 8px}.landlord-layout.landlord-layout .v3-equipment-actions .hand-caption{font-size:11px;margin:0;line-height:1.2}
+.equipment-rack{display:flex;gap:4px;align-items:center;min-width:0}.equipment-info{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:5px;border:1px solid #a38bb4;border-radius:6px;background:#eee2fb;color:#533c70;cursor:pointer;padding:4px;min-height:24px;font-size:11px;transition:background 120ms,outline-color 120ms}
+.equipment-info>i{position:absolute;right:-2px;top:-5px;font:700 8px/1.2 sans-serif;background:#fff3c0;color:#533c70;padding:1px 2px;border-radius:3px}
+.equipment-rack .equipment-info{width:24px;height:24px;min-height:24px;padding:3px}.equipment-rack .equipment-info svg{width:16px;height:16px}.equipment-more{font-size:10px;padding:2px 4px;border-radius:4px;background:#ede2fb;color:#533c70;cursor:pointer}
+.equipment-tooltip{max-width:300px;z-index:100;font-size:12px;line-height:1.6;padding:10px}.equipment-tooltip strong{display:block}
+.equipment-detail-modal,.equipment-grid-modal,.shop-selection-modal{background:#fffaf0;color:#344658;border:2px solid #344658;border-radius:18px}
+.equipment-detail-modal [data-slot=dialog-title]{display:flex;align-items:center;gap:8px}.equipment-detail-modal [data-slot=dialog-description]{color:#4c5967;line-height:1.8}
+.equipment-grid-modal,.shop-selection-modal{width:min(760px,calc(100vw - 24px));max-width:none;gap:12px;padding:18px}
+.equipment-expanded-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.equipment-expanded-grid .equipment-info{height:65px;flex-direction:column;font-size:12px;white-space:normal}.equipment-tabs{display:flex;gap:8px}
+.landlord-layout.landlord-layout .phase-shopping{grid-template-rows:var(--hud-height,36px) minmax(0,1fr);padding-bottom:14px}.landlord-layout.landlord-layout .phase-shopping .landlord-arena{display:none}
+.skill-shop-workspace{grid-area:2/1;display:grid;grid-template-rows:48px minmax(0,1fr);gap:10px;min-height:0;padding-top:8px;color:#344658}
+.shop-workspace-header{display:flex;align-items:center;gap:18px;background:#fffaf0;border:2px solid #344658;border-radius:12px;padding:5px 12px;font-size:12px;min-width:0}.shop-workspace-header>strong,.shop-workspace-header>span{display:flex;align-items:center;gap:5px;white-space:nowrap}.shop-workspace-header>strong{margin-right:auto}.shop-workspace-header button{min-height:30px}
+.shop-workspace-body{display:grid;grid-template-columns:minmax(0,1fr) 248px;gap:14px;min-height:0}.shop-offer-columns{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;min-height:0}
+.shop-tier{--tier:#9cc9e9;--tier-light:#eef7ff;--tier-edge:#7295b2;display:grid;grid-template-rows:24px repeat(3,minmax(0,1fr));gap:8px;padding:8px;background:var(--tier-light);border:2px solid var(--tier-edge);border-radius:15px;min-height:0}.shop-tier h4{margin:0;text-align:center;font-size:13px;color:#344658}
+.compact-offer{display:flex;flex-direction:column;justify-content:center;align-items:stretch;gap:5px;min-height:0;padding:8px;background:#fff;border:1px solid var(--tier-edge);border-radius:10px}.compact-offer>.equipment-info{border:0;background:none;color:#344658;flex:1;min-height:0;padding:2px;font-size:12px;line-height:1.3;gap:7px;text-align:left}.compact-offer .equipment-info svg{flex-shrink:0}.compact-offer-price{display:flex;align-items:center;justify-content:center;gap:4px;font-size:14px;color:#775722}.compact-offer-price small{font-size:9px}.compact-offer>button:last-child{background:var(--tier);color:#344658;border:1px solid var(--tier-edge);border-radius:7px;min-height:28px;height:28px;font-size:11px;padding:2px 4px;white-space:normal;line-height:1.1}.compact-offer.is-bought{opacity:.65}
+.shop-backpack{display:flex;flex-direction:column;min-height:0;background:#fffaf0;border:2px solid #b4b9a5;border-radius:15px;padding:10px}.shop-backpack h4{display:flex;align-items:center;gap:6px;font-size:13px;margin:0 0 10px}.shop-backpack h4 small{margin-left:auto;font-size:10px}.shop-backpack-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr));gap:8px;flex:1;min-height:0}.shop-backpack-grid article{min-height:0;display:flex;flex-direction:column;align-items:stretch;background:#f6f0fc;border:1px solid #c9b6df;border-radius:8px;padding:4px}.shop-backpack-grid .equipment-info{border:0;background:none;font-size:10px;line-height:1.3;flex:1;min-height:0}.shop-backpack-grid .equipment-info svg{flex-shrink:0}.shop-backpack-grid article>button:last-child:not(.equipment-info){min-height:22px;height:22px;padding:0;font-size:10px;color:#56644e}.shop-backpack-grid .empty-equipment{display:grid;place-items:center;opacity:.45;color:#536570;border-style:dashed}.shop-special-actions{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}.shop-special-actions button{font-size:10px;padding:3px 7px;height:28px;min-height:28px}
+.shop-selection-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.shop-selection-grid>div{display:flex;flex-direction:column;border:1px solid #bca3cf;border-radius:8px;background:#f6efff;min-height:65px;padding:4px}.shop-selection-grid>div>button:first-child{display:flex;align-items:center;justify-content:center;gap:6px;flex:1;border-radius:6px;font-size:12px;padding:4px}.shop-selection-grid button.selected{background:#ddc9f2;outline:2px solid #8964a9}.shop-selection-grid .choice-help{border:0;background:none;font-size:10px;min-height:20px}
+@media(min-width:1024px){.landlord-layout.landlord-layout .fixed-landlord-hand{--card-width:96px}.landlord-layout.landlord-layout.skill-room .fixed-landlord-hand{--card-width:44px}}
+@media(max-width:1023px){
+ .landlord-layout.landlord-layout{height:auto;min-height:100dvh;--hand-height:auto}.landlord-layout.landlord-layout .game-table{height:auto;min-height:calc(100dvh - 48px);grid-template-rows:36px minmax(300px,1fr) auto;padding-inline:10px}.landlord-layout.landlord-layout .self-area{grid-template-rows:minmax(52px,auto) auto;min-height:210px}.landlord-layout.landlord-layout .landlord-hand-zone{min-height:164px;padding-bottom:12px}.landlord-layout.landlord-layout .self-area>.action-bar{height:auto;min-height:52px;flex-wrap:wrap;padding:5px 0}.landlord-layout.landlord-layout .landlord-arena{min-height:300px}.landlord-layout.landlord-layout .landlord-seat{grid-template-rows:86px minmax(0,1fr)}.landlord-layout.landlord-layout .room-toolbar{padding-inline:10px}.landlord-layout.landlord-layout .room-toolbar h2{max-width:160px}.landlord-layout.landlord-layout .shop-workspace-body{grid-template-columns:minmax(0,1fr) 200px}.landlord-layout.landlord-layout .phase-shopping{grid-template-rows:36px auto}.skill-shop-workspace{min-height:500px}.shop-offer-columns{gap:6px}.shop-workspace-body{gap:8px}.compact-offer{padding:5px}
+}
+@media(max-width:640px){
+ .landlord-layout.landlord-layout .room-toolbar>div>div{gap:4px;flex-wrap:wrap}.landlord-layout.landlord-layout .room-toolbar h2{font-size:12px}.landlord-layout.landlord-layout .room-toolbar>div>div>span{font-size:9px}.landlord-layout.landlord-layout .table-hud{gap:7px;font-size:10px;justify-content:space-between}.landlord-layout.landlord-layout .table-hud .bottom-cards{gap:1px!important}.landlord-layout.landlord-layout .table-hud .bottom-cards :is(.playing-card,.card-back){width:14px!important;height:23px!important}.landlord-layout.landlord-layout .table-hud .table-clock{padding:1px 3px}.landlord-layout.landlord-layout .table-clock>b{font-size:16px}
+ .landlord-layout.landlord-layout .landlord-opponents,.landlord-layout.landlord-layout.four-player-room .landlord-opponents{gap:6px}.landlord-layout.landlord-layout .opponent{grid-template-columns:28px minmax(0,1fr);grid-template-rows:24px 24px 24px 24px;height:106px;padding:4px;gap:0 3px}.landlord-layout.landlord-layout .landlord-seat,.landlord-layout.landlord-layout .landlord-seat.side-right{grid-template-rows:106px minmax(0,1fr)}.landlord-layout.landlord-layout .opponent>.royal-character{display:none}.landlord-layout.landlord-layout .opponent>.chat-avatar,.landlord-layout.landlord-layout .opponent>.royal-character~.chat-avatar{grid-area:1/1;align-self:center;justify-self:center}.landlord-layout.landlord-layout .opponent .avatar{width:24px;height:24px}.landlord-layout.landlord-layout .opponent>strong{grid-area:1/2;font-size:10px}.landlord-layout.landlord-layout .opponent>.equipment-rack{grid-area:2/1/3/3;gap:2px}.landlord-layout.landlord-layout .opponent>.seat-score{grid-area:3/1/4/3;font-size:10px;gap:5px}.landlord-layout.landlord-layout .opponent>.card-count{grid-area:4/1/5/3;justify-self:start;font-size:17px;padding:2px 5px;min-height:22px}.landlord-layout.landlord-layout :is(.seat-role,.landlord-label){top:auto;bottom:5px;right:3px;font-size:8px;padding:0}.landlord-layout.landlord-layout .royal-double{bottom:28px;left:auto;right:2px;font-size:8px;background:none}.landlord-layout.landlord-layout .landlord-arena{grid-template-rows:minmax(190px,1fr) 100px;min-height:306px}.landlord-layout.landlord-layout .landlord-self-action{width:55%;justify-self:end}.landlord-layout.landlord-layout .self-label>div:first-child{width:120px;flex-basis:120px;padding-left:30px}.landlord-layout.landlord-layout .self-label .royal-character{display:none}.landlord-layout.landlord-layout .self-label .chat-avatar{left:0;top:24px}.landlord-layout.landlord-layout .self-label .self-identity{display:block}.landlord-layout.landlord-layout .self-label strong{font-size:10px}.landlord-layout.landlord-layout .self-label .room-chat--compact{position:absolute;right:0;top:-2px;gap:3px}.landlord-layout.landlord-layout .self-label .seat-score{font-size:9px;gap:3px}.landlord-layout.landlord-layout .table-stage{inset:auto 10% 30px;width:80%}.landlord-layout.landlord-layout .phase-bidding .table-stage,.landlord-layout.landlord-layout .phase-doubling .table-stage{display:none}.landlord-layout.landlord-layout .table-stage h2{font-size:16px}.landlord-layout.landlord-layout .action-bar>button{padding-inline:9px;font-size:12px}.selection-status{font-size:10px}.landlord-layout.landlord-layout .seat-emote-bubble{width:64px;height:64px}.landlord-layout.landlord-layout .v3-equipment-actions{left:28%;right:0;bottom:5px;padding:5px}.landlord-layout.landlord-layout .v3-equipment-actions button{font-size:10px;min-width:0;padding:2px 5px}.landlord-layout.landlord-layout .v3-equipment-actions .hand-caption{font-size:10px}
+ .skill-shop-workspace{min-height:0;grid-template-rows:auto auto;padding-top:5px}.shop-workspace-header{flex-wrap:wrap;gap:7px;padding:8px;font-size:11px}.shop-workspace-header>strong{flex-basis:100%}.shop-workspace-body{display:flex;flex-direction:column}.shop-offer-columns{grid-template-columns:repeat(2,minmax(0,1fr))}.shop-tier{grid-template-rows:20px repeat(3,110px)}.shop-backpack-grid{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,80px)}.shop-selection-grid,.equipment-expanded-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.shop-selection-modal,.equipment-grid-modal{padding:14px;gap:8px}.shop-selection-grid>div{min-height:60px}.shop-selection-grid>div>button:first-child{font-size:10px;gap:3px}.equipment-expanded-grid .equipment-info{height:55px;font-size:10px}.expanded-card-grid{grid-template-columns:repeat(8,minmax(0,1fr));gap:4px}.equipment-rack .equipment-info{width:20px;height:20px;min-height:20px;padding:2px}
+}
+@media(prefers-reduced-motion:reduce){.landlord-layout.landlord-layout *,.equipment-info{transition:none!important;animation:none!important}}
+
+.landlord-layout.landlord-layout .self-label>div:first-child{flex-direction:row}.landlord-layout.landlord-layout .table-hud .table-clock{color:#364638!important}.landlord-layout.landlord-layout .table-clock:before,.landlord-layout.landlord-layout .table-clock:after{display:none}.landlord-layout.landlord-layout .table-clock>b{text-shadow:none}.landlord-layout.landlord-layout .turn-label{max-width:140px;overflow:hidden;text-overflow:ellipsis;font-size:11px}.landlord-layout.landlord-layout .opponent .card-count[data-idle=true]{font-size:12px}.landlord-layout.landlord-layout .self-label .chat-avatar{pointer-events:auto}
+
+.skill-shop-workspace{position:relative}.shop-selection-panel{position:absolute;inset:66px 0 0;width:100%;display:flex;flex-direction:column;justify-content:center;gap:12px;z-index:6;padding:18px 24px;box-shadow:none}.shop-selection-panel header h3{font-size:17px;margin:0}.shop-selection-panel header p{font-size:12px;margin:4px 0}.shop-selection-panel .shop-selection-grid{flex:1;grid-auto-rows:minmax(60px,1fr);min-height:0}.shop-selection-panel .expanded-card-controls{flex-shrink:0}.shop-selection-panel:focus{outline:none}.landlord-layout.landlord-layout .table-clock>b{min-width:2ch;width:auto}.landlord-layout.landlord-layout .opponent strong .bot-label{display:none!important}
+@media(max-width:640px){.shop-selection-panel{inset:120px 0 auto;min-height:440px;padding:12px}.shop-selection-panel .shop-selection-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* Expanded public cards stay inside the desktop arena. */
+@media(min-width:1024px){.landlord-cards-modal{top:88px;left:50%;transform:none!important;width:min(760px,calc(100vw - 48px));max-height:calc(100dvh - 308px);padding:10px 16px;gap:6px}.landlord-cards-modal [data-slot=dialog-header]{gap:2px}.landlord-cards-modal [data-slot=dialog-title]{font-size:16px}.landlord-cards-modal [data-slot=dialog-description]{font-size:11px}.landlord-cards-modal .expanded-card-grid{grid-template-columns:repeat(12,minmax(0,1fr));gap:4px;justify-items:center}.landlord-cards-modal .expanded-card-grid .playing-card{width:auto;height:min(58px,calc((100dvh - 410px)/2))}.landlord-cards-modal .expanded-card-controls button{height:28px;min-height:28px;padding:3px 12px}}
+@media(max-width:640px){.landlord-layout.landlord-layout .room-toolbar>div{min-width:0;flex:1}.landlord-layout.landlord-layout .room-toolbar>div>div>span{max-width:100%;overflow:hidden}.landlord-layout.landlord-layout .room-toolbar>.table-menu-toggle{flex:0 0 38px;width:38px;padding:4px}.landlord-connection{flex-shrink:0}}
+
+/* Spacious table: the viewport, never the remaining card count, sets the scale. */
+.landlord-layout.landlord-layout .public-cards-label{font-size:14px;line-height:18px;font-weight:600;white-space:nowrap}
+.landlord-layout.landlord-layout .landlord-seat>.shows-remaining{grid-area:2/1;min-height:0;align-self:stretch}
+.landlord-layout.landlord-layout .royal-hand-row{max-width:100%}
+.landlord-layout.landlord-layout.skill-room .game-table{background:radial-gradient(ellipse at 15% 0%,#ffdb9b70,transparent 50%),radial-gradient(ellipse at 90% 90%,#baa5eb60,transparent 60%),linear-gradient(135deg,#fff3d6,#eee5f6);color:#29394f;isolation:isolate}
+.landlord-layout.landlord-layout.skill-room .landlord-arena:before{content:'';position:absolute;inset:18px 2% 6px;border:3px solid #d6c8ae80;border-radius:40%;background:#fffaf038;box-shadow:inset 0 0 0 8px #ffffff28;pointer-events:none;z-index:-1}
+.landlord-layout.landlord-layout.skill-room .room-toolbar{background:#fff4dd;border-bottom:1px solid #d6c5a4}
+.landlord-layout.landlord-layout.skill-room .landlord-arena{isolation:isolate}
+.landlord-layout.landlord-layout.skill-room .opponent{background:#fffaf0;border:2px solid #586880;box-shadow:0 5px 0 #7583a72b}
+.landlord-layout.landlord-layout.skill-room .side-left .opponent{background:linear-gradient(110deg,#fce4d4,#fffaf0 42%)}
+.landlord-layout.landlord-layout.skill-room .side-right .opponent{background:linear-gradient(110deg,#e6ddfa,#fffaf0 42%)}
+.landlord-layout.landlord-layout.skill-room .opponent.active-seat{border-color:#ba8426;box-shadow:0 5px 0 #b38a3940,0 0 0 3px #ffe49a80}
+.landlord-layout.landlord-layout.skill-room .playing-card{background:#fffdf7;border:1px solid #b9b9b1;box-shadow:0 3px 0 #a9b3ae,0 5px 8px #34485a18;color:#263b51;position:relative;text-align:left}
+.landlord-layout.landlord-layout.skill-room .playing-card.red{color:#b72f46}
+.landlord-layout.landlord-layout.skill-room .playing-card>span{font-size:clamp(15px,calc(var(--card-width,48px)*.3),21px);line-height:1}
+.landlord-layout.landlord-layout.skill-room .playing-card>i{display:block;position:absolute;inset:42% auto auto 42%;font-size:clamp(18px,calc(var(--card-width,48px)*.42),30px);line-height:1;font-style:normal;opacity:.85}
+.landlord-layout.landlord-layout.skill-room .playing-card:after{content:attr(data-corner);position:absolute;bottom:4px;right:4px;white-space:pre;transform:rotate(180deg);font:600 11px/1 Georgia,serif;text-align:center}
+.landlord-layout.landlord-layout.skill-room .playing-card.joker:after{display:none}
+.landlord-layout.landlord-layout.skill-room .playing-card.joker b{font-size:12px!important}
+.landlord-layout.landlord-layout.skill-room .generated-card{position:absolute;left:auto;right:3px;top:3px;bottom:auto;background:#eee0ff;color:#724b9c;border-radius:3px;padding:1px;line-height:1}
+.landlord-layout.landlord-layout.skill-room .bottom-cards .playing-card:after,.landlord-layout.landlord-layout.skill-room .bottom-cards .playing-card>i{display:none}
+.landlord-layout.landlord-layout .fixed-played-row .playing-card b{font-size:clamp(12px,calc(var(--card-width)*.32),26px);line-height:1}
+.landlord-layout.landlord-layout .fixed-played-row .playing-card>span{font-size:clamp(12px,calc(var(--card-width)*.26),22px);line-height:1}
+.landlord-layout.landlord-layout .landlord-hand-zone>.card-group-preview{max-width:1100px}
+.landlord-layout.landlord-layout .self-role{display:inline-flex;align-items:center;font-size:14px}
+@media(min-width:1024px){
+ .landlord-layout.landlord-layout .landlord-arena{grid-template-rows:minmax(0,1fr) 100px;gap:8px;padding:10px 0 2px}
+ .landlord-layout.landlord-layout .landlord-opponents{gap:36px;padding:0 32px}
+ .landlord-layout.landlord-layout.four-player-room .landlord-opponents{gap:24px;padding:0 12px}
+ .landlord-layout.landlord-layout .landlord-seat,.landlord-layout.landlord-layout .landlord-seat.side-right{grid-template-rows:104px minmax(0,1fr);gap:8px}
+ .landlord-layout.landlord-layout .opponent{width:min(460px,100%);height:104px;grid-template-columns:64px minmax(0,1fr) 62px;grid-template-rows:28px 28px 24px;gap:2px 10px;padding:8px 12px;border-radius:18px}
+ .landlord-layout.landlord-layout .opponent>strong{font-size:18px}
+ .landlord-layout.landlord-layout .opponent>.seat-score{font-size:15px;gap:12px}
+ .landlord-layout.landlord-layout .opponent>.card-count{font-size:28px;padding:9px;min-height:42px;justify-content:center;gap:4px}
+ .landlord-layout.landlord-layout .opponent>.royal-character{left:4px;top:3px;width:66px;height:86px}
+ .landlord-layout.landlord-layout .opponent .avatar{width:46px;height:46px}
+ .landlord-layout.landlord-layout .opponent>.royal-character~.chat-avatar{position:absolute;left:46px;top:64px;inset:auto auto 8px 46px}
+ .landlord-layout.landlord-layout .opponent>.royal-character~.chat-avatar .avatar{width:28px;height:28px}
+ .landlord-layout.landlord-layout .opponent :is(.seat-role,.landlord-label){top:9px;right:12px;font-size:13px;padding:2px 6px}
+ .landlord-layout.landlord-layout .dealer-label{font-size:12px;right:9px;top:-13px;padding:3px 7px}
+ .landlord-layout.landlord-layout .opponent>.royal-double{position:static;grid-area:2/2;justify-self:start;align-self:center;display:inline-flex;font-size:14px;line-height:1.3;padding:3px 8px;border-radius:7px;margin:0;background:#42608b;color:#fff1bd}
+ .landlord-layout.landlord-layout .self-label{height:94px}
+ .landlord-layout.landlord-layout .self-label>div:first-child{width:300px;flex-basis:300px;height:90px;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:30px 30px;align-content:center;gap:5px 10px;padding:10px 12px 10px 78px;background:#1d315acf;border:1px solid #c9d5e866;border-radius:17px;box-shadow:0 3px 0 #172b4433;font-size:15px}
+ .landlord-layout.landlord-layout.skill-room .self-label>div:first-child{background:#fff8e9;border:2px solid #586880;color:#29394f;box-shadow:0 4px 0 #7583a72b}
+ .landlord-layout.landlord-layout .self-label .self-identity{grid-area:1/1/2/3;gap:10px;flex:initial}
+ .landlord-layout.landlord-layout .self-label strong{font-size:17px;max-width:105px;flex-shrink:0}
+ .landlord-layout.landlord-layout .self-label .seat-score{grid-area:2/1;font-size:15px;gap:10px}
+ .landlord-layout.landlord-layout .self-label .self-role{grid-area:2/2;justify-self:end;font-size:14px}
+ .landlord-layout.landlord-layout .self-label .royal-double{position:static;grid-area:1/2;justify-self:end;font-size:14px;padding:3px 7px;border-radius:7px;line-height:1.3;margin:0}
+ .landlord-layout.landlord-layout .self-label .self-identity:has(+.seat-score+.royal-double){grid-column:1}
+ .landlord-layout.landlord-layout .self-label .royal-character{width:66px;height:82px;left:2px;top:0}
+ .landlord-layout.landlord-layout .self-label .chat-avatar{left:16px;top:22px}
+ .landlord-layout.landlord-layout .self-label .avatar{width:48px;height:48px}
+ .landlord-layout.landlord-layout .self-label .royal-character~.chat-avatar{left:43px;top:57px}
+ .landlord-layout.landlord-layout .self-label .royal-character~.chat-avatar .avatar{width:26px;height:26px}
+ .landlord-layout.landlord-layout .landlord-self-action{width:calc(100% - 660px);height:96px}
+ .landlord-layout.landlord-layout .table-stage{bottom:16px;height:74px}
+ .landlord-layout.landlord-layout .table-round-summary h2{font-size:25px}.landlord-layout.landlord-layout .table-round-summary strong{font-size:25px}.landlord-layout.landlord-layout .table-round-summary p{font-size:16px}
+ .landlord-layout.landlord-layout .action-bar>button{height:42px;min-height:42px;font-size:16px;padding:6px 20px;min-width:78px}
+ .landlord-layout.landlord-layout .action-bar>.play-button{min-width:150px}
+ .landlord-layout.landlord-layout .selection-status{font-size:14px}
+ .landlord-layout.landlord-layout .equipment-rack{gap:5px}
+ .landlord-layout.landlord-layout .equipment-rack .equipment-info{width:28px;height:28px;min-height:28px;padding:4px}
+ .landlord-layout.landlord-layout .equipment-rack .equipment-info svg{width:18px;height:18px}
+ .landlord-layout.landlord-layout .equipment-info>i{font-size:10px}
+ .landlord-layout.landlord-layout .equipment-more{font-size:13px;padding:4px;height:28px;min-height:28px;line-height:20px}
+ .landlord-layout.landlord-layout .self-label .equipment-rack{gap:3px}
+ .landlord-layout.landlord-layout .self-label:has(.equipment-more)>div:first-child{width:350px;flex-basis:350px}
+ .landlord-layout.landlord-layout .v3-equipment-actions{left:365px;right:120px;bottom:6px;padding:8px 12px}
+ .landlord-layout.landlord-layout .v3-equipment-heading,.landlord-layout.landlord-layout .v3-equipment-actions .hand-caption{font-size:14px}
+ .landlord-layout.landlord-layout .v3-equipment-actions button{font-size:14px;min-height:34px;height:34px;padding:4px 10px;min-width:0}
+ .landlord-layout.landlord-layout .table-hud .table-clock>b{font-size:24px}
+}
+@media(min-width:1024px) and (min-height:700px){
+ .landlord-layout.landlord-layout .landlord-arena{grid-template-rows:minmax(0,1fr) 108px}
+ .landlord-layout.landlord-layout .landlord-seat,.landlord-layout.landlord-layout .landlord-seat.side-right{grid-template-rows:116px minmax(0,1fr);gap:12px}
+ .landlord-layout.landlord-layout .opponent{height:116px;grid-template-rows:32px 30px 28px;padding:10px 14px;grid-template-columns:76px minmax(0,1fr) 72px}
+ .landlord-layout.landlord-layout .opponent>strong{font-size:20px}
+ .landlord-layout.landlord-layout .opponent>.seat-score{font-size:16px}
+ .landlord-layout.landlord-layout .opponent>.card-count{font-size:32px;padding:10px}
+ .landlord-layout.landlord-layout .opponent>.royal-character{width:76px;height:102px}
+ .landlord-layout.landlord-layout .opponent>.royal-character~.chat-avatar{left:55px;bottom:10px}
+ .landlord-layout.landlord-layout .landlord-self-action{height:104px}
+}
+@media(max-width:640px){
+ .landlord-layout.landlord-layout .shows-remaining .public-cards-label{font-size:11px}
+ .landlord-layout.landlord-layout.skill-room .playing-card>i{font-size:18px}
+ .landlord-layout.landlord-layout .opponent>.royal-double{position:static;grid-area:2/1/3/3;justify-self:start;align-self:center;font-size:11px;padding:2px 4px;line-height:1.2;background:#284173}
+ .landlord-layout.landlord-layout .self-label .self-role{font-size:11px}
+}
+.landlord-layout.landlord-layout .landlord-opponents{grid-template-rows:minmax(0,1fr)}
+.landlord-layout.landlord-layout .self-label .avatar{min-height:0;padding:0}
+@media(min-width:1024px){
+ .landlord-layout.landlord-layout .phase-finished .landlord-arena{grid-template-rows:minmax(0,1fr) 80px}
+ .landlord-layout.landlord-layout .phase-finished .table-stage{height:64px;bottom:8px}
+ .landlord-layout.landlord-layout .phase-finished .self-label>div:first-child{height:78px}
+ .landlord-layout.landlord-layout .phase-finished .self-label .royal-character{height:72px}
+ .landlord-layout.landlord-layout .phase-finished .self-label .royal-character~.chat-avatar{top:45px}
+ .landlord-layout.landlord-layout .self-label:has(.equipment-rack)>div:first-child{width:350px;flex-basis:350px}
+}
+
+.landlord-layout.landlord-layout .revealed-hand{grid-area:2/1;align-self:end;justify-self:center;height:28px;z-index:1}
+.landlord-layout.landlord-layout .landlord-seat:has(.revealed-hand)>.seat-action{height:calc(100% - 32px);align-self:start}
+
+/* Skill table controls keep their own geometry across selection and play updates. */
+.landlord-layout.landlord-layout.skill-room{overflow-anchor:none}
+.landlord-layout.landlord-layout.skill-room .room-toolbar>.table-menu-toggle{background:#fffaf0;color:#29394f;border:1px solid #586880;flex:0 0 auto;width:auto;min-width:72px}
+.landlord-layout.landlord-layout.skill-room .table-menu-toggle>span{display:inline;color:inherit;font-size:12px;white-space:nowrap}
+.landlord-layout.landlord-layout.skill-room .play-controls{display:grid;grid-template-columns:78px 78px 78px 150px;column-gap:8px;justify-content:center;align-content:center;flex-wrap:nowrap}
+.landlord-layout.landlord-layout.skill-room .play-controls>button{width:100%;min-width:0!important;padding-inline:6px}
+.landlord-layout.landlord-layout.skill-room .play-controls>.selection-status{position:absolute;top:calc(100% - 2px);left:0;width:100%;max-width:none;text-align:center;line-height:16px;pointer-events:none}
+.landlord-layout.landlord-layout .equipment-rack{--equipment-size:24px;flex:1 1 0;width:100%;min-width:0;overflow:visible;gap:4px}
+.landlord-layout.landlord-layout .equipment-rack :is(.equipment-info,.equipment-more){flex:0 0 var(--equipment-size);width:var(--equipment-size);height:var(--equipment-size);min-height:var(--equipment-size);padding:2px}
+.landlord-layout.landlord-layout .self-identity{min-width:0}
+@media(min-width:1024px){
+ .landlord-layout.landlord-layout .equipment-rack{--equipment-size:28px}
+ .landlord-layout.landlord-layout.skill-room .self-label>div:first-child{width:min(430px,38vw);flex-basis:min(430px,38vw)}
+ .landlord-layout.landlord-layout.skill-room .landlord-self-action{width:calc(100% - 880px);min-width:140px}
+ .landlord-layout.landlord-layout.skill-room .v3-equipment-actions{left:min(445px,39vw)}
+}
+@media(max-width:1023px){
+ .landlord-layout.landlord-layout.skill-room .game-table:not(.phase-shopping){grid-template-rows:36px 306px auto;align-content:start}
+ .landlord-layout.landlord-layout.skill-room .self-area{grid-template-rows:64px auto}
+ .landlord-layout.landlord-layout.skill-room .self-area>.action-bar{height:64px;min-height:64px;margin:0}
+ .landlord-layout.landlord-layout.skill-room .landlord-hand-zone{height:auto;min-height:340px;align-items:start}
+ .landlord-layout.landlord-layout.skill-room .fixed-landlord-hand{min-height:var(--hand-reserved-height)}
+ .landlord-layout.landlord-layout.skill-room .play-controls{grid-template-columns:56px 56px 56px 92px;gap:6px}
+}
+@media(max-width:640px){
+ .landlord-layout.landlord-layout .equipment-rack{--equipment-size:20px;gap:2px}
+ .landlord-layout.landlord-layout.skill-room .self-label .self-identity{display:flex;flex-wrap:wrap;gap:5px}
+ .landlord-layout.landlord-layout.skill-room .self-label .equipment-rack{flex-basis:100%;width:90px}
+}
+
+.landlord-layout.landlord-layout.skill-room .fixed-landlord-hand{justify-content:flex-start}

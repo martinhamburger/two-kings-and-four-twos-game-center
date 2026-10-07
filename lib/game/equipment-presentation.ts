@@ -1,0 +1,6 @@
+export const EQUIPMENT_ICONS={
+ 'peek-bottom':'view','borrowed-light':'discard','piggy-bank':'coins','endgame-change':'coins','copy-1':'copy','bomb-1':'bomb','extra-refresh':'refresh','change':'coins','dealer-change':'coins','no-bid':'bid','no-chase':'coins','precision-copy-1':'copy','return-lead':'discard','side-bet':'bid','copy-2':'copy','bomb-2':'bomb','take-the-lot':'discard','solo-diet':'coins','richest':'coins','interest':'coins','appearance-fee':'coins','bet-is-set':'bid','shadow-rank':'transform','four-with-two-pass':'transfer','aftershock':'discard','follow-through':'discard','copy-3':'copy','bomb-3':'bomb','smith':'transform','thirteen':'discard','precision-copy-2':'copy','raise-stake':'bid','all-in':'bid','lucky-star':'star','stand-up-fight':'view','quit-early':'exit','last-stand':'star','cut-off-income':'target','clearance':'shop','skip-straight':'transform','airdrop':'gift','connections':'users','bomb-4':'bomb','copy-4':'copy','rocket-win':'rocket'
+} as const;
+export type EquipmentIconKey=typeof EQUIPMENT_ICONS[keyof typeof EQUIPMENT_ICONS];
+export const equipmentIcon=(id:string):EquipmentIconKey=>EQUIPMENT_ICONS[id as keyof typeof EQUIPMENT_ICONS]??'star';
+export const equipmentLevel=(level:number)=>['I','II','III','IV'][level-1]??String(level);

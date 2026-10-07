@@ -153,3 +153,45 @@
 .royal-room .seat-played-cards>.royal-card{height:auto;aspect-ratio:2/3}
 @media(max-height:560px) and (min-width:641px){.royal-room .royal-hand{--card-width:75px!important}.royal-room .royal-hand-row{padding-right:0}.royal-room .hand-slot{flex-basis:min(var(--step),75px);width:min(var(--step),75px)}}
 @media(min-width:1400px){.royal-room .game-table{grid-template-rows:80px minmax(180px,1fr) auto}}
+
+/* Four ordinary seats share the royal cards and courtyard, with their own safe grid. */
+.four-player-room .landlord-opponents{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;padding-top:12px}
+.four-player-room .landlord-seat,.four-player-room .landlord-seat.side-right{display:flex;flex-direction:column;gap:4px;align-items:center}
+.four-player-room .opponent{min-height:160px;width:min(200px,100%)}
+.four-player-room .royal-character{width:110px;height:110px;margin:0}
+.four-player-room .landlord-seat .seat-action{width:100%;min-height:80px}
+.four-player-room .seat-played-cards{justify-content:center!important;max-height:140px;overflow-y:auto;overscroll-behavior:contain}
+.four-player-room .table-stage{align-self:end;width:80%;margin-bottom:56px}
+.four-player-room .bottom-cards{gap:3px!important;position:static!important;transform:none!important}
+.four-player-room .bottom-cards .card-back,.four-player-room .bottom-cards .playing-card{width:32px!important;height:48px!important;padding:2px!important;border-width:1px}
+.four-player-room .card-back svg{width:14px;height:14px}
+.four-player-room .table-hud{gap:12px}
+.four-player-room .royal-game-label{position:static;letter-spacing:0}
+.four-player-room .game-table{grid-template-rows:68px minmax(300px,1fr) auto}
+@media(max-width:640px){
+ .four-player-room .room-toolbar{height:54px;min-height:54px}
+ .four-player-room .game-table{min-height:calc(100dvh - 54px);grid-template-rows:62px minmax(260px,1fr) auto;padding-inline:6px}
+ .four-player-room .table-hud{gap:6px;flex-wrap:wrap;justify-content:center;padding-top:8px}
+ .four-player-room .royal-game-label{font-size:10px}
+ .four-player-room .royal-stakes{font-size:10px;padding:3px 7px}
+ .four-player-room .royal-stakes b{font-size:15px}
+ .four-player-room .bottom-cards .card-back,.four-player-room .bottom-cards .playing-card{width:20px!important;height:30px!important}
+ .four-player-room .landlord-opponents{gap:6px;padding-top:8px}
+ .four-player-room .landlord-seat,.four-player-room .landlord-seat.side-right{display:flex;align-items:center}
+ .four-player-room .royal-character{width:64px;height:64px;margin:0}
+ .four-player-room .opponent{min-height:138px;padding:0;font-size:10px}
+ .four-player-room .opponent strong{font-size:11px}
+ .four-player-room .opponent .avatar{width:28px;height:28px}
+ .four-player-room .landlord-seat .seat-action{min-height:48px}
+ .four-player-room .seat-played-cards>.playing-card{width:34px;flex-basis:34px;height:51px;margin-right:-16px}
+ .four-player-room .table-stage{margin-bottom:45px;width:90%}
+ .four-player-room .table-stage h2{font-size:18px}
+ .four-player-room .self-label{position:relative;bottom:auto;width:100%;height:auto}
+ .four-player-room .self-label>div{flex-direction:row;align-items:center;padding:0}
+ .four-player-room .self-label .royal-character{display:none}
+ .four-player-room .self-label .chat-avatar{position:relative!important;top:auto!important;left:auto!important}
+ .four-player-room .self-label .self-identity{align-items:flex-start}
+ .four-player-room .self-label .room-chat{position:static}
+ .four-player-room .royal-hand{padding-top:20px}
+ .four-player-room .hand-caption{font-size:10px}
+}
