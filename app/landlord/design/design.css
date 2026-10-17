@@ -74,3 +74,27 @@
 @media(prefers-reduced-motion:reduce){.endgame-room *{transition:none!important}}
 
 .endgame-owned{min-width:12px;text-align:center;color:#f0dba3;font-size:11px;font-weight:600}
+/* The active player's controls stay beside that player's hand. */
+.endgame-room.landlord-layout.landlord-layout .endgame-hand-cards{width:100%;height:100%;min-width:0;min-height:0}
+.endgame-room.landlord-layout.landlord-layout.endgame-testing .endgame-public-hand{display:grid;grid-template-rows:minmax(0,min(154px,calc(100% - 73px))) 68px;gap:5px;align-content:start}
+.endgame-room.landlord-layout.landlord-layout .endgame-opponent-controls{min-height:0;display:flex;justify-content:center;align-items:start}
+.endgame-room.landlord-layout.landlord-layout .endgame-turn-controls{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;max-width:100%;padding:5px 12px 7px;border:1px solid #efd28b80;border-radius:12px;background:#1c2c50dc;box-shadow:0 3px 14px #101b3e33}
+.endgame-room.landlord-layout.landlord-layout .endgame-turn-caption{font-size:12px;line-height:16px;color:#ffe4a1;display:flex;align-items:center;gap:7px;white-space:nowrap}
+.endgame-turn-caption>span{width:6px;height:6px;border-radius:50%;background:#f2d28a;box-shadow:0 0 8px #efcc7366}
+.endgame-room.landlord-layout.landlord-layout .endgame-turn-controls>.action-bar{display:flex;align-items:center;justify-content:center;flex-wrap:nowrap;gap:7px;height:auto;min-height:0;padding:0;margin:0}
+.endgame-room.landlord-layout.landlord-layout .endgame-turn-controls .action-bar>button{min-width:48px;height:29px;min-height:29px;padding:3px 10px;font-size:11px}
+.endgame-room.landlord-layout.landlord-layout .self-area>.action-bar:has(.endgame-turn-controls){overflow:visible;z-index:5}
+.endgame-room.landlord-layout.landlord-layout .self-area>.action-bar>.endgame-turn-controls{transform:translateY(-6px)}
+.endgame-room.landlord-layout.landlord-layout .self-label>div:first-child{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:16px 14px;align-content:center;align-items:center;gap:0;padding-block:6px}
+.endgame-room.landlord-layout.landlord-layout .self-label .self-identity{grid-area:1/1;display:block;position:static;width:auto;height:16px;min-height:0;margin:0;padding:0;line-height:16px;align-self:center}
+.endgame-room.landlord-layout.landlord-layout .self-label .self-identity strong{display:block;position:static;height:16px;line-height:16px;margin:0;padding:0}
+.endgame-room.landlord-layout.landlord-layout .self-label .self-role{grid-area:2/1;justify-self:start;align-self:center;height:14px;line-height:14px;margin:0}
+@media(max-width:640px){
+ .endgame-room.landlord-layout.landlord-layout.endgame-testing .endgame-public-hand{grid-template-rows:minmax(0,min(240px,calc(100% - 92px))) 88px;gap:4px}
+ .endgame-room.landlord-layout.landlord-layout .endgame-opponent-controls .endgame-turn-controls{padding:5px 5px 6px;width:100%;gap:4px;border-radius:9px}
+ .endgame-room.landlord-layout.landlord-layout .endgame-turn-caption{font-size:10px;line-height:14px;gap:5px}
+ .endgame-room.landlord-layout.landlord-layout .endgame-opponent-controls .action-bar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:4px}
+ .endgame-room.landlord-layout.landlord-layout .endgame-turn-controls .action-bar>button{min-width:0;height:25px;min-height:25px;padding:2px 5px;font-size:10px}
+}
+
+.endgame-room.landlord-layout.landlord-layout .endgame-self-active>div:first-child{border-color:#efd28b;background:#243956da;box-shadow:0 0 0 1px #efd28b3d}

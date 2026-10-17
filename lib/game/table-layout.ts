@@ -1,8 +1,8 @@
 export type LandlordLayoutMode='ordinary'|'four'|'skill';
 /** Card size and row capacity stay stable; illustrated hands spread to fit the current count. */
-export function landlordHandLayout(count:number,width:number,mode:LandlordLayoutMode,handHeight=164,compact=false,fitHeight=false){
+export function landlordHandLayout(count:number,width:number,mode:LandlordLayoutMode,handHeight=164,compact=false,fitHeight=false,compactCardWidth=56){
  const available=Math.max(compact?80:240,width),desktop=available>=900,skill=mode==='skill';
- let cardWidth=compact?Math.min(56,Math.floor((available-8)/3)):desktop?(skill?Math.min(64,Math.floor((handHeight-28)/2.8)):Math.min(116,Math.floor((handHeight-20)/1.5))):skill?48:56;
+ let cardWidth=compact?Math.min(compactCardWidth,Math.floor((available-8)/3)):desktop?(skill?Math.min(64,Math.floor((handHeight-28)/2.8)):Math.min(116,Math.floor((handHeight-20)/1.5))):skill?48:56;
  if(fitHeight){
   const rowCapacity=Math.max(1,Math.floor((available-cardWidth)/(compact?14:22))+1),rows=Math.ceil(21/rowCapacity);
   cardWidth=Math.max(18,Math.min(cardWidth,Math.floor((handHeight-20-(rows-1)*8)/(rows*1.5))));

@@ -56,3 +56,12 @@ test('height-bounded editor hands stay within short desktop and phone slots',()=
   assert(l.rows*l.cardHeight+(l.rows-1)*8+12<=height,`${width}/${height}/${compact}`);
  }
 });
+
+test('enlarged public cards respect both width and height at each seat',()=>{
+ for(const width of [130,180,300,560])for(const height of [100,154,240])for(const count of [4,17,20]){
+  const l=landlordHandLayout(count,width,'ordinary',height,true,true,84);
+  assert(l.cardWidth+(Math.min(count,l.perRow)-1)*l.step<=width+.01);
+  assert(l.rows*l.cardHeight+(l.rows-1)*8+12<=height);
+ }
+ assert.equal(landlordHandLayout(4,560,'ordinary',154,true,true,84).cardWidth,84);
+});
