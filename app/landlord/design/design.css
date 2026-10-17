@@ -125,3 +125,6 @@
 .endgame-room.landlord-layout.landlord-layout .seat-action .fixed-played-row{pointer-events:auto}
 .endgame-room.landlord-layout.landlord-layout .seat-action{pointer-events:none}
 .endgame-room.landlord-layout.landlord-layout .landlord-self-action{pointer-events:none}
+/* Place the local public play lower to complete the three-seat arc. */
+.endgame-room.landlord-layout.landlord-layout .landlord-self-action{transform:translateY(28px)}
+@media(max-width:640px){.endgame-room.landlord-layout.landlord-layout .landlord-self-action{transform:translateY(12px)}}
