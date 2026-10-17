@@ -98,3 +98,30 @@
 }
 
 .endgame-room.landlord-layout.landlord-layout .endgame-self-active>div:first-child{border-color:#efd28b;background:#243956da;box-shadow:0 0 0 1px #efd28b3d}
+/* Keep compact identity badges above the hands; give public plays a real card-sized area. */
+.endgame-room.landlord-layout.landlord-layout .landlord-seat,.endgame-room.landlord-layout.landlord-layout .landlord-seat.side-right{grid-template-rows:38px minmax(0,1fr);gap:5px}
+.endgame-room.landlord-layout.landlord-layout .opponent{width:min(176px,100%);height:38px;min-height:38px;max-height:38px;padding:4px 7px;grid-template-columns:27px minmax(0,1fr) 28px;grid-template-rows:15px 13px;gap:0 6px;border-radius:10px}
+.endgame-room.landlord-layout.landlord-layout .opponent>.royal-character{width:26px;height:32px;left:6px;top:2px}
+.endgame-room.landlord-layout.landlord-layout .opponent>strong{font-size:11px;line-height:15px}
+.endgame-room.landlord-layout.landlord-layout .opponent :is(.seat-role,.landlord-label){font-size:8px;line-height:13px}
+.endgame-room.landlord-layout.landlord-layout .opponent>.card-count{font-size:14px;min-height:24px;padding:3px;border-radius:6px}
+.endgame-room.landlord-layout.landlord-layout .endgame-public-hand .fixed-landlord-hand{padding-top:4px}
+.endgame-room.landlord-layout.landlord-layout .landlord-seat>.seat-action{position:absolute;top:calc(47px + min(154px,calc(100% - 116px)));left:0;grid-area:auto;width:100%;height:128px;min-height:0;padding:0;z-index:2}
+.endgame-room.landlord-layout.landlord-layout .landlord-seat .card-group-preview{max-height:none;height:100%;padding:0}
+.endgame-room.landlord-layout.landlord-layout .landlord-self-action{height:128px;align-self:end;width:46%;margin:0 0 3px}
+.endgame-room.landlord-layout.landlord-layout .landlord-self-action .card-group-preview{max-height:none;height:100%;padding:0}
+@media(max-width:640px){
+ .endgame-room.landlord-layout.landlord-layout .landlord-seat,.endgame-room.landlord-layout.landlord-layout .landlord-seat.side-right{grid-template-rows:34px minmax(0,1fr);gap:4px}
+ .endgame-room.landlord-layout.landlord-layout .opponent{width:min(150px,100%);height:34px;min-height:34px;max-height:34px;padding:3px 5px;grid-template-columns:23px minmax(0,1fr) 25px;grid-template-rows:14px 12px;gap:0 4px}
+ .endgame-room.landlord-layout.landlord-layout .opponent>.royal-character{width:22px;height:28px;left:4px;top:2px}
+ .endgame-room.landlord-layout.landlord-layout .opponent>strong{font-size:10px;line-height:14px}
+ .endgame-room.landlord-layout.landlord-layout .opponent :is(.seat-role,.landlord-label){line-height:12px}
+ .endgame-room.landlord-layout.landlord-layout .opponent>.card-count{font-size:12px;min-height:22px;padding:2px}
+ .endgame-room.landlord-layout.landlord-layout .landlord-seat>.seat-action{top:calc(42px + min(240px,calc(100% - 130px)));height:100px}
+ .endgame-room.landlord-layout.landlord-layout .landlord-self-action{height:100px}
+}
+/* Only the actual public cards receive clicks; empty preview slots must not cover seat controls. */
+.endgame-room.landlord-layout.landlord-layout .seat-action .card-group-preview{pointer-events:none}
+.endgame-room.landlord-layout.landlord-layout .seat-action .fixed-played-row{pointer-events:auto}
+.endgame-room.landlord-layout.landlord-layout .seat-action{pointer-events:none}
+.endgame-room.landlord-layout.landlord-layout .landlord-self-action{pointer-events:none}
