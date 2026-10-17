@@ -1,3 +1,4 @@
+import type {FriendlyMatch} from '../friendly-match.ts';
 import {emitVisual,publicVisuals,type VisualEvent} from '../motion/events.ts';
 import {BASIC_136, type MahjongRules} from './rules.ts';
 import type {Practice} from '../practice/types.ts';
@@ -6,7 +7,7 @@ export type Meld={kind:'chi'|'pong'|'kong';tiles:number[];from:number;concealed:
 export type Seat={id:string;name:string;hand:number[];melds:Meld[];river:number[];ready:boolean;last:string;bot?:boolean};
 export type Option={key:string;kind:'chi'|'pong'|'kong'|'hu'|'concealed'|'added';tiles:number[];meldIndex?:number};
 type Pending={kind:'discard'|'added';from:number;tile:number;meldIndex?:number;eligible:number[];responses:Record<string,Option|null>};
-export type MahjongGame={
+export type MahjongGame={friendlyMatch?:FriendlyMatch;
  visualEvents?:VisualEvent[];
  practice?:Practice;kind:'mahjong';schemaVersion:1;rules:MahjongRules;phase:Phase;host:string;seats:Seat[];
  wall:number[];turn:number;dealer:number;round:string;roundNumber:number;seconds:number;deadline:number;
@@ -145,9 +146,9 @@ export function timeoutMahjong(g:MahjongGame,now=Date.now()){
  return true;
 }
 export function mahjongView(g:MahjongGame,id:string){
- const own=g.seats.findIndex(s=>s.id===id),finished=g.phase==='finished';
+ const own=g.seats.findIndex(s=>s.id===id),finished=g.phase==='finished'||g.phase==='closed'&&g.friendlyMatch?.status==='finished';
  // Whitelist every visible field. Never return the wall, eligibility or other players' choices.
- return {visualEvents:publicVisuals(g),kind:g.kind,rules:g.rules,phase:g.phase,host:g.host,turn:g.turn,dealer:g.dealer,round:g.round,roundNumber:g.roundNumber,seconds:g.seconds,deadline:g.deadline,
+ return {friendlyMatch:g.friendlyMatch,visualEvents:publicVisuals(g),kind:g.kind,rules:g.rules,phase:g.phase,host:g.host,turn:g.turn,dealer:g.dealer,round:g.round,roundNumber:g.roundNumber,seconds:g.seconds,deadline:g.deadline,
   remaining:g.wall.length,drawn:own===g.turn?g.drawn:null,lastDiscard:g.lastDiscard,
   pending:g.pending?{kind:g.pending.kind,from:g.pending.from,tile:g.pending.tile}:null,
   winner:g.winner,winType:g.winType,source:g.source,deltas:g.deltas,log:g.log,options:mahjongOptions(g,own),

@@ -11,9 +11,9 @@ export function royalMotion(role:RoyalRole,action:RoyalAction):FrameMotion{
  return {id:`royal-${role}-${action}`,label:`${role==='king'?'国王':'公主'} · ${labels[action]}`,poster:`${ROYAL_ROOT}/${role}/poster.webp`,sheets:[{src:`${ROYAL_ROOT}/${role}/${action}.webp`,columns:4,rows:1,cellWidth:320,cellHeight:320}],frames:[0,1,2,3].map(cell=>({sheet:0,cell,duration:action==='idle'?550:action==='win'||action==='lose'?400:260}))};
 }
 export const ROYAL_ASSETS:RoyalAsset[]=[{id:'courtyard',src:ROYAL_BACKGROUND},...(['king','princess'] as const).flatMap(role=>ROYAL_ACTIONS.map(action=>({id:`${role}-${action}`,src:`${ROYAL_ROOT}/${role}/poster.webp`,motion:royalMotion(role,action)})))];
-export type RoyalGame={round:string;phase:string;landlord:number;winner:number;suddenDeath?:boolean;tableActions?:(TableAction|null)[]};
+export type RoyalGame={round:string;phase:string;landlord:number;winner:number;suddenDeath?:boolean;tableActions?:(TableAction|null)[];friendlyMatch?:{status:string}};
 export function royalRole(g:RoyalGame,seat:number):RoyalRole|null{
- return seat<0||g.suddenDeath||g.landlord<0||['waiting','shopping','bidding','closed'].includes(g.phase)?null:seat===g.landlord?'king':'princess';
+ return seat<0||g.suddenDeath||g.landlord<0||['waiting','shopping','bidding'].includes(g.phase)||g.phase==='closed'&&g.friendlyMatch?.status!=='finished'?null:seat===g.landlord?'king':'princess';
 }
 /** Only confirmed changes in an already observed round produce a local cue. */
 export function royalCue(before:RoyalGame|null,after:RoyalGame,seat:number):RoyalAction|null{

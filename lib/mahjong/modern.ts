@@ -1,3 +1,4 @@
+import type {FriendlyMatch} from '../friendly-match.ts';
 import {emitVisual,publicVisuals,type VisualEvent} from '../motion/events.ts';
 import {newSeat, sortTiles, tileLabel, isWinning, type Seat, type Option, type Meld} from './engine.ts';
 import {HAM, type ModernRules} from './rules.ts';
@@ -10,7 +11,7 @@ export type RoundResult = {practice?:boolean;kind:'mahjong';schemaVersion:2;id:s
   winner:number;source:number;winType:'self'|'discard'|'rob'|'draw'|'aborted';wildcard:number;plan:WinPlan|null;awards:{tile:number;type:number;hit:boolean}[];
   seats:{id:string;name:string;bot?:boolean;delta:Money;balance:Money}[];entries:ChipEntry[];log:{text:string;at:number}[];started:number;ended:number;automatic:boolean};
 type Pending={kind:'discard'|'added';from:number;tile:number;meldIndex?:number;eligible:number[];responses:Record<string,Option|null>;earth:boolean};
-export type ModernGame = {
+export type ModernGame = {friendlyMatch?:FriendlyMatch;
   visualEvents?:VisualEvent[];
   practice?:Practice;
   leavingIds?:string[];departedIds?:string[];
@@ -205,8 +206,8 @@ export function closeModern(g:ModernGame,force=false,now=Date.now(),reason:'admi
   g.phase='closed';g.deadline=0;g.pending=null;g.choice=null;g.ended=now;note(g,reason==='empty'?'全部玩家已离桌，房间自动关闭':reason==='practice'?'房主结束人机测试':force?'管理员结束整桌':'房主结束整桌',now);
 }
 export function modernView(g:ModernGame,id:string){
-  const own=g.seats.findIndex(s=>s.id===id),reveal=g.phase==='finished',leaving=!!g.leavingIds?.includes(id),departed=!!g.departedIds?.includes(id);
-  return {visualEvents:publicVisuals(g),practice:g.practice?{difficulty:g.practice.difficulty,roomType:g.practice.roomType}:null,kind:g.kind,schemaVersion:2 as const,rules:g.rules,phase:g.phase,host:g.host,turn:g.turn,dealer:g.dealer,round:g.round,roundNumber:g.roundNumber,seconds:g.seconds,deadline:g.deadline,
+  const own=g.seats.findIndex(s=>s.id===id),reveal=g.phase==='finished'||g.phase==='closed'&&g.friendlyMatch?.status==='finished',leaving=!!g.leavingIds?.includes(id),departed=!!g.departedIds?.includes(id);
+  return {friendlyMatch:g.friendlyMatch,visualEvents:publicVisuals(g),practice:g.practice?{difficulty:g.practice.difficulty,roomType:g.practice.roomType}:null,kind:g.kind,schemaVersion:2 as const,rules:g.rules,phase:g.phase,host:g.host,turn:g.turn,dealer:g.dealer,round:g.round,roundNumber:g.roundNumber,seconds:g.seconds,deadline:g.deadline,
     remaining:g.wall.length,drawn:own===g.turn?g.drawn:null,lastDiscard:g.lastDiscard,pending:g.pending?{kind:g.pending.kind,from:g.pending.from,tile:g.pending.tile}:null,
     winner:g.winner,source:g.source,winType:g.winType,deltas:g.deltas,log:g.log,options:modernOptions(g,leaving||departed?-1:own),wildcard:g.wildcard,result:g.result,
     session:{initialChips:g.initialChips,baseChips:g.baseChips,started:g.started,ended:g.ended,stats:g.stats,streak:g.streak,fixed:g.fixedIds.length>0},

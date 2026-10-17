@@ -2,6 +2,8 @@
 
 给朋友一起玩的在线游戏室：斗地主、136 张麻将（基础玩法 / ham 规）、4–10 人德州扑克。支持朋友与人机混合、独立账号、房间聊天、动态表情、筹码战报和管理后台。
 
+建房还可选择自由对局或 **1 / 4 / 8 / 12 局友谊赛**：首局发牌后固定同桌玩家，按累计净成绩排名，同分共享冠军。打满后自动结算并释放座位；提前结束保留成绩、不颁冠军。技能斗地主沿用自己的专属赛制。详见 [友谊赛说明与验收](docs/friendly-match.md)。
+
 - 线上站点：[娱乐中心](https://yule-center.hhhamburgerrr.chatgpt.site)
 - 代码仓库：[two-kings-and-four-twos-game-center](https://github.com/martinhamburger/two-kings-and-four-twos-game-center)
 - **修改从分支开始，PR 由 Martin 决定合并。合并不会自动上线。**

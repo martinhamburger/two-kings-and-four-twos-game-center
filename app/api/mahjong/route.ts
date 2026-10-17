@@ -7,6 +7,7 @@ import {newModern,modernSeat,closeModern} from '@/lib/mahjong/modern';
 import {HAM,MODERN_PRESETS,customMahjongRules} from '@/lib/mahjong/rules';
 import {fillBots,addRoomBot,removeRoomBot,resetRosterReady,transferHumanHost} from '@/lib/practice/room';
 import {practiceMode,soloPractice} from '@/lib/practice/types';
+import {assertFriendlyReady,assertFriendlyRosterEditable,newFriendlyMatch} from '@/lib/friendly-match';
 export const dynamic='force-dynamic';
 function visible(r:Room,g:MahjongGame,id:string){return {code:r.code,title:r.title,revision:r.revision,serverNow:Date.now(),game:mahjongView(g,id)};}
 export async function GET(req:Request){return safe(async()=>{
@@ -25,7 +26,7 @@ export async function POST(req:Request){return safe(async()=>{
   const c=await config();if(c.maintenance)throw new AppError('暂时暂停开新桌，请稍后再来');
   const rules=MODERN_PRESETS.find(r=>r.id===(b.rulesId??HAM.id));if(!rules)throw new AppError('请选择当前可用的麻将规则');
   const title=typeof b.title==='string'&&b.title.trim()?b.title.trim():`${u.display} 的麻将桌`;if(title.length>24)throw new AppError('房间名最多 24 个字符');
-  let g;try{g=newModern(u.id,u.display,c.seconds,customMahjongRules(rules,b.customRules),b.initialChips,b.baseChips);if(practiceMode(b.mode))fillBots(g);}catch(e){throw new AppError((e as Error).message);}
+  let g;try{g=newModern(u.id,u.display,c.seconds,customMahjongRules(rules,b.customRules),b.initialChips,b.baseChips);g.friendlyMatch=newFriendlyMatch(b.friendlyRounds,'筹码');if(practiceMode(b.mode))fillBots(g);}catch(e){throw new AppError((e as Error).message);}
   const code=String(100000+crypto.getRandomValues(new Uint32Array(1))[0]%900000),now=Date.now();
   try{await db().batch([
    db().prepare("INSERT INTO rooms (code,title,state,phase,revision,op,created,updated) VALUES (?,?,?,'waiting',0,?,?,?)").bind(code,title,JSON.stringify(g),crypto.randomUUID(),now,now),
@@ -39,6 +40,7 @@ export async function POST(req:Request){return safe(async()=>{
  if(b.action==='join'){
   if(g.phase==='closed')throw new AppError('该房间已关闭');if(isModern(g)&&g.departedIds?.includes(u.id))throw new AppError('你已离开这桌，请创建或加入其他房间',403);if(g.seats.some(s=>s.id===u.id))return json(visible(r,g,u.id));
   if(soloPractice(g))throw new AppError('这是个人的人机测试房，不能加入其他玩家',403);
+  try{assertFriendlyRosterEditable(g);}catch(e){throw new AppError((e as Error).message);}
   if(g.phase!=='waiting'||g.seats.length>=4||(isModern(g)&&g.fixedIds.length))throw new AppError('该房间已满或已经开局');
   if((await config()).maintenance)throw new AppError('暂时暂停加入新桌');
   if(isModern(g)){g.seats.push(modernSeat(u.id,u.display,g.initialChips));resetRosterReady(g);}else g.seats.push(newSeat(u.id,u.display));
@@ -51,10 +53,11 @@ export async function POST(req:Request){return safe(async()=>{
  if(b.action==='add_bot'||b.action==='remove_bot'){
   if(g.host!==u.id)throw new AppError('只有房主可以调整人机座位',403);
   if(!isModern(g))throw new AppError('旧版麻将房不支持添加人机，请新建基础试玩或 ham 规房间');
-  try{if(b.action==='add_bot')addRoomBot(g);else removeRoomBot(g,b.botId);}catch(e){throw new AppError((e as Error).message);}
+  try{assertFriendlyRosterEditable(g);if(b.action==='add_bot')addRoomBot(g);else removeRoomBot(g,b.botId);}catch(e){throw new AppError((e as Error).message);}
   r=await commit(r,g);return json(visible(r,g,u.id));
  }
  if(b.action==='ready'){
+  try{assertFriendlyReady(g);}catch(e){throw new AppError((e as Error).message);}
   if(!['waiting','finished'].includes(g.phase))throw new AppError('对局中不能修改准备状态');if(isModern(g)&&g.departedIds?.length)throw new AppError('有玩家已离桌，请由房主结束整桌后重新开桌');g.seats[seat].ready=!g.seats[seat].ready;if(g.seats.length===4&&g.seats.every(s=>s.ready))dealMahjong(g);
  }else if(b.action==='end_practice'){
   if(!isModern(g)||!soloPractice(g)||g.host!==u.id)throw new AppError('只有个人测试房的房主可以使用结束测试',403);

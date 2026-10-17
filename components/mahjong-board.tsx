@@ -19,6 +19,7 @@ import {Dialog,DialogTrigger,DialogContent,DialogHeader,DialogTitle,DialogDescri
 
 type Seat=MahjongView['seats'][number];
 const positions:MahjongSeat[]=['south','east','north','west'];
+const roundFinished=(g:MahjongView)=>g.phase==='finished'||g.phase==='closed'&&g.friendlyMatch?.status==='finished';
 const tileStyle=(w:number,h:number,d:number):CSSProperties=>({'--tile-w':`${w}px`,'--tile-h':`${h}px`,'--tile-d':`${d}px`} as CSSProperties);
 const placement=(p:{x:number;y:number;angle:number}):CSSProperties=>({left:p.x,top:p.y,transform:`rotateZ(${p.angle}deg)`,transformOrigin:'0 0'});
 
@@ -29,7 +30,7 @@ export function MahjongMelds({s,own,finished,wildcard,highlightType=null}:{s:Sea
 
 function WorldMelds({s,own,g,position,width,slotWidth,gap,columns=4,rowPitch=0,highlightType}:{s:Seat;own:boolean;g:MahjongView;position:MahjongSeat;width:number;slotWidth:number;gap:number;columns?:number;rowPitch?:number;highlightType:number|null}){
  return <div className="mj-world-melds" style={{width}} aria-label={`${s.name}的吃碰杠`}>
-  {s.melds.map((m,j)=>{const hidden=m.concealed&&!own&&g.phase!=='finished';return <div key={j} className="mj-world-meld" data-meld-index={j} style={{left:width-((j%columns)+1)*slotWidth,top:Math.floor(j/columns)*rowPitch,width:slotWidth-gap}}>
+  {s.melds.map((m,j)=>{const hidden=m.concealed&&!own&&!roundFinished(g);return <div key={j} className="mj-world-meld" data-meld-index={j} style={{left:width-((j%columns)+1)*slotWidth,top:Math.floor(j/columns)*rowPitch,width:slotWidth-gap}}>
    <div className="mj-world-meld-tiles" style={{'--meld-gap':`${gap/4}px`} as CSSProperties}>{(hidden?[0,1,2,3]:m.tiles).map((t,k)=><MahjongTile key={k} tile={hidden?undefined:t} hidden={hidden} presentation="flat" seat={position} wildcard={g.wildcard} highlightType={highlightType}/>)}</div>
    <span className="mj-world-meld-label">{m.concealed?'暗杠':m.kind==='chi'?'吃':m.kind==='pong'?'碰':'明杠'}</span>
   </div>})}
@@ -37,7 +38,7 @@ function WorldMelds({s,own,g,position,width,slotWidth,gap,columns=4,rowPitch=0,h
 }
 
 const PlayerRack=memo(function PlayerRack({s,g,position,layout,highlightType}:{s:Seat;g:MahjongView;position:Exclude<MahjongSeat,'south'>;layout:MahjongRackLayout;highlightType:number|null}){
- const finished=g.phase==='finished',visible=['playing','choosing','revealing','finished'].includes(g.phase);
+ const finished=roundFinished(g),visible=finished||['playing','choosing','revealing'].includes(g.phase);
  const restingCount=Math.max(0,13-s.melds.length*3);
  return <div className={`mj-world-rack rack-${position}`} style={{...placement(layout),width:layout.length,...tileStyle(layout.tileW,layout.tileH,layout.tileD)}}>
   <div className="mj-world-hand" aria-label={`${s.name}的 ${s.count} 张${finished?'结算手牌':'暗手牌'}`}>
@@ -99,4 +100,4 @@ export const MahjongSurface=memo(function MahjongSurface({g,seat,layout,clock,ch
   {children&&<div className="mj-stage-message">{children}</div>}
  </div>;
 });
-export function ExpandMahjong({g,seat,highlightType=null}:{g:MahjongView;seat:number;highlightType?:number|null}){return <Dialog><DialogTrigger asChild><Button variant="ghost" size="icon" className="mj-expand table-tool" aria-label="完整牌桌" title="完整牌桌"><Maximize2 size={22}/></Button></DialogTrigger><DialogContent className="mj-expanded-modal"><DialogHeader><DialogTitle>完整牌桌</DialogTitle><DialogDescription>四家的全部公开牌；每组均按该玩家的阅读方向展开。对局中仅显示你自己的暗手牌。</DialogDescription></DialogHeader><div className="mj-public-overview">{Array.from({length:4},(_,r)=>{const i=(seat+r)%4,s=g.seats[i];return s?<section key={s.id}><h3>{s.name}{i===seat?' · 你':''}{g.dealer===i?' · 庄':''}</h3>{(i===seat||g.phase==='finished')&&<div className="mj-overview-hand" aria-label={s.name+'的手牌'}>{s.hand.map(t=><MahjongTile key={t} tile={t} small wildcard={g.wildcard}/>)}</div>}<MahjongMelds s={s} own={i===seat} finished={g.phase==='finished'} wildcard={g.wildcard} highlightType={highlightType}/><div className="mj-overview-river" aria-label={s.name+'的全部弃牌'}>{s.river.length?s.river.map(t=><MahjongTile key={t} tile={t} small wildcard={g.wildcard} highlightType={highlightType}/>):<small>尚无弃牌</small>}</div></section>:null})}</div></DialogContent></Dialog>}
+export function ExpandMahjong({g,seat,highlightType=null}:{g:MahjongView;seat:number;highlightType?:number|null}){return <Dialog><DialogTrigger asChild><Button variant="ghost" size="icon" className="mj-expand table-tool" aria-label="完整牌桌" title="完整牌桌"><Maximize2 size={22}/></Button></DialogTrigger><DialogContent className="mj-expanded-modal"><DialogHeader><DialogTitle>完整牌桌</DialogTitle><DialogDescription>四家的全部公开牌；每组均按该玩家的阅读方向展开。对局中仅显示你自己的暗手牌。</DialogDescription></DialogHeader><div className="mj-public-overview">{Array.from({length:4},(_,r)=>{const i=(seat+r)%4,s=g.seats[i];return s?<section key={s.id}><h3>{s.name}{i===seat?' · 你':''}{g.dealer===i?' · 庄':''}</h3>{(i===seat||roundFinished(g))&&<div className="mj-overview-hand" aria-label={s.name+'的手牌'}>{s.hand.map(t=><MahjongTile key={t} tile={t} small wildcard={g.wildcard}/>)}</div>}<MahjongMelds s={s} own={i===seat} finished={roundFinished(g)} wildcard={g.wildcard} highlightType={highlightType}/><div className="mj-overview-river" aria-label={s.name+'的全部弃牌'}>{s.river.length?s.river.map(t=><MahjongTile key={t} tile={t} small wildcard={g.wildcard} highlightType={highlightType}/>):<small>尚无弃牌</small>}</div></section>:null})}</div></DialogContent></Dialog>}

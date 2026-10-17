@@ -1,3 +1,4 @@
+import type {FriendlyMatch} from '../friendly-match.ts';
 import type {Practice} from '../practice/types.ts';
 import {emitVisual,publicVisuals,DDZ_EFFECTS,type VisualEvent} from '../motion/events.ts';
 import {classifyFour,beatsFour,hintsFour} from './four-player.ts';
@@ -15,7 +16,7 @@ export function landlordRules(v:unknown):LandlordRules{if(v===undefined)return {
 export type Combo = {kind:string; rank:number; size:number; chain:number};
 export type Seat = {id:string; name:string; hand:number[]; ready:boolean; plays:number; last:string;bot?:boolean};
 export type TableAction={kind:'play';cards:number[];label:string;eventId?:string}|{kind:'pass'}|{kind:'bid';value:number}|{kind:'double';value:boolean};
-export type Game = {visualEvents?:VisualEvent[];rules?:LandlordRules;doubles?:(boolean|null)[];tableActions?:(TableAction|null)[];practice?:Practice;phase:'waiting'|'bidding'|'doubling'|'playing'|'finished'|'closed'; seats:Seat[]; host:string; bottom:number[]; turn:number; landlord:number; bid:number; bidPasses:number; passes:number; last:{seat:number; cards:number[]; combo:Combo}|null; multiplier:number; deadline:number; seconds:number; round:string; winner:number; spring:boolean; deltas:number[]; log:{text:string; at:number}[]};
+export type Game = {friendlyMatch?:FriendlyMatch;visualEvents?:VisualEvent[];rules?:LandlordRules;doubles?:(boolean|null)[];tableActions?:(TableAction|null)[];practice?:Practice;phase:'waiting'|'bidding'|'doubling'|'playing'|'finished'|'closed'; seats:Seat[]; host:string; bottom:number[]; turn:number; landlord:number; bid:number; bidPasses:number; passes:number; last:{seat:number; cards:number[]; combo:Combo}|null; multiplier:number; deadline:number; seconds:number; round:string; winner:number; spring:boolean; deltas:number[]; log:{text:string; at:number}[]};
 /** Virtual cards are unique, private hand instances used by landlord-v3 copies. */
 export const VIRTUAL_CARD_BASE=100000;
 export const virtualCard=(value:number,serial:number)=>VIRTUAL_CARD_BASE+serial*32+value;
@@ -86,4 +87,4 @@ export function play(g:Game,seat:number,cards:number[],now=Date.now()){
 }
 export function doubleChoice(g:Game,seat:number,value:boolean,now=Date.now()){if(g.phase!=='doubling'||!g.rules?.allowDouble||seat<0||seat>=landlordCapacity(g)||typeof value!=='boolean'||g.doubles?.[seat]!==null)throw Error('当前不能选择加倍');g.doubles![seat]=value;g.tableActions![seat]={kind:'double',value};g.seats[seat].last=value?'加倍 ×2':'不加倍';note(g,g.seats[seat].name+' '+g.seats[seat].last,now);if(g.doubles!.every(v=>v!==null)){if(blindDouble(g))g.seats[g.landlord].hand=sorted([...g.seats[g.landlord].hand,...g.bottom]);g.phase='playing';g.turn=g.landlord;g.deadline=now+g.seconds*1000;g.tableActions=g.seats.map(()=>null);}else g.turn=g.doubles!.findIndex(v=>v===null);}
 export function timeout(g:Game,now=Date.now()){if(g.deadline>now||!['bidding','doubling','playing'].includes(g.phase))return false;if(g.phase==='doubling'){for(let i=0;i<landlordCapacity(g);i++)if(g.doubles?.[i]===null)doubleChoice(g,i,false,now);}else if(g.phase==='bidding')bid(g,g.turn,0,now);else play(g,g.turn,g.last?[]:[sorted(g.seats[g.turn].hand).at(-1)!],now);return true;}
-export function view(g:Game,id:string){return {...g,visualEvents:publicVisuals(g),tableActions:tableActions(g),seats:g.seats.map(s=>({...s,count:s.hand.length,hand:s.id===id||g.phase==='finished'?s.hand:[]})),bottom:g.phase==='bidding'||blindDouble(g)&&g.phase==='doubling'?[]:g.bottom};}
+export function view(g:Game,id:string){const finished=g.phase==='finished'||g.phase==='closed'&&g.friendlyMatch?.status==='finished';return {...g,visualEvents:publicVisuals(g),tableActions:tableActions(g),seats:g.seats.map(s=>({...s,count:s.hand.length,hand:s.id===id||finished?s.hand:[]})),bottom:g.phase==='bidding'||blindDouble(g)&&g.phase==='doubling'?[]:g.bottom};}
