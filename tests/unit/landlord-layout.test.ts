@@ -37,3 +37,13 @@ test('illustrated hands spread by current count, fill available width and keep a
  const full=landlordHandLayout(33,1425,'four',208),reduced=landlordHandLayout(25,1425,'four',208);
  assert(reduced.step>full.step);assert.equal(reduced.cardWidth,full.cardWidth);assert.equal(reduced.cardWidth+24*reduced.step,1425);
 });
+
+// Public opponent hands use the same selector within a half-table seat.
+test('compact public hands fit narrow seats while keeping every card selectable',()=>{
+ for(const width of [130,150,175,300,600])for(const count of [1,2,17,20]){
+  const layout=landlordHandLayout(count,width,'ordinary',164,true);
+  const perRow=Math.min(count,layout.perRow);
+  assert(layout.cardWidth+(perRow-1)*layout.step<=width+.01);
+  assert(layout.rows*layout.perRow>=count);assert(layout.step>=14||count===1);
+ }
+});

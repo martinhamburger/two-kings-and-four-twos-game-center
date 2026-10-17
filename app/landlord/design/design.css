@@ -1,0 +1,18 @@
+/* Endgame-only extensions to the existing ordinary Landlord table. */
+.endgame-room.landlord-layout.landlord-layout .endgame-toolbar-actions{margin-left:auto;display:flex;gap:6px}
+.endgame-room.landlord-layout.landlord-layout .table-hud>span{display:flex;align-items:center;gap:5px}
+.endgame-room.landlord-layout.landlord-layout .landlord-seat:has(.endgame-public-hand){grid-template-rows:116px 30px minmax(100px,1fr) 64px;gap:4px}
+.endgame-room.landlord-layout.landlord-layout .endgame-seat-tools{grid-row:2;display:flex;align-items:center;justify-content:center;gap:8px;min-height:30px;font-size:12px}
+.endgame-room.landlord-layout.landlord-layout .endgame-seat-tools>button{min-height:26px;height:26px;padding:2px 10px;font-size:11px}
+.endgame-room.landlord-layout.landlord-layout .endgame-public-hand{grid-row:3;min-width:0;width:100%;min-height:0;overflow:visible}
+.endgame-room.landlord-layout.landlord-layout .endgame-public-hand .fixed-landlord-hand{padding-top:12px;gap:4px}
+.endgame-room.landlord-layout.landlord-layout .landlord-seat:has(.endgame-public-hand)>.seat-action{grid-row:4}
+.endgame-room.landlord-layout.landlord-layout .landlord-hand-zone>div{width:100%}
+.endgame-room.landlord-layout.landlord-layout .self-label>div:first-child>button{padding:2px 7px;min-height:24px;height:24px;font-size:10px}
+.endgame-room.landlord-layout.landlord-layout .action-bar>button[aria-pressed=true]{outline:1px solid #ebd28a;background:#54658d}
+.endgame-palette{max-height:90dvh;overflow-y:auto}
+.endgame-palette-seats{display:flex;gap:8px}
+.endgame-palette .expanded-card-grid .playing-card{aspect-ratio:2/3;height:auto}
+@media(min-width:1024px){.endgame-room.landlord-layout.landlord-layout .landlord-arena{grid-template-rows:minmax(300px,1fr) 90px}.endgame-room.landlord-layout.landlord-layout .game-table{min-height:760px;height:max(calc(100dvh - 48px),760px)}.endgame-room.landlord-layout{height:auto;min-height:100dvh}}
+@media(max-width:1023px){.endgame-room.landlord-layout.landlord-layout .landlord-arena{min-height:540px;grid-template-rows:minmax(452px,1fr) 80px}.endgame-room.landlord-layout.landlord-layout .landlord-opponents{gap:10px}.endgame-room.landlord-layout.landlord-layout .action-bar{color:#fff3dd}}
+@media(max-width:640px){.endgame-room.landlord-layout.landlord-layout .endgame-toolbar-actions span{display:none}.endgame-room.landlord-layout.landlord-layout .table-hud{font-size:11px!important;gap:10px!important}.endgame-room.landlord-layout.landlord-layout .endgame-public-hand .hand-card{pointer-events:auto}.endgame-palette .expanded-card-grid{grid-template-columns:repeat(6,minmax(0,1fr))}.endgame-room.landlord-layout.landlord-layout .self-area>.action-bar{flex-wrap:wrap}.endgame-room.landlord-layout.landlord-layout .action-bar>button{min-width:40px;padding:4px 8px;font-size:11px}.endgame-room.landlord-layout.landlord-layout .landlord-seat:has(.endgame-public-hand){grid-template-rows:106px 30px minmax(240px,1fr) 64px}}

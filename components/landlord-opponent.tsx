@@ -1,0 +1,18 @@
+"use client";
+import {memo,type ReactNode} from 'react';
+import {Crown,Coins,Trophy,Layers} from 'lucide-react';
+import {fourPlayer} from '@/lib/game/engine';
+import {royalRole} from '@/lib/motion/royal';
+import {createRoomTiming} from '@/lib/sync/clock';
+import {RoyalCharacter} from './royal-character';
+import {PlayerChat} from './player-chat';
+import {PlayerAvatar} from './player-avatar';
+import {EquipmentRack} from './equipment-ui';
+import {EmptyBotSeat,RemoveBotSeat} from './bot-seat';
+import {CardGroupPreview,SeatAction} from './poker-table';
+export const LandlordOpponent=memo(function OpponentSeat({g,idx,off,botControls,bubble,timing,userId,connected,publicHand}:{g:any;idx:number;off:number;botControls:any;bubble:any;timing:ReturnType<typeof createRoomTiming>;userId:string;connected:boolean;publicHand?:ReactNode}){
+ const s=g.seats[idx],v3=g.kind==='landlord-v3',side=fourPlayer(g)?off===3?'left':off===2?'north':'right':off===2?'left':'right';
+ return <section className={`landlord-seat side-${side}`} aria-label={`${s?.name||'空位'}的座位`}><div className={`opponent ${(g.phase==='doubling'?g.doubles?.[idx]===null:g.turn===idx&&['playing','bidding','equipment'].includes(g.phase))?'active-seat':''}`}>
+  {s?<>{!v3&&<RoyalCharacter game={g} seat={idx} userId={userId} connected={connected}/>}<PlayerChat bubble={bubble} align={side==='right'?'end':'start'}><PlayerAvatar name={s.name} userId={s.id} bot={s.bot} className={`avatar-${off%3}`}/></PlayerChat><strong>{s.name}{s.bot&&<span className="bot-label">机器人</span>}</strong>{v3&&<EquipmentRack game={g} items={g.equipment?.[idx]||[]}/>}<span className={(v3?idx===g.landlord:royalRole(g,idx)==='king')?'landlord-label':'seat-role'}>{(v3?idx===g.landlord:royalRole(g,idx)==='king')?<><Crown size={13}/>地主</>:(v3?g.landlord<0:!royalRole(g,idx))?'牌友':'农民'}</span>{v3&&g.dealer===idx&&g.roundNumber>0&&<span className="dealer-label">庄家</span>}<span className="seat-score">{v3?<><span title="金币" aria-label={`金币 ${g.coins[idx]}`}><Coins size={14}/>{g.coins[idx]}</span><span title="胜利点" aria-label={`胜利点 ${g.victoryPoints[idx]}`}><Trophy size={14}/>{g.victoryPoints[idx]}</span></>:`${s.tableScore>=0?'+':''}${s.tableScore??0}`}</span><span className="card-count" data-idle={g.phase==='waiting'} data-low={['playing','equipment'].includes(g.phase)&&s.count<6} title={`剩余 ${s.count} 张`} aria-label={`剩余 ${s.count} 张`}>{['playing','bidding','doubling','equipment','finished'].includes(g.phase)?<><Layers size={14}/>{s.count}</>:s.ready?'已准备':'未准备'}</span>{s.bot&&<RemoveBotSeat id={s.id} name={s.name} controls={botControls}/>}</>:<EmptyBotSeat controls={botControls}/>}
+ {!v3&&g.doubles?.[idx]!==null&&g.doubles?.[idx]!==undefined&&<span className="royal-double">个人 ×{g.doubles[idx]?2:1}</span>}</div>{publicHand}{s&&!publicHand&&g.phase==='finished'&&<CardGroupPreview showLabel appearance={v3?'classic':'royal'} cards={s.hand??[]} name={`${s.name}剩余牌`}/>} {s&&v3&&g.phase!=='finished'&&s.hand?.length>0&&<div className="revealed-hand"><CardGroupPreview triggerOnly cards={s.hand} name={`${s.name}公开手牌`}/></div>} {s&&g.phase!=='finished'&&<SeatAction showClock={false} appearance={v3?'classic':'royal'} action={g.tableActions?.[idx]} active={(g.phase==='doubling'?g.doubles?.[idx]===null:g.turn===idx&&['playing','bidding','equipment'].includes(g.phase))} timing={timing} deadline={g.deadline} bidding={g.phase==='bidding'} doubling={g.phase==='doubling'} equipment={g.phase==='equipment'} name={s.name}/>}</section>;
+});
