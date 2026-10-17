@@ -7,7 +7,7 @@
 .endgame-room.landlord-layout.landlord-layout .endgame-public-hand{grid-row:3;min-width:0;width:100%;min-height:0;overflow:visible}
 .endgame-room.landlord-layout.landlord-layout .endgame-public-hand .fixed-landlord-hand{padding-top:12px;gap:4px}
 .endgame-room.landlord-layout.landlord-layout .landlord-seat:has(.endgame-public-hand)>.seat-action{grid-row:4}
-.endgame-room.landlord-layout.landlord-layout .landlord-hand-zone>div{width:100%}
+.endgame-room.landlord-layout.landlord-layout .landlord-hand-zone>div{width:100%;height:100%}
 .endgame-room.landlord-layout.landlord-layout .self-label>div:first-child>button{padding:2px 7px;min-height:24px;height:24px;font-size:10px}
 .endgame-room.landlord-layout.landlord-layout .action-bar>button[aria-pressed=true]{outline:1px solid #ebd28a;background:#54658d}
 .endgame-palette{max-height:90dvh;overflow-y:auto}
