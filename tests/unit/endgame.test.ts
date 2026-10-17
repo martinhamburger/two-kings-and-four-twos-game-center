@@ -25,3 +25,16 @@ test('design supports farmer lead, farmer victory and legal overcalls',()=>{
  const b=moveEndgame(moveEndgame(a,[]),[]),done=moveEndgame(b,[20]);assert.equal(done.winner,2);assert.equal(done.phase,'finished');
  const over=moveEndgame(moveEndgame(startEndgame(position()),[0]),[8]);assert.equal(over.last?.seat,1);
 });
+
+// The visible rank tile represents shared stock across all three seats.
+test('rank editor allocates unique physical cards, returns stock, and rejects excess',async()=>{
+ const {changeEndgameRank,endgameRankStock}=await import('../../lib/game/endgame.ts');
+ let p=emptyEndgame();const before=structuredClone(p);
+ for(let i=0;i<4;i++)p=changeEndgameRank(p,i%3,14,1);
+ assert.equal(endgameRankStock(p,14).length,0);assert.equal(new Set(p.hands.flat()).size,4);assert.deepEqual(before,emptyEndgame());
+ assert.throws(()=>changeEndgameRank(p,0,14,1));
+ p=changeEndgameRank(p,1,14,-1);assert.equal(endgameRankStock(p,14).length,1);p=changeEndgameRank(p,2,14,1);assert.equal(endgameRankStock(p,14).length,0);
+ p=changeEndgameRank(p,0,17,1);assert.throws(()=>changeEndgameRank(p,1,17,1));
+ assert.throws(()=>changeEndgameRank(p,3,3,1));assert.throws(()=>changeEndgameRank(p,0,18,1));
+ const full={...emptyEndgame(),hands:[[],Array.from({length:17},(_,i)=>i),[]]};assert.throws(()=>changeEndgameRank(full,1,15,1));assert.equal(full.hands[1].length,17);
+});

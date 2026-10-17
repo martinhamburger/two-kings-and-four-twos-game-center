@@ -1,4 +1,4 @@
-import {DEFAULT_LANDLORD_RULES,newGame,play,sorted,type Game} from './engine.ts';
+import {DEFAULT_LANDLORD_RULES,newGame,play,rank,sorted,type Game} from './engine.ts';
 
 /** Portable starting position; deliberately contains no account or room state. */
 export type Endgame={version:1;hands:number[][];landlord:number;turn:number};
@@ -26,4 +26,17 @@ export function startEndgame(value:unknown):Game{
 /** Reuse the ordinary rules without timers, bots, persistence or settlement. */
 export function moveEndgame(game:Game,cards:number[]):Game{
  const next=structuredClone(game);play(next,next.turn,cards);next.deadline=0;next.deltas=[];return next;
+}
+
+/** Rank-level editor keeps unique physical cards behind the single visible tile. */
+export function endgameRankStock(position:Endgame,value:number){
+ const used=new Set(position.hands.flat());
+ return Array.from({length:54},(_,i)=>i).filter(card=>rank(card)===value&&!used.has(card));
+}
+export function changeEndgameRank(position:Endgame,seat:number,value:number,delta:1|-1):Endgame{
+ if(!Number.isInteger(seat)||seat<0||seat>2||!Number.isInteger(value)||value<3||value>17)throw Error('请选择有效的座位与点数');
+ const next=readEndgame(position,false),hand=next.hands[seat];
+ if(delta===1){const card=endgameRankStock(next,value)[0];if(card===undefined)throw Error('这个点数的牌已全部分配');hand.push(card);}
+ else {const index=hand.findIndex(card=>rank(card)===value);if(index<0)throw Error('这家没有这个点数的牌');hand.splice(index,1);}
+ return readEndgame(next,false);
 }

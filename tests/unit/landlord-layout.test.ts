@@ -47,3 +47,12 @@ test('compact public hands fit narrow seats while keeping every card selectable'
   assert(layout.rows*layout.perRow>=count);assert(layout.step>=14||count===1);
  }
 });
+
+test('height-bounded editor hands stay within short desktop and phone slots',()=>{
+ for(const width of [130,170,300,358,600,1220])for(const height of [92,110,144,180])for(const compact of [false,true]){
+  if(!compact&&width<240)continue;
+  const l=landlordHandLayout(20,width,'ordinary',height,compact,true);
+  assert(l.cardWidth+(Math.min(20,l.perRow)-1)*l.step<=width+.01);
+  assert(l.rows*l.cardHeight+(l.rows-1)*8+12<=height,`${width}/${height}/${compact}`);
+ }
+});

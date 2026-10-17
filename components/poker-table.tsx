@@ -32,12 +32,12 @@ export const SeatAction=memo(function SeatAction({action,active,seconds=0,timing
  </div>;
 });
 
-export const HandStrip=memo(function HandStrip({hand,selected=[],onChange=()=>{},round='',appearance='classic',royal=false,readOnly=false,layoutMode,hideSuit=false,compact=false}:{hand:number[];selected?:number[];onChange?:(cards:number[])=>void;round?:string;appearance?:CardAppearance;royal?:boolean;readOnly?:boolean;layoutMode?:LandlordLayoutMode;hideSuit?:boolean;compact?:boolean}){
+export const HandStrip=memo(function HandStrip({hand,selected=[],onChange=()=>{},round='',appearance='classic',royal=false,readOnly=false,layoutMode,hideSuit=false,compact=false,fitHeight=false}:{hand:number[];selected?:number[];onChange?:(cards:number[])=>void;round?:string;appearance?:CardAppearance;royal?:boolean;readOnly?:boolean;layoutMode?:LandlordLayoutMode;hideSuit?:boolean;compact?:boolean;fitHeight?:boolean}){
  const root=useRef<HTMLDivElement>(null),selection=useRef(selected);selection.current=selected;
  const [size,setSize]=useState({width:800,height:164});
  const {width,height}=size;
  useEffect(()=>{if((!royal&&!layoutMode)||!root.current)return;const element=root.current,update=()=>setSize({width:element.clientWidth,height:element.parentElement?.clientHeight??164});update();const observer=new ResizeObserver(update);observer.observe(element);if(element.parentElement)observer.observe(element.parentElement);return()=>observer.disconnect();},[royal,layoutMode]);
- const fixed=layoutMode?landlordHandLayout(hand.length,width,layoutMode,height,compact):null;
+ const fixed=layoutMode?landlordHandLayout(hand.length,width,layoutMode,height,compact,fitHeight):null;
  const layout=fixed??royalHandLayout(hand.length,width);
  const reservedHeight=fixed?20+Math.ceil(fixed.capacity/fixed.perRow)*(fixed.cardHeight+8):0;
  const gesture=useRef<{id:number;select:boolean;visited:Set<number>;x:number;y:number;rects:HitRegion[]}|null>(null);
