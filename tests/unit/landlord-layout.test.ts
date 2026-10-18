@@ -37,3 +37,31 @@ test('illustrated hands spread by current count, fill available width and keep a
  const full=landlordHandLayout(33,1425,'four',208),reduced=landlordHandLayout(25,1425,'four',208);
  assert(reduced.step>full.step);assert.equal(reduced.cardWidth,full.cardWidth);assert.equal(reduced.cardWidth+24*reduced.step,1425);
 });
+
+// Public opponent hands use the same selector within a half-table seat.
+test('compact public hands fit narrow seats while keeping every card selectable',()=>{
+ for(const width of [130,150,175,300,600])for(const count of [1,2,17,20]){
+  const layout=landlordHandLayout(count,width,'ordinary',164,true);
+  const perRow=Math.min(count,layout.perRow);
+  assert(layout.cardWidth+(perRow-1)*layout.step<=width+.01);
+  assert(layout.rows*layout.perRow>=count);assert(layout.step>=14||count===1);
+ }
+});
+
+test('height-bounded editor hands stay within short desktop and phone slots',()=>{
+ for(const width of [130,170,300,358,600,1220])for(const height of [92,110,144,180])for(const compact of [false,true]){
+  if(!compact&&width<240)continue;
+  const l=landlordHandLayout(20,width,'ordinary',height,compact,true);
+  assert(l.cardWidth+(Math.min(20,l.perRow)-1)*l.step<=width+.01);
+  assert(l.rows*l.cardHeight+(l.rows-1)*8+12<=height,`${width}/${height}/${compact}`);
+ }
+});
+
+test('enlarged public cards respect both width and height at each seat',()=>{
+ for(const width of [130,180,300,560])for(const height of [100,154,240])for(const count of [4,17,20]){
+  const l=landlordHandLayout(count,width,'ordinary',height,true,true,84);
+  assert(l.cardWidth+(Math.min(count,l.perRow)-1)*l.step<=width+.01);
+  assert(l.rows*l.cardHeight+(l.rows-1)*8+12<=height);
+ }
+ assert.equal(landlordHandLayout(4,560,'ordinary',154,true,true,84).cardWidth,84);
+});

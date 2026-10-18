@@ -23,6 +23,7 @@ npm run dev
 | 想看什么 | 本地地址 |
 |---|---|
 | 斗地主 | `http://localhost:5173/` |
+| 设计斗地主残局 | `http://localhost:5173/landlord/design` |
 | 麻将 | `http://localhost:5173/mahjong` |
 | 德州扑克 | `http://localhost:5173/holdem` |
 | 对局记录 | `http://localhost:5173/history` |
