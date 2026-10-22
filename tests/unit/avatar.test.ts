@@ -12,6 +12,23 @@ test('avatar raster validates dimensions and strips metadata, rejecting truncate
  for(const bad of [jpg.subarray(0,-1),jpg.subarray(0,40),new TextEncoder().encode('<svg/>'),new Uint8Array(65537)])assert.throws(()=>sanitizeAvatar(bad));
  const wrong=jpg.slice();for(let p=2;p<wrong.length-10;p++)if(wrong[p]===255&&wrong[p+1]===192){wrong[p+5]=0;wrong[p+6]=128;break;}assert.throws(()=>sanitizeAvatar(wrong),/256/);
 });
+test('source JPEG tolerates trailing bytes and a PNG filename while uploaded avatars remain strict',async()=>{
+ const suffix=Uint8Array.from({length:24},(_,i)=>i+1),source=new Uint8Array(jpg.length+suffix.length);source.set(jpg);source.set(suffix,jpg.length);
+ const file=new File([source],'camera.png',{type:'image/png'});
+ assert.deepEqual(inspectImage(new Uint8Array(await file.arrayBuffer())),{width:256,height:256,type:'image/jpeg'});
+ assert.throws(()=>sanitizeAvatar(source));
+ for(const bad of [jpg.subarray(0,-1),jpg.subarray(0,40),new TextEncoder().encode('<svg/>')])assert.throws(()=>inspectImage(bad));
+ const missingEnd=source.slice();missingEnd[jpg.length-2]=0;assert.throws(()=>inspectImage(missingEnd));
+ const malformed=source.slice();malformed[4]=255;malformed[5]=255;assert.throws(()=>inspectImage(malformed));
+});
+test('source PNG tolerates bytes after a complete empty IEND but rejects incomplete or malformed chunks',()=>{
+ const png=new Uint8Array(Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aXZkAAAAASUVORK5CYII=','base64'));
+ const source=new Uint8Array(png.length+24);source.set(png);source.fill(42,png.length);
+ assert.deepEqual(inspectImage(source),{width:1,height:1,type:'image/png'});
+ for(const bad of [png.subarray(0,-1),png.subarray(0,-12)])assert.throws(()=>inspectImage(bad));
+ const malformed=source.slice();new DataView(malformed.buffer).setUint32(png.length-12,1);assert.throws(()=>inspectImage(malformed));
+ const oversizedChunk=source.slice();new DataView(oversizedChunk.buffer).setUint32(33,0xffffffff);assert.throws(()=>inspectImage(oversizedChunk));
+});
 test('source limits and animation headers reject before image decoding',()=>{
  assert.throws(()=>inspectImage(new Uint8Array(10*1024*1024+1)),/10MB/);
  const png=new Uint8Array(57),v=new DataView(png.buffer);png.set([137,80,78,71,13,10,26,10]);v.setUint32(8,13);png.set(new TextEncoder().encode('IHDR'),12);v.setUint32(16,6000);v.setUint32(20,4001);assert.throws(()=>inspectImage(png),/2400/);v.setUint32(16,256);v.setUint32(20,256);png.set(new TextEncoder().encode('acTL'),37);assert.throws(()=>inspectImage(png),/动画/);

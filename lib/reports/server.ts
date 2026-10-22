@@ -35,7 +35,7 @@ export async function tableScores(code:string,userId:string){
  if(g.kind==='holdem'||g.kind==='mahjong'&&g.schemaVersion===2)report.balances=g.seats.map((s:any)=>{const initial=String(g.kind==='holdem'?s.brought:g.initialChips),balance=String(g.kind==='holdem'?s.stack:s.balance);return {name:s.name,initial,balance,delta:(BigInt(balance)-BigInt(initial)).toString()};});
  if(!records.length){report.game=g.kind??'landlord';report.warnings.push('本桌没有已保存的结算，暂时无法绘制分数曲线。');}
  if(g.kind==='mahjong'&&g.schemaVersion===2&&records.length!==g.stats.completed+g.stats.aborted||g.kind==='holdem'&&records.length!==g.roundNumber)report.warnings.push('保存的局数与牌桌总局数不一致，曲线仅累计可读取的结算。');
- return report;
+ return {...report,canInspectTable:!!g.seats?.some((s:{id:string})=>s.id===userId)};
 }
 export async function landlordTableSummary(row:{code:string;title:string;updated:number;state:string},userId:string):Promise<HistoryItem>{
  const g=JSON.parse(row.state),rows=await readScoreRecords(row.code);

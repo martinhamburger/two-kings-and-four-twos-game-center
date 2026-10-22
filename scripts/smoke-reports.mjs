@@ -21,6 +21,8 @@ export async function verifyReportApis({request,signup,state,outsider,extended,v
  await request('/api/history?room='+roomCode,undefined,outsider.cookie,403);
  await request('/api/history?room=bad',undefined,player.cookie,400);
  const table=(await request('/api/history?room='+roomCode,undefined,player.cookie)).data;
+ assert.equal(table.canInspectTable,false);
+ await request('/api/game?room='+roomCode,undefined,player.cookie,403);
  assert.equal(table.points.length,26);assert.deepEqual(table.points.at(-1).values,['150','-75','-75']);assert.equal(table.players.length,3);
  assert(!JSON.stringify(table).includes(uid));assert(!JSON.stringify(table).includes('不应进入曲线'));
  const list=(await request('/api/history?scope=tables&game=landlord',undefined,player.cookie)).data;
@@ -28,6 +30,7 @@ export async function verifyReportApis({request,signup,state,outsider,extended,v
  const single=(await request('/api/history?id=report-000',undefined,player.cookie)).data;assert.equal(single.scores.points.length,2);
  const otherList=(await request('/api/history?scope=tables&game=landlord',undefined,outsider.cookie)).data;assert(!otherList.items.some(r=>r.code===roomCode));
  const v3=(await request('/api/history?room='+extended.code,undefined,v3Humans[0].cookie)).data;
+ assert.equal(v3.canInspectTable,true);
  assert.equal(v3.unit,'胜利点');assert.equal(v3.points.length,2);assert.deepEqual(v3.points[1].values,extended.game.victoryPoints);
  const [first,second]=await Promise.all([0,1].map(page=>request('/api/mahjong/reports?room=123457&page='+page,undefined,player.cookie)));
  assert.equal(first.data.rounds.length,20);assert.equal(second.data.rounds.length,5);assert.deepEqual(first.data.scores,second.data.scores);assert.equal(first.data.scores.points.length,26);

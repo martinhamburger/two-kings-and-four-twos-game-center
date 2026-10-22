@@ -2,15 +2,15 @@ export const MAX_SOURCE_BYTES=10*1024*1024,MAX_PIXELS=24_000_000,MAX_AVATAR_BYTE
 const invalid=()=>new Error('图片损坏或格式不支持，请选择静态 JPG、PNG 或 WebP');
 const ascii=(b:Uint8Array,p:number,n:number)=>String.fromCharCode(...b.subarray(p,p+n));
 function dimensions(width:number,height:number){if(!width||!height||width*height>MAX_PIXELS)throw Error('图片不得超过 2400 万像素');return {width,height};}
-/** Parse bounded marker/chunk streams before asking the browser to decode a large source. */
+/** Inspect magic bytes, not filenames; permit source trailers only after a complete image. */
 export function inspectImage(b:Uint8Array){
  if(b.length>MAX_SOURCE_BYTES)throw Error('原图不能超过 10MB');
  const v=new DataView(b.buffer,b.byteOffset,b.byteLength);
- if(b[0]===255&&b[1]===216){const j=jpeg(b);return {...dimensions(j.width,j.height),type:'image/jpeg'};}
+ if(b[0]===255&&b[1]===216){const j=jpeg(b,true);return {...dimensions(j.width,j.height),type:'image/jpeg'};}
  if(b.length>=33&&ascii(b,0,8)==='\x89PNG\r\n\x1a\n'){
   if(ascii(b,12,4)!=='IHDR'||v.getUint32(8)!==13)throw invalid();const size=dimensions(v.getUint32(16),v.getUint32(20));let p=8,end=false;
-  while(p+12<=b.length){const n=v.getUint32(p),kind=ascii(b,p+4,4);if(n>b.length-p-12)throw invalid();if(kind==='acTL')throw Error('暂不支持动画图片');p+=n+12;if(kind==='IEND'){end=true;break;}}
-  if(!end||p!==b.length)throw invalid();return {...size,type:'image/png'};
+  while(p+12<=b.length){const n=v.getUint32(p),kind=ascii(b,p+4,4);if(n>b.length-p-12)throw invalid();if(kind==='acTL')throw Error('暂不支持动画图片');p+=n+12;if(kind==='IEND'){if(n!==0)throw invalid();end=true;break;}}
+  if(!end)throw invalid();return {...size,type:'image/png'};
  }
  if(b.length>=30&&ascii(b,0,4)==='RIFF'&&ascii(b,8,4)==='WEBP'){
   if(v.getUint32(4,true)+8!==b.length)throw invalid();let p=12,size:{width:number;height:number}|undefined;
@@ -26,11 +26,11 @@ export function inspectImage(b:Uint8Array){
  }
  throw invalid();
 }
-/** JPEG marker validation and APP/COM stripping. The browser exports only the cropped raster. */
-function jpeg(b:Uint8Array){
+/** Source decoders may ignore bytes after EOI; uploaded avatars must end there. */
+function jpeg(b:Uint8Array,allowTrailingData=false){
  if(b.length<4||b[0]!==255||b[1]!==216)throw invalid();const view=new DataView(b.buffer,b.byteOffset,b.byteLength),parts:Uint8Array[]=[b.subarray(0,2)];let p=2,width=0,height=0,scan=false,tables=false,entropy=0;
  while(p<b.length){const start=p;if(b[p++]!==255)throw invalid();while(b[p]===255)p++;const marker=b[p++];
-  if(marker===217){if(!scan||!tables||!width||!entropy||p!==b.length)throw invalid();parts.push(b.subarray(start,p));const clean=new Uint8Array(parts.reduce((n,s)=>n+s.length,0));let at=0;for(const part of parts){clean.set(part,at);at+=part.length;}return {width,height,clean};}
+  if(marker===217){if(!scan||!tables||!width||!entropy||!allowTrailingData&&p!==b.length)throw invalid();parts.push(b.subarray(start,p));const clean=new Uint8Array(parts.reduce((n,s)=>n+s.length,0));let at=0;for(const part of parts){clean.set(part,at);at+=part.length;}return {width,height,clean};}
   if(marker===0||marker===216||marker>=208&&marker<=215||p+2>b.length)throw invalid();const length=view.getUint16(p);if(length<2||p+length>b.length)throw invalid();const end=p+length;
   if([192,193,194].includes(marker)){if(length<11||width)throw invalid();height=view.getUint16(p+3);width=view.getUint16(p+5);dimensions(width,height);if(b[p+2]!==8||length!==8+3*b[p+7])throw invalid();}
   else if(marker>=195&&marker<=207&&![196,200,204].includes(marker))throw invalid();

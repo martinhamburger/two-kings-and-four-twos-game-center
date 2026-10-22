@@ -39,8 +39,8 @@ async function request(path, data, cookie = '', expected = 200) {
     method: data ? 'POST' : 'GET', signal: AbortSignal.timeout(30_000),
     headers: { Origin: origin, ...(data ? { 'Content-Type': 'application/json' } : {}), ...(cookie ? { Cookie: cookie } : {}) },
     ...(data ? { body: JSON.stringify(data) } : {}),
-  });
-  assert.equal(response.status, expected, `${path}: HTTP ${response.status} ${response.status === expected ? '' : await response.clone().text()}`);
+  }).catch(error=>{throw new Error(`${path}: ${error.message}`,{cause:error});});
+  assert.equal(response.status, expected, `${path}: HTTP ${response.status}${response.status===expected?'':` ${await response.clone().text()}`}`);
   checks++;
   return { data: await response.json(), cookie: response.headers.get('set-cookie')?.split(';')[0] || cookie };
 }
@@ -492,6 +492,8 @@ try {
   // Historical table recovery reads immutable settlements, even after classic seats were cleared.
   const {verifyReportApis}=await import('./smoke-reports.mjs');
   await verifyReportApis({request,signup,state,outsider,extended,v3Humans});
+  const {verifyFriendlyMatchApis}=await import('./smoke-friendly-match.mjs');
+  await verifyFriendlyMatchApis({request,signup,state,outsider});
   const info = (await request('/build-info.json')).data;
   assert.match(info.commit, /^[a-f0-9]{40}$/);
   // Feedback quota is server-enforced and atomic, with private administrator-only browsing.
@@ -522,7 +524,10 @@ try {
   assert.equal((await request('/api/feedback',undefined,feedbackPlayer.cookie)).data.remaining,5);
   assert.equal((await request('/api/feedback',feedbackPayloads[acceptedIndex],feedbackPlayer.cookie)).data.used,0);
   await request('/api/feedback',{clientId:crypto.randomUUID(),content:'<img src=x onerror=alert(1)>'},feedbackPlayer.cookie);
-  const forbiddenOrigin=await fetch(origin+'/api/feedback',{method:'POST',headers:{Origin:'https://invalid.example',Cookie:feedbackOther.cookie,'Content-Type':'application/json'},body:JSON.stringify({clientId:crypto.randomUUID(),content:'跨站'})});assert.equal(forbiddenOrigin.status,403);await forbiddenOrigin.text();checks++;
+  const forbiddenOrigin=await fetch(origin+'/api/feedback',{method:'POST',headers:{Origin:'https://invalid.example',Cookie:feedbackOther.cookie,'Content-Type':'application/json'},body:JSON.stringify({clientId:crypto.randomUUID(),content:'跨站'})});assert.equal(forbiddenOrigin.status,403);assert.equal((await forbiddenOrigin.json()).error,'请求来源无效');checks++;
+  assert.equal((await request('/api/feedback',undefined,feedbackOther.cookie)).data.used,1,'A rejected upload leaves quota unchanged and the next request responsive');
+  const unreadOrigin=await fetch(origin+'/api/feedback',{method:'POST',headers:{Origin:'https://invalid.example',Cookie:feedbackOther.cookie,'Content-Type':'application/json'},body:JSON.stringify({clientId:crypto.randomUUID(),content:'不读取拒绝响应'})});assert.equal(unreadOrigin.status,403);checks++;
+  assert.equal((await request('/api/feedback',undefined,feedbackOther.cookie)).data.used,1);await unreadOrigin.body.cancel();
   feedbackFixture=new DatabaseSync(feedbackFixturePath);
   feedbackFixture.prepare("UPDATE users SET role='admin' WHERE id=?").run(feedbackUserId);
   feedbackFixture.prepare("UPDATE users SET role='admin' WHERE id=?").run(fourPlayers[3].data.user.id);
