@@ -1,0 +1,48 @@
+.replay-page{--replay-edge:#29394b;--replay-ink:#243348;max-width:1480px;margin:0 auto;padding:32px 24px 76px;color:var(--replay-ink);font-family:'Microsoft YaHei','PingFang SC',system-ui,sans-serif}
+.replay-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:24px;padding:22px 26px;border:2px solid var(--replay-edge);border-radius:20px;background:#fff6d9;box-shadow:4px 5px 0 var(--replay-edge)}
+.replay-heading>div{min-width:0}.replay-heading .history-back{display:inline-flex;align-items:center;gap:6px;width:max-content;max-width:100%;margin-bottom:16px;padding:7px 11px;border:2px solid var(--replay-edge);border-radius:10px;background:#fffdf2;box-shadow:2px 3px 0 var(--replay-edge);color:var(--replay-ink);font-size:12px;text-decoration:none}
+.replay-kicker{display:block;color:#684197;font-size:12px;font-weight:800;letter-spacing:.08em}
+.replay-heading h1{margin:4px 0 5px;color:var(--replay-ink);font:800 clamp(25px,3vw,34px)/1.35 'Microsoft YaHei','PingFang SC',system-ui,sans-serif}
+.replay-heading-meta{margin:0;color:#566277;font-size:13px;line-height:1.6}
+.replay-heading>button,.replay-publish>button,.replay-manage button{flex:none;min-height:40px;padding:8px 13px;border:2px solid var(--replay-edge);border-radius:11px;background:#ffdf8a;color:var(--replay-ink);box-shadow:2px 3px 0 var(--replay-edge);font-weight:700}
+.replay-story{margin-top:14px;padding:11px 14px;border-left:4px solid #9f7bd6;border-radius:0 10px 10px 0;background:#f0e6ff;overflow-wrap:anywhere}
+.replay-story blockquote{margin:0 0 5px;color:#49306d;font-size:17px;font-weight:750;line-height:1.6}.replay-story span{color:#5b5571;font-size:12px}
+.replay-player{border:2px solid var(--replay-edge);border-radius:20px;background:#fffdf6;box-shadow:4px 6px 0 var(--replay-edge);overflow:hidden}
+.replay-publish{display:flex;align-items:flex-end;gap:22px;margin-top:24px;padding:22px 25px;border:2px solid var(--replay-edge);border-radius:18px;background:#e9ddff;box-shadow:3px 5px 0 var(--replay-edge)}
+.replay-publish>div{flex:1;min-width:0}.replay-publish h2{margin:0 0 6px;color:var(--replay-ink);font-size:19px}.replay-publish p{margin:0 0 17px;color:#4e5870;font-size:13px;line-height:1.7}
+.replay-publish>button{background:#ffdf62;min-width:116px}.replay-reason-label{display:flex;align-items:baseline;gap:8px;margin-bottom:7px;color:var(--replay-ink);font-size:14px;font-weight:750}.replay-reason-label span{color:#646077;font-size:12px;font-weight:500}
+.replay-publish input:not([type='radio']){width:min(100%,560px);min-height:42px;padding:9px 12px;border:2px solid var(--replay-edge);border-radius:10px;background:#fffdf8;color:var(--replay-ink);font-size:14px}.replay-publish input::placeholder{color:#798196}
+.replay-poster-options{display:flex;gap:8px 19px;flex-wrap:wrap;border:0;padding:13px 0 0;margin:0;color:var(--replay-ink);font-size:13px}.replay-poster-options legend{padding:0;margin-bottom:7px;font-weight:750}.replay-poster-options label{display:inline-flex;align-items:center;gap:6px;cursor:pointer}.replay-poster-options input{accent-color:#684197}
+.replay-manage{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-top:24px;padding:14px 18px;border:2px solid var(--replay-edge);border-radius:15px;background:#d9f3e5;box-shadow:2px 4px 0 var(--replay-edge);font-size:13px;font-weight:700}.replay-manage button{background:#fffdf3}
+.replay-notice{margin-top:15px;color:#285b42;font-size:14px;font-weight:700}
+.replay-filters{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:20px}.replay-filters button{padding:9px 13px;border:2px solid var(--replay-edge);border-radius:11px;background:#cceaff;color:var(--replay-ink);box-shadow:2px 3px 0 var(--replay-edge);font-weight:750}.replay-filters button:nth-child(3){background:#c4f3d2}.replay-filters button:nth-child(4){background:#e1d0ff}.replay-filters button[aria-pressed=true]{background:#fffdf7}
+.tv-list{display:grid;gap:15px}.tv-item{display:flex;align-items:center;gap:16px;padding:18px 21px;border:2px solid var(--replay-edge);border-radius:16px;background:#fffdf7;box-shadow:3px 4px 0 var(--replay-edge);color:var(--replay-ink);text-decoration:none}.tv-item:hover{background:#fff2d2}.tv-item-copy{flex:1;display:flex;flex-direction:column;gap:5px;min-width:0}.tv-item-copy small{font-size:12px;color:#5b687b}.tv-item-copy strong{font-size:17px;overflow-wrap:anywhere}
+.replay-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:40px 20px;border:2px solid var(--replay-edge);border-radius:16px;background:#fffdf7;text-align:center;color:#57657a}.replay-empty h2{margin:0;color:var(--replay-ink);font-size:18px}.replay-empty p{margin:0;font-size:14px}
+.history-replay-links,.replay-pagination{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:0 0 18px}.replay-pagination{margin:20px 0;color:#516073;font-size:13px}.history-item-link{display:flex;gap:7px;flex-wrap:wrap}
+@media(max-width:700px){.replay-page{padding:20px 14px 48px}.replay-heading{align-items:stretch;flex-direction:column;padding:18px}.replay-heading>button{align-self:flex-end}.replay-publish{align-items:stretch;flex-direction:column;padding:17px}.replay-publish>button{align-self:stretch}.replay-filters button{flex:1}.tv-item{padding:14px;gap:10px}}
+/* A replay opens on the table. Keep the SLY brand and the route back, then give the table the first viewport. */
+body:has(.replay-watch-page) .app-header.club-header{min-height:0;padding:8px 16px;gap:0}
+body:has(.replay-watch-page) .club-header .brand{font-size:18px;gap:9px}
+body:has(.replay-watch-page) .club-header .brand-icon{width:32px;height:32px}
+body:has(.replay-watch-page) .club-header .brand small,body:has(.replay-watch-page) .club-header .club-brand-version,body:has(.replay-watch-page) .club-header .game-nav,body:has(.replay-watch-page) .club-header .header-right{display:none}
+.replay-page.replay-watch-page{padding:8px 12px 12px}
+.replay-watch-heading{display:flex;align-items:center;gap:12px;min-height:54px;margin-bottom:8px}
+.replay-watch-back,.replay-info-button{display:flex;align-items:center;justify-content:center;gap:5px;min-height:44px;flex:none;padding:7px 10px;border:2px solid #29394b;border-radius:11px;background:#fff6d9;color:#29394b;box-shadow:2px 3px 0 #29394b;font-size:12px;text-decoration:none}
+.replay-watch-title{flex:1;min-width:0}.replay-watch-title h1{margin:0;font-size:20px;font-weight:800;line-height:1.3}.replay-watch-title>span{display:block;font-size:11px;color:#566277;overflow-wrap:anywhere}
+.replay-watch-reason{display:block;width:100%;text-align:left;margin:0 0 8px;padding:6px 10px;border:0;border-left:3px solid #9872c5;border-radius:6px;background:#f0e6ff;color:#49306d;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.replay-info-modal{--replay-edge:#29394b;--replay-ink:#243348;background:#fffdf6;color:#243348;border:2px solid #29394b;border-radius:18px;box-shadow:4px 5px 0 #29394b}
+.replay-info-modal .replay-publish{flex-direction:column;align-items:stretch;padding:14px;margin:0;gap:10px}.replay-info-modal .replay-manage,.replay-info-modal .replay-story{margin:0}.replay-info-modal .replay-story blockquote{font-size:15px}
+@media(max-width:700px){.replay-page.replay-watch-page{padding:6px 6px 12px}.replay-watch-heading{gap:8px}.replay-watch-back{padding:7px}.replay-watch-back span{font-size:11px}.replay-watch-title h1{font-size:18px}.replay-info-button{min-width:60px;padding:0 10px}}
+@media(max-width:700px){
+ .replay-page{padding:9px 8px 32px}
+ .replay-heading{position:relative;display:block;margin-bottom:10px;padding:10px 12px 12px;border-radius:14px;box-shadow:2px 3px 0 var(--replay-edge)}
+ .replay-heading .history-back{margin-bottom:6px;padding:5px 8px;font-size:11px}
+ .replay-heading .replay-kicker{display:none}
+ .replay-heading h1{margin:0 72px 1px 0;font-size:20px;line-height:1.3}
+ .replay-heading-meta{font-size:11px}
+ .replay-heading>button{position:absolute;right:10px;top:10px;min-height:38px;padding:5px 8px;font-size:11px}
+ .replay-story{margin-top:6px;padding:5px 9px}
+ .replay-story blockquote{margin:0;font-size:13px;line-height:1.4}
+ .replay-story span{font-size:11px}
+ .replay-player{overflow:visible;border-radius:14px;box-shadow:2px 3px 0 var(--replay-edge)}
+}

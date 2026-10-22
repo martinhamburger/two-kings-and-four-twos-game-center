@@ -1,0 +1,48 @@
+.replay-holdem.th-room{padding:12px;max-width:none}
+.replay-holdem .th-table-scroll{overflow:visible}
+.replay-holdem .th-table,.replay-holdem .th-table.is-large{min-width:0}
+.replay-holdem .th-player-name{white-space:normal;overflow-wrap:anywhere}
+.replay-holdem .th-controls{margin-top:8px}
+@media(max-width:1100px){
+ .replay-holdem.th-room{padding:8px}
+ .replay-holdem .th-table{height:max(450px,calc(var(--replay-stage-height,600px) - 130px));border-radius:18px}
+ .replay-holdem[data-capacity='6'] .th-table{height:max(520px,calc(var(--replay-stage-height,600px) - 90px))}
+ .replay-holdem .th-seat{left:clamp(42px,var(--x),calc(100% - 42px));width:clamp(66px,20vw,78px);gap:2px}
+ .replay-holdem .th-seat .avatar{width:26px;height:26px;font-size:14px;border-radius:8px}
+ .replay-holdem .th-player-name{font-size:11px;line-height:14px;max-width:100%}
+ .replay-holdem .th-player-name small{display:none}
+ .replay-holdem .th-seat .th-stack{font-size:12px;line-height:14px}
+ .replay-holdem .th-position{top:-14px;right:0;font-size:8px;gap:2px}
+ .replay-holdem .th-position>span{padding:1px 3px}
+ .replay-holdem .th-hole{min-height:43px;gap:3px}
+ .replay-holdem .th-hole .th-card{width:29px;height:43px}
+ .replay-holdem .th-card-index b{font-size:15px}
+ .replay-holdem .th-card-index span{font-size:12px}
+ .replay-holdem .th-card-decoration{font-size:18px}
+ .replay-holdem .th-seat-wager{gap:2px}
+ .replay-holdem .th-invested{font-size:10px;line-height:13px;padding:2px 4px;min-width:0;min-height:23px;gap:3px;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+ .replay-holdem .th-invested svg{width:12px;height:12px;flex:none}
+ .replay-holdem .th-invested>span{display:none}
+ .replay-holdem .th-invested strong{font-size:11px;line-height:14px;min-width:0;overflow-wrap:anywhere}
+ .replay-holdem .th-action-badge{font-size:9px;line-height:12px;padding:2px 4px;min-height:17px}
+ .replay-holdem .th-seat-feedback{min-height:18px;gap:2px}
+ .replay-holdem .th-seat-action,.replay-holdem .th-bet{font-size:10px;line-height:12px;padding:2px 4px;min-height:18px;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+ .replay-holdem .th-seat-result{font-size:10px;line-height:12px;padding:2px 4px;white-space:normal;max-width:78px}
+ .replay-holdem .th-center{width:174px}
+ .replay-holdem[data-capacity='4'] .th-center{top:59%}
+ .replay-holdem .th-community{gap:3px}
+ .replay-holdem .th-community .th-card,.replay-holdem .th-card-placeholder{width:29px;height:43px;min-width:0}
+ .replay-holdem .th-pot{gap:4px;margin:5px 0 8px;font-size:11px}
+ .replay-holdem .th-pot b{font-size:21px}
+ .replay-holdem .th-street{font-size:11px;letter-spacing:0}
+ .replay-holdem .th-table-number{left:12px;top:10px;font-size:10px}
+ .replay-holdem .th-felt{inset:20% 10%;border-width:5px}
+ .replay-holdem:is([data-capacity='7'],[data-capacity='8'],[data-capacity='9'],[data-capacity='10']) .th-table{height:720px}
+ .replay-holdem:is([data-capacity='7'],[data-capacity='8'],[data-capacity='9'],[data-capacity='10']) .th-seat.is-upper{top:12%}
+ .replay-holdem:is([data-capacity='7'],[data-capacity='8'],[data-capacity='9'],[data-capacity='10']) .th-seat.is-me{top:89%}
+ .replay-holdem:is([data-capacity='7'],[data-capacity='8'],[data-capacity='9'],[data-capacity='10']) .th-center{top:46%}
+ .replay-holdem:is([data-capacity='7'],[data-capacity='8'],[data-capacity='9'],[data-capacity='10']) .th-table-number{top:2px;left:0;right:0;text-align:center;font-size:9px;line-height:10px;letter-spacing:0}
+ .replay-holdem:is([data-capacity='7'],[data-capacity='8'],[data-capacity='9'],[data-capacity='10']) .th-seat:is(:nth-of-type(2),:last-of-type){top:88%}
+ .replay-holdem .th-seat .seat-emote-bubble{width:70px;height:70px}
+ .replay-holdem .th-seat .seat-chat-bubble{max-width:120px}
+}

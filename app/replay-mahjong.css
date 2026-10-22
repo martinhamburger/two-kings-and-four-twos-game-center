@@ -1,0 +1,42 @@
+/* Replay uses the measured live table geometry and places spectator tools in its control row. */
+.replay-mj-table.mj-room.mj-immersive{height:min(800px,max(560px,var(--replay-stage-height,680px)));min-height:560px}
+.replay-mj-table .mj-world-hand{display:none}
+.replay-mj-table .mj-world-rack:not(.rack-south) .mj-world-melds{display:none}
+.replay-mj-open-hand{position:absolute;z-index:8;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.replay-mj-hand-tiles{display:grid;grid-template-columns:repeat(2,var(--open-tile-w));gap:3px}
+.replay-mj-open-north .replay-mj-hand-tiles{grid-template-columns:repeat(var(--north-desktop-columns,14),var(--open-tile-w))}
+.replay-mj-open-hand .mj-melds{display:flex;flex-direction:column;gap:5px;width:69px}
+.replay-mj-open-hand .mj-meld{display:flex;flex-direction:column;gap:1px;margin:0}
+.replay-mj-open-hand .mj-meld>div{display:flex;gap:1px}
+.replay-mj-open-hand .mj-meld .mj-tile{width:16px;height:23px;padding:1px}
+.replay-mj-open-hand .mj-meld span{font-size:9px;color:#edf3d8;line-height:11px}
+.replay-mj-open-north .mj-melds{flex-direction:row;flex-wrap:wrap;width:100%;justify-content:center}
+.replay-mj-open-east .replay-mj-hand-tiles{align-self:flex-end}
+.replay-mj-table .mj-dealer{top:-4px;bottom:auto;right:-6px}
+.replay-mj-open-hand .mj-tile{width:var(--open-tile-w);height:calc(var(--open-tile-w)*1.43);min-width:0;padding:2px 2px 4px}
+.replay-mj-open-north{--open-tile-w:clamp(26px,2.7vw,42px);grid-template-columns:repeat(14,var(--open-tile-w));left:50%;top:112px;transform:translateX(-50%)}
+.replay-mj-open-east,.replay-mj-open-west{--open-tile-w:clamp(26px,2.2vw,34px);grid-template-columns:repeat(2,var(--open-tile-w));top:220px}
+.replay-mj-open-east{right:12px}.replay-mj-open-west{left:12px}
+.replay-mj-table .mj-portrait-caption>span{font-size:clamp(12px,1.1vw,16px)}
+.replay-mj-table .replay-mj-tools{position:absolute;z-index:15;left:12px;top:12px;display:flex;gap:8px;justify-content:center;max-width:calc(100% - 24px)}
+.replay-mj-table .replay-mj-tools button{min-height:38px;white-space:nowrap;padding:6px 11px;background:#123f47d9;color:#f3eac2;border-color:#a7cfc36b;font-size:12px}
+.replay-mj-table .mj-self-rack,.replay-mj-table .mj-hand,.replay-mj-table .mj-hand-slot,.replay-mj-table .mj-hand .mj-tile{pointer-events:none!important}
+.replay-mj-own-heading{position:absolute;left:50%;bottom:calc(100% - var(--self-rack-y) + 8px);transform:translateX(-50%);z-index:11;display:flex;align-items:center;justify-content:center;gap:9px;width:min(420px,calc(100% - 176px));color:#fff6ce}
+.replay-mj-own-heading .chat-avatar{flex:0 0 36px}.replay-mj-own-heading .avatar{width:36px;height:36px;border-radius:8px;margin:0}
+.replay-mj-own-heading>div:last-child{min-width:0}.replay-mj-own-heading strong{display:block;font-size:13px;line-height:1.3;overflow-wrap:anywhere}
+.replay-mj-own-heading strong>span{margin-left:6px;font-size:11px;color:#ffe09c}.replay-mj-own-heading small{display:flex;flex-wrap:wrap;gap:1px 8px;font-size:11px;line-height:1.4;color:#cde5d0;overflow-wrap:anywhere}.replay-mj-own-heading small>span{min-width:0}
+.replay-mj-own-heading.is-active .avatar{outline:2px solid #ffda69;outline-offset:3px}
+@media(min-width:1101px){
+ .replay-mj-open-north{--open-tile-w:32px;top:58px}
+ .replay-mj-table .portrait-east,.replay-mj-table .portrait-west{top:20px!important}
+}
+@media(max-width:580px){
+ .replay-mj-open-north{--open-tile-w:clamp(26px,calc((100vw - 150px)/7),32px);top:100px}
+ .replay-mj-open-north .replay-mj-hand-tiles{grid-template-columns:repeat(var(--north-columns),var(--open-tile-w));gap:1px}
+ .replay-mj-open-east,.replay-mj-open-west{--open-tile-w:23px;gap:2px;top:220px}
+ .replay-mj-open-east .replay-mj-hand-tiles,.replay-mj-open-west .replay-mj-hand-tiles{grid-template-columns:repeat(3,var(--open-tile-w));gap:3px}
+ .replay-mj-table .portrait-east,.replay-mj-table .portrait-west{top:125px!important}
+ .replay-mj-table .mj-seat-name{font-size:10px;line-height:12px;width:60px;white-space:normal;overflow-wrap:anywhere}
+ .replay-mj-table .replay-mj-tools{gap:4px}
+ .replay-mj-table .replay-mj-tools button{font-size:12px;min-height:44px;padding:7px 9px;white-space:normal;max-width:110px;line-height:1.25}
+}

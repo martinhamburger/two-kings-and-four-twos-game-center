@@ -1,0 +1,1 @@
+ALTER TABLE `replay_tv` ADD `reason` text DEFAULT '' NOT NULL;

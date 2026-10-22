@@ -2,7 +2,7 @@
 .game-lobby{--lobby-accent:#285c83;--lobby-soft:#d4f0ff;--lobby-line:#29394b;--lobby-ink:#243348;--lobby-muted:#485771;--lobby-art:#65c6ff;max-width:1360px;padding:32px 32px 64px;gap:28px;grid-template-columns:minmax(0,1fr) 284px;font-family:'Microsoft YaHei','PingFang SC',system-ui,sans-serif;font-weight:700}
 .lobby-mahjong{--lobby-accent:#287658;--lobby-soft:#d4f9df;--lobby-art:#69dbab}
 .lobby-holdem{--lobby-accent:#684197;--lobby-soft:#eee0ff;--lobby-art:#c19cf5}
-body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)){background:radial-gradient(ellipse at 5% 10%,#ccecff88,transparent 50%),radial-gradient(ellipse at 95% 70%,#eedaff88,transparent 50%),#f8f5ea;background-attachment:fixed}
+body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)){background:radial-gradient(ellipse at 5% 10%,#ccecff88,transparent 50%),radial-gradient(ellipse at 95% 70%,#eedaff88,transparent 50%),#f8f5ea;background-attachment:fixed}
 body:has(.lobby-holdem){background-color:#f3edf9}
 body:has(.lobby-mahjong){background-color:#edf7ee}
 .game-lobby :is(h1,h2,h3,b,strong,button,input){font-family:inherit;font-weight:700}
@@ -32,29 +32,29 @@ body:has(.lobby-mahjong){background-color:#edf7ee}
 .game-lobby .friends-heading h3{font-weight:700}.game-lobby .friends-heading h3>svg{color:#87415e}
 .game-lobby .friend-row button{background:#fff9e5;border:1.5px solid var(--lobby-line);color:#243348}
 .game-lobby .lobby-aside-note{margin:0}
-body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .club-header{height:auto;min-height:90px;flex-wrap:wrap;padding:18px max(24px,calc((100vw - 1296px)/2));gap:18px 24px;background:#ffdf62;border-bottom:3px solid #29394b;color:#243348;font-family:'Microsoft YaHei','PingFang SC',system-ui,sans-serif;font-weight:700}
-body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .club-header .brand{color:#243348}
-body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .club-header .brand-icon{background:linear-gradient(#fff4ae,#ffc149);border:2px solid #29394b;border-radius:13px;box-shadow:2px 3px 0 #29394b;color:#835006;transform:rotate(-5deg)}
-body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .club-header .brand small{color:#535f72}
-body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .club-header .header-right{flex-wrap:wrap;margin-left:auto;gap:9px}
-body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .club-header :is(.club-repository-link,.club-friends-link){background:#bfe8ff;border:2px solid #29394b;border-radius:12px;box-shadow:2px 3px 0 #29394b;padding:9px 11px;color:#243348;min-height:44px;font-weight:700}
-body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .club-header .club-friends-link{background:#ffbccd}
-body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .club-header .game-nav{order:3;flex-basis:100%;background:transparent;padding:0;gap:12px;flex-wrap:wrap}
+body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .club-header{height:auto;min-height:90px;flex-wrap:wrap;padding:18px max(24px,calc((100vw - 1296px)/2));gap:18px 24px;background:#ffdf62;border-bottom:3px solid #29394b;color:#243348;font-family:'Microsoft YaHei','PingFang SC',system-ui,sans-serif;font-weight:700}
+body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .club-header .brand{color:#243348}
+body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .club-header .brand-icon{background:linear-gradient(#fff4ae,#ffc149);border:2px solid #29394b;border-radius:13px;box-shadow:2px 3px 0 #29394b;color:#835006;transform:rotate(-5deg)}
+body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .club-header .brand small{color:#535f72}
+body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .club-header .header-right{flex-wrap:wrap;margin-left:auto;gap:9px}
+body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .club-header :is(.club-repository-link,.club-friends-link){background:#bfe8ff;border:2px solid #29394b;border-radius:12px;box-shadow:2px 3px 0 #29394b;padding:9px 11px;color:#243348;min-height:44px;font-weight:700}
+body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .club-header .club-friends-link{background:#ffbccd}
+body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .club-header .game-nav{order:3;flex-basis:100%;background:transparent;padding:0;gap:12px;flex-wrap:wrap}
 .game-nav a{display:inline-flex;align-items:center;justify-content:center;gap:7px}
-body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .game-nav a{border:2px solid #29394b;box-shadow:2px 3px 0 #29394b;border-radius:12px;padding:10px 16px;background:#c4ecff;color:#243348;font-weight:700}
-body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .game-nav a[href='/mahjong']{background:#c4f3d2}
-body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .game-nav a[href='/holdem']{background:#e1d0ff}
-body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .game-nav a[href='/indie']{background:#ffcfaa}
-body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .game-nav a[aria-current='page']{background:#fff;box-shadow:2px 3px 0 #29394b}
-body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .club-game-tools{font-family:'Microsoft YaHei','PingFang SC',system-ui,sans-serif}
-body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) [data-slot='dialog-content']:has(.stack-form){background:#fff9e6;border:3px solid #29394b;box-shadow:6px 7px 0 #29394b;border-radius:20px;color:#243348;font-family:'Microsoft YaHei','PingFang SC',system-ui,sans-serif}
-body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .stack-form .house-switches{background:#fffdf2;border:2px solid #29394b;border-radius:12px;padding:15px}
-body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .stack-form>button[type='submit']{background:#ffdb65;color:#493207;border:2px solid #29394b;box-shadow:2px 4px 0 #29394b}
-.game-lobby :is(button,a),body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .club-header :is(button,a){transition:transform .18s ease,box-shadow .18s ease}
-.game-lobby :is(button,a) svg,body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .club-header :is(button,a) svg{transition:transform .2s ease}
+body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .game-nav a{border:2px solid #29394b;box-shadow:2px 3px 0 #29394b;border-radius:12px;padding:10px 16px;background:#c4ecff;color:#243348;font-weight:700}
+body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .game-nav a[href='/mahjong']{background:#c4f3d2}
+body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .game-nav a[href='/holdem']{background:#e1d0ff}
+body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .game-nav a[href='/indie']{background:#ffcfaa}
+body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .game-nav a[aria-current='page']{background:#fff;box-shadow:2px 3px 0 #29394b}
+body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .club-game-tools{font-family:'Microsoft YaHei','PingFang SC',system-ui,sans-serif}
+body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) [data-slot='dialog-content']:has(.stack-form){background:#fff9e6;border:3px solid #29394b;box-shadow:6px 7px 0 #29394b;border-radius:20px;color:#243348;font-family:'Microsoft YaHei','PingFang SC',system-ui,sans-serif}
+body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .stack-form .house-switches{background:#fffdf2;border:2px solid #29394b;border-radius:12px;padding:15px}
+body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .stack-form>button[type='submit']{background:#ffdb65;color:#493207;border:2px solid #29394b;box-shadow:2px 4px 0 #29394b}
+.game-lobby :is(button,a),body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .club-header :is(button,a){transition:transform .18s ease,box-shadow .18s ease}
+.game-lobby :is(button,a) svg,body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .club-header :is(button,a) svg{transition:transform .2s ease}
 @media(hover:hover) and (pointer:fine){
- .game-lobby :is(button,a):not(:disabled):hover,body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .club-header :is(button,a):not(:disabled):hover{transform:translateY(-2px)}
- .game-lobby :is(button,a):not(:disabled):hover svg,body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .club-header :is(button,a):not(:disabled):hover svg{transform:rotate(5deg) scale(1.1)}
+ .game-lobby :is(button,a):not(:disabled):hover,body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .club-header :is(button,a):not(:disabled):hover{transform:translateY(-2px)}
+ .game-lobby :is(button,a):not(:disabled):hover svg,body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .club-header :is(button,a):not(:disabled):hover svg{transform:rotate(5deg) scale(1.1)}
 }
 @media(max-width:1080px){.game-lobby{grid-template-columns:minmax(0,1fr) 250px;padding-inline:24px;gap:22px}.lobby-feature{grid-template-columns:minmax(0,1fr) 155px}.lobby-feature-art{padding:15px 6px}}
 @media(max-width:800px){.game-lobby{grid-template-columns:1fr;max-width:760px}.game-lobby-aside{display:grid;grid-template-columns:1fr 1fr;gap:18px}.game-lobby-aside>.lobby-online-friends{grid-column:1/-1}.lobby-feature{grid-template-columns:minmax(0,1fr) 185px}.lobby-join{flex-direction:column;align-items:stretch}.lobby-join form{width:100%}.lobby-join input{flex:1;width:0}}
@@ -62,11 +62,11 @@ body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .stack-form
  .game-lobby{padding:24px 16px 45px;gap:24px}.lobby-feature{grid-template-columns:1fr;margin-top:0}.lobby-feature-copy{padding:24px 22px 10px}.lobby-feature-copy>p{max-width:none}.lobby-feature h2{font-size:31px}
  .lobby-feature-art{position:relative;right:auto;top:auto;opacity:1;width:100%;height:175px;padding:12px 30px 22px;z-index:0;transform:none}.lobby-feature-art:before{height:150px;width:200px}.lobby-feature footer{font-size:10px;gap:8px}.lobby-feature-actions .create-actions{gap:10px}
  .lobby-join{padding:20px 16px}.lobby-join form{flex-wrap:wrap;gap:12px}.lobby-join input{flex-basis:100%;width:100%}.lobby-join button{width:100%}.game-lobby-aside{grid-template-columns:1fr}
- body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .club-header{padding:15px 16px;gap:16px}.club-header .club-user{max-width:80px}body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .club-header .header-right{gap:8px;margin-left:0;flex-basis:100%}body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .club-header :is(.club-repository-link,.club-friends-link){padding:8px 10px}
- body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .club-header .club-friends-link>span{display:inline}body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .club-header .game-nav{display:grid;grid-template-columns:1fr 1fr;gap:11px}body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .game-nav a{font-size:13px;padding:9px 7px}
+ body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .club-header{padding:15px 16px;gap:16px}.club-header .club-user{max-width:80px}body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .club-header .header-right{gap:8px;margin-left:0;flex-basis:100%}body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .club-header :is(.club-repository-link,.club-friends-link){padding:8px 10px}
+ body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .club-header .club-friends-link>span{display:inline}body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .club-header .game-nav{display:grid;grid-template-columns:1fr 1fr;gap:11px}body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .game-nav a{font-size:13px;padding:9px 7px}
 
 }
-@media(prefers-reduced-motion:reduce){.game-lobby :is(button,a,svg),body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .club-header :is(button,a,svg){transition:none!important;transform:none!important}}
+@media(prefers-reduced-motion:reduce){.game-lobby :is(button,a,svg),body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .club-header :is(button,a,svg){transition:none!important;transform:none!important}}
 /* Shared Page design for the collection, records and independent games. */
 :is(.club-history,.emote-preview,.indie-lobby){--public-edge:#29394b;--public-ink:#243348;font-family:'Microsoft YaHei','PingFang SC',system-ui,sans-serif;font-weight:700;color:var(--public-ink);max-width:1160px;margin:auto;padding:32px 24px 80px}
 :is(.club-history,.emote-preview,.indie-lobby) :is(h1,h2,h3,b,strong,button,input){font-family:inherit;font-weight:700}
@@ -107,7 +107,7 @@ body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .stack-form
 .club-repository-link{display:inline-flex;align-items:center;gap:7px;color:#243348}
 
 .club-announcement-link{display:inline-flex;gap:7px;align-items:center;color:#243348}
-body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .club-header .club-announcement-link{background:#fff1a6;border:2px solid #29394b;border-radius:12px;box-shadow:2px 3px 0 #29394b;padding:9px 11px;min-height:44px;font-weight:700}
+body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .club-header .club-announcement-link{background:#fff1a6;border:2px solid #29394b;border-radius:12px;box-shadow:2px 3px 0 #29394b;padding:9px 11px;min-height:44px;font-weight:700}
 .club-announcement-link svg{color:#af5c28;fill:#ffd579;transform:rotate(-12deg)}
 .club-announcement-popover{width:min(340px,calc(100vw - 32px));max-height:calc(100svh - 40px);overflow:auto;background:#fff9e6;color:#243348;border:2px solid #29394b;border-radius:18px;box-shadow:3px 5px 0 #29394b;padding:20px;font-family:'Microsoft YaHei','PingFang SC',system-ui,sans-serif}
 .club-announcement-popover h2{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:700;margin:0 0 12px}
@@ -115,7 +115,7 @@ body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .club-heade
 .club-announcement-popover p{font-size:16px;line-height:1.8;margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
 
 /* A continuous pastel canvas keeps long public pages free of image seams. */
-body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .app-shell{background:transparent;min-height:0}
+body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .app-shell{background:transparent;min-height:0}
 body:has(:is(.club-history,.emote-preview,.indie-lobby)){background:radial-gradient(ellipse at 0% 0%,#d4efff 0,transparent 45%),radial-gradient(ellipse at 100% 40%,#f0dfff 0,transparent 45%),radial-gradient(ellipse at 40% 100%,#fff0c9 0,transparent 50%),#f8f5ee;background-attachment:fixed;min-height:100svh}
 :is(.club-history-heading,.indie-heading,.gallery-heading){background:#fffdf4;position:relative;overflow:hidden}
 :is(.club-history-heading,.indie-heading,.gallery-heading):after{content:'';position:absolute;width:110px;height:110px;right:-30px;top:-40px;border:18px solid #ffd97855;border-radius:50%;pointer-events:none}
@@ -156,7 +156,7 @@ body:has(:is(.club-history,.emote-preview,.indie-lobby)){background:radial-gradi
 body:has(.game-lobby){min-height:100svh}
 
 .club-feedback-link{display:inline-flex;align-items:center;gap:7px;color:#243348}
-body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .club-header .club-feedback-link{background:#d9c7ff;border:2px solid #29394b;border-radius:12px;box-shadow:2px 3px 0 #29394b;padding:9px 11px;min-height:44px;font-weight:700}
+body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .club-header .club-feedback-link{background:#d9c7ff;border:2px solid #29394b;border-radius:12px;box-shadow:2px 3px 0 #29394b;padding:9px 11px;min-height:44px;font-weight:700}
 .club-feedback-link svg{color:#7952b3;fill:#f5e9ff;transform:rotate(7deg)}
 .feedback-dialog{width:calc(100% - 32px)!important;transition-property:opacity,transform!important;max-width:512px!important;background:#fffaf0!important;color:#243348!important;border:2px solid #29394b!important;border-radius:24px!important;box-shadow:4px 6px 0 #29394b!important;padding:26px!important;font-family:'Microsoft YaHei','PingFang SC',system-ui,sans-serif}
 .feedback-badge{width:58px;height:58px;display:grid;place-items:center;background:#e5d5ff;border:2px solid #29394b;border-radius:18px;transform:rotate(-5deg);margin-bottom:7px;color:#7952b3}
@@ -181,4 +181,4 @@ body:has(.auth-cartoon){background:radial-gradient(circle at 15% 15%,#fff0b6 0,t
 .admin-shell .settings-form{max-width:760px}.admin-shell .settings-form>label{color:#243348;font-weight:700}.admin-shell .settings-form textarea{background:#fff;color:#243348;border:2px solid #9c94ae;border-radius:13px;font-size:16px;line-height:1.8}.admin-shell .settings-form [data-slot=select-trigger]{background:#e5d5ff;border:2px solid #29394b;border-radius:12px;color:#243348;min-height:44px;max-width:220px}.admin-shell .switch-row{border-color:#d9d5cc;padding-top:22px;margin:12px 0}.admin-shell .switch-row label{font-weight:700;color:#243348}.admin-shell [role=switch][data-state=checked]{background:#7952b3}.admin-shell .settings-form button[type=submit]{background:#ffdf62;color:#243348;border:2px solid #29394b;border-radius:12px;box-shadow:2px 3px 0 #29394b;font-weight:700;min-height:45px}.admin-shell .app-header>a:last-child,.admin-shell .admin-heading>button,.admin-shell .admin-feedback-heading>button{background:#fffaf0;border:2px solid #29394b;border-radius:12px;box-shadow:2px 3px 0 #29394b;color:#243348;min-height:42px}.admin-shell .form-error{background:#ffe4e8;color:#a63746;border:2px solid #e7a9b5;border-radius:12px}.admin-shell .save-message{background:#ddf2dd;color:#346437;border:2px solid #76a975;border-radius:12px}.admin-shell .admin-feedback-item{border:2px solid #9b88b8;border-radius:15px;background:#f2eaff}.admin-shell .audit-row{border-color:#d9d5cc}.admin-shell .admin-empty{color:#657086}
 @media(max-width:680px){.admin-shell .admin-main{padding:26px 16px}.admin-shell .admin-stats{grid-template-columns:1fr;gap:13px}.admin-shell .admin-stats>div{padding:15px 18px}.admin-shell .app-header{padding:16px;flex-wrap:wrap;gap:16px}.admin-shell .admin-heading h1{font-size:28px}.admin-shell .admin-tabs{gap:9px}.admin-shell .admin-tabs button{padding:8px 11px;font-size:13px}.admin-shell .admin-panel{padding:20px 17px}}
 
-body:has(:is(.game-lobby,.club-history,.emote-preview,.indie-lobby)) .club-header .club-repository-link{background:#ffdec0}
+body:has(:is(.game-lobby,.club-history,.replay-page,.emote-preview,.indie-lobby)) .club-header .club-repository-link{background:#ffdec0}

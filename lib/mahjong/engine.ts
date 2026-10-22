@@ -1,12 +1,15 @@
 import {emitVisual,publicVisuals,type VisualEvent} from '../motion/events.ts';
 import {BASIC_136, type MahjongRules} from './rules.ts';
 import type {Practice} from '../practice/types.ts';
+import {captureReplay,finishReplay} from '../replay/capture.ts';
+import type {ReplayState} from '../replay/types.ts';
 export type Phase='waiting'|'playing'|'finished'|'closed';
 export type Meld={kind:'chi'|'pong'|'kong';tiles:number[];from:number;concealed:boolean};
 export type Seat={id:string;name:string;hand:number[];melds:Meld[];river:number[];ready:boolean;last:string;bot?:boolean};
 export type Option={key:string;kind:'chi'|'pong'|'kong'|'hu'|'concealed'|'added';tiles:number[];meldIndex?:number};
 type Pending={kind:'discard'|'added';from:number;tile:number;meldIndex?:number;eligible:number[];responses:Record<string,Option|null>};
 export type MahjongGame={
+ replay?:ReplayState;
  visualEvents?:VisualEvent[];
  practice?:Practice;kind:'mahjong';schemaVersion:1;rules:MahjongRules;phase:Phase;host:string;seats:Seat[];
  wall:number[];turn:number;dealer:number;round:string;roundNumber:number;seconds:number;deadline:number;
@@ -31,6 +34,7 @@ export function dealMahjong(g:MahjongGame,now=Date.now()){
  g.wall=deck;g.drawn=g.wall.shift()!;g.seats[g.turn].hand=sortTiles([...g.seats[g.turn].hand,g.drawn]);
  g.lastDiscard=null;g.pending=null;g.winner=-1;g.source=-1;g.winType=null;g.deltas=[];g.log=[];
  note(g,`第 ${g.roundNumber} 局开始，${g.seats[g.dealer].name} 坐庄`,now);due(g,now);
+ captureReplay(g,'发牌',g.dealer,now);
 }
 /** Exact decomposition of a concealed hand into remaining melds and one pair. */
 export function isWinning(tiles:number[],meldCount=0,sevenPairs=false):boolean{
@@ -82,15 +86,18 @@ function finish(g:MahjongGame,winner:number,source:number,type:'self'|'discard'|
  if(type==='self'){g.deltas=g.seats.map((_,i)=>i===winner?3*g.rules.selfDrawUnit:-g.rules.selfDrawUnit);}
  else if(type!=='draw'){g.deltas[winner]=g.rules.discardUnit;g.deltas[source]=-g.rules.discardUnit;}
  note(g,type==='draw'?'牌墙已摸完，本局流局':`${g.seats[winner].name} ${type==='self'?'自摸':type==='rob'?'抢杠胡':'胡牌'}，本局结束`,now);
+ captureReplay(g,type==='draw'?'流局':type==='self'?'自摸':type==='rob'?'抢杠胡':'胡牌',winner<0?undefined:winner,now);finishReplay(g,now);
 }
 function draw(g:MahjongGame,seat:number,replacement:boolean,now:number){
  g.pending=null;if(!g.wall.length){finish(g,-1,-1,'draw',now);return;}
  const tile=replacement?g.wall.pop()!:g.wall.shift()!;g.turn=seat;g.drawn=tile;g.seats[seat].hand=sortTiles([...g.seats[seat].hand,tile]);g.seats[seat].last=replacement?'杠后补牌':'摸牌';due(g,now);
  // Drawn face is deliberately absent from public logs.
  note(g,`${g.seats[seat].name} ${replacement?'杠后补牌':'摸牌'}`,now);
+ captureReplay(g,replacement?'杠后补牌':'摸牌',seat,now);
 }
-function startPending(g:MahjongGame,p:Pending,now:number){
+function startPending(g:MahjongGame,p:Pending,now:number,action:string){
  g.pending=p;g.drawn=null;p.eligible=g.seats.map((_,i)=>i).filter(i=>claimOptions(g,i,p).length>0);due(g,now);
+ captureReplay(g,action,p.from,now);
  if(!p.eligible.length)resolve(g,now);
 }
 function resolve(g:MahjongGame,now:number){
@@ -103,8 +110,8 @@ function resolve(g:MahjongGame,now:number){
   g.seats[chosen.seat].hand=sortTiles([...g.seats[chosen.seat].hand,p.tile]);finish(g,chosen.seat,p.from,p.kind==='added'?'rob':'discard',now);return;
  }
  if(p.kind==='added'){
-  const s=g.seats[p.from];take(s,[p.tile]);const m=s.melds[p.meldIndex!];m.kind='kong';m.tiles=sortTiles([...m.tiles,p.tile]);
-  emitVisual(g,p.from,'kong',now,'added');note(g,`${s.name} 补杠 ${tileLabel(p.tile)}`,now);draw(g,p.from,true,now);return;
+  const s=g.seats[p.from];take(s,[p.tile]);const m=s.melds[p.meldIndex!];m.kind='kong';m.tiles=sortTiles([...m.tiles,p.tile]);g.pending=null;
+  emitVisual(g,p.from,'kong',now,'added');note(g,`${s.name} 补杠 ${tileLabel(p.tile)}`,now);captureReplay(g,`补杠 ${tileLabel(p.tile)}`,p.from,now);draw(g,p.from,true,now);return;
  }
  if(!chosen){draw(g,(p.from+1)%4,false,now);return;}
  const {seat,choice}=chosen,s=g.seats[seat];take(s,choice.tiles);const river=g.seats[p.from].river;river.splice(river.lastIndexOf(p.tile),1);
@@ -112,6 +119,7 @@ function resolve(g:MahjongGame,now:number){
  emitVisual(g,seat,choice.kind as 'chi'|'pong'|'kong',now,choice.kind==='kong'?'exposed':undefined);
  s.last=choice.kind==='chi'?'吃':choice.kind==='pong'?'碰':'杠';note(g,`${s.name} ${s.last} ${tileLabel(p.tile)}`,now);
  g.turn=seat;g.pending=null;g.drawn=null;g.lastDiscard=null;
+ captureReplay(g,`${s.last} ${tileLabel(p.tile)}`,seat,now);
  if(choice.kind==='kong')draw(g,seat,true,now);else due(g,now);
 }
 export type Move={action:'discard'|'claim'|'pass'|'hu'|'kong';tile?:number;key?:string};
@@ -129,14 +137,14 @@ export function moveMahjong(g:MahjongGame,seat:number,m:Move,now=Date.now()){
  if(m.action==='hu'){if(!opts.canHu)throw Error('还未组成可胡的牌型');finish(g,seat,seat,'self',now);return;}
  if(m.action==='kong'){
   const k=opts.kongs.find(o=>o.key===m.key);if(!k)throw Error('这些牌不能开杠');
-  if(k.kind==='concealed'){take(s,k.tiles);s.melds.push({kind:'kong',tiles:k.tiles,from:seat,concealed:true});emitVisual(g,seat,'kong',now,'concealed');note(g,`${s.name} 暗杠`,now);draw(g,seat,true,now);}
-  else if(g.rules.allowRobAddedKong)startPending(g,{kind:'added',from:seat,tile:k.tiles[0],meldIndex:k.meldIndex,eligible:[],responses:{}},now);
-  else{take(s,k.tiles);const meld=s.melds[k.meldIndex!];meld.kind='kong';meld.tiles=sortTiles([...meld.tiles,...k.tiles]);emitVisual(g,seat,'kong',now,'added');note(g,`${s.name} 补杠 ${tileLabel(k.tiles[0])}`,now);draw(g,seat,true,now);}
+  if(k.kind==='concealed'){take(s,k.tiles);g.drawn=null;s.melds.push({kind:'kong',tiles:k.tiles,from:seat,concealed:true});emitVisual(g,seat,'kong',now,'concealed');note(g,`${s.name} 暗杠`,now);captureReplay(g,`暗杠 ${tileLabel(k.tiles[0])}`,seat,now);draw(g,seat,true,now);}
+  else if(g.rules.allowRobAddedKong){startPending(g,{kind:'added',from:seat,tile:k.tiles[0],meldIndex:k.meldIndex,eligible:[],responses:{}},now,`声明补杠 ${tileLabel(k.tiles[0])}`);}
+  else{take(s,k.tiles);g.drawn=null;const meld=s.melds[k.meldIndex!];meld.kind='kong';meld.tiles=sortTiles([...meld.tiles,...k.tiles]);emitVisual(g,seat,'kong',now,'added');note(g,`${s.name} 补杠 ${tileLabel(k.tiles[0])}`,now);captureReplay(g,`补杠 ${tileLabel(k.tiles[0])}`,seat,now);draw(g,seat,true,now);}
   return;
  }
  if(m.action!=='discard'||typeof m.tile!=='number'||!Number.isInteger(m.tile)||!s.hand.includes(m.tile))throw Error('请选择自己的一张手牌');
  take(s,[m.tile]);emitVisual(g,seat,'discard',now);s.river.push(m.tile);s.last=`打 ${tileLabel(m.tile)}`;g.lastDiscard={seat,tile:m.tile};
- note(g,`${s.name} 打出 ${tileLabel(m.tile)}`,now);startPending(g,{kind:'discard',from:seat,tile:m.tile,eligible:[],responses:{}},now);
+ note(g,`${s.name} 打出 ${tileLabel(m.tile)}`,now);startPending(g,{kind:'discard',from:seat,tile:m.tile,eligible:[],responses:{}},now,`打出 ${tileLabel(m.tile)}`);
 }
 export function timeoutMahjong(g:MahjongGame,now=Date.now()){
  if(g.phase!=='playing'||g.deadline>now)return false;

@@ -7,7 +7,7 @@ import {chips} from '@/lib/mahjong/report';
 import {useEmotePreferences} from './emote-preferences';
 import {TurnClock} from './table-ui';
 const labels={fold:'弃牌',check:'过牌',call:'跟注',raise:'加注',allin:'全下'};
-export function HoldemSeatWager({seat:s,street,round,active,seconds,userId}:{seat:HoldemView['seats'][number];street:HoldemView['street'];round:string;active:boolean;seconds:number;userId:string}){
+export function HoldemSeatWager({seat:s,street,round,active,seconds,userId}:{seat:Pick<HoldemView['seats'][number],'name'|'total'|'bet'|'folded'|'allIn'>&{action?:HoldemView['seats'][number]['action']};street:HoldemView['street'];round:string;active:boolean;seconds:number;userId:string}){
  const {prefs}=useEmotePreferences(userId),amount=useRef<HTMLDivElement>(null),badge=useRef<HTMLSpanElement>(null);
  const previous=useRef({round,total:s.total,id:s.action?.id});
  const kind=s.folded?'fold':s.allIn?'allin':s.action?.street===street?s.action.kind:null;

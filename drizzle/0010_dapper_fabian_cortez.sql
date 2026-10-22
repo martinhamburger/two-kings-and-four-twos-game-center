@@ -1,0 +1,1 @@
+ALTER TABLE `replay_tv` ADD `anonymous` integer DEFAULT 0 NOT NULL;

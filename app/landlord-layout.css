@@ -4,6 +4,10 @@
 .landlord-board .self-label{align-items:flex-start;flex-wrap:wrap}
 .landlord-board .self-label>div:first-child{flex:1 1 220px;flex-wrap:wrap;min-width:0}
 .landlord-board .self-label .room-chat{flex:0 0 auto;margin-left:auto}
+/* An open chat must escape both the self-seat and arena stacking contexts. */
+.landlord-layout.landlord-layout .self-label:has(.room-chat){z-index:6}
+.landlord-layout.landlord-layout .landlord-arena:has(.chat-panel){z-index:20}
+.landlord-layout.landlord-layout .self-label:has(.chat-panel){z-index:50}
 .landlord-board .self-label .self-identity{flex:0 1 auto;max-width:100%}
 .landlord-board .self-label .seat-score{max-width:100%;overflow-wrap:anywhere;white-space:normal}
 /* Explicit cells prevent the shared 44px table button rule overlapping grid rows. */

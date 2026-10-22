@@ -3,6 +3,8 @@ import {newSeat, sortTiles, tileLabel, isWinning, type Seat, type Option, type M
 import {HAM, type ModernRules} from './rules.ts';
 import {canWin, bestWinPlan, findWinPlan, effectiveType, isWild, type WinContext, type WinPlan} from './solver.ts';
 import type {Practice} from '../practice/types.ts';
+import {captureReplay,finishReplay} from '../replay/capture.ts';
+import type {ReplayState} from '../replay/types.ts';
 
 export type Money = string;
 export type ChipEntry = {id:string;round:string;kind:'exposed'|'concealed'|'added'|'win'|'refund';actor:number;deltas:Money[];at:number;description:string};
@@ -11,6 +13,7 @@ export type RoundResult = {practice?:boolean;kind:'mahjong';schemaVersion:2;id:s
   seats:{id:string;name:string;bot?:boolean;delta:Money;balance:Money}[];entries:ChipEntry[];log:{text:string;at:number}[];started:number;ended:number;automatic:boolean};
 type Pending={kind:'discard'|'added';from:number;tile:number;meldIndex?:number;eligible:number[];responses:Record<string,Option|null>;earth:boolean};
 export type ModernGame = {
+  replay?:ReplayState;
   visualEvents?:VisualEvent[];
   practice?:Practice;
   leavingIds?:string[];departedIds?:string[];
@@ -49,6 +52,7 @@ export function dealModern(g:ModernGame,now=Date.now()){
   g.pending=null;g.choice=null;g.reveal=null;g.lastDiscard=null;g.winner=-1;g.source=-1;g.winType=null;g.deltas=['0','0','0','0'];g.entries=[];g.result=null;g.log=[];
   g.roundStart=g.seats.map(s=>s.balance);g.flower=false;g.opening=true;g.discardCount=0;
   note(g,`第 ${g.roundNumber} 局开始，${g.seats[g.dealer].name} 坐庄${g.streak?' · 连庄 '+g.streak+' 次':''}`,now);due(g,now);
+  captureReplay(g,'发牌',g.dealer,now);
 }
 function context(g:ModernGame,seat:number,tile?:number,p?:Pending):WinContext {
   return {round:g.round,hand:tile===undefined?[...g.seats[seat].hand]:[...g.seats[seat].hand,tile],melds:g.seats[seat].melds,wildcard:g.wildcard,incoming:tile??g.drawn!,
@@ -100,6 +104,7 @@ function finish(g:ModernGame,type:RoundResult['winType'],now:number,plan:WinPlan
   if(type==='aborted'){g.winner=-1;g.source=-1;g.stats.aborted++;note(g,'本局已中止，本局杠分已撤销',now);}else g.stats.completed++;
   g.result={...(g.practice?{practice:true}:{}),kind:'mahjong',schemaVersion:2,id:g.round,roundNumber:g.roundNumber,rules:{...g.rules},initialChips:g.initialChips,baseChips:g.baseChips,winner:g.winner,source:g.source,winType:type,wildcard:g.wildcard,
     plan,awards,seats:g.seats.map((s,i)=>({id:s.id,name:s.name,bot:!!s.bot,delta:g.deltas[i],balance:s.balance})),entries:structuredClone(g.entries),log:[...g.log],started:g.roundStarted,ended:now,automatic};
+  captureReplay(g,type==='draw'?'流局':type==='aborted'?'本局中止':type==='self'?'自摸':type==='rob'?'抢杠胡':'胡牌',g.winner<0?undefined:g.winner,now);finishReplay(g,now);
 }
 function settle(g:ModernGame,now:number,plan:WinPlan|null,automatic=false,revealed?:RoundResult['awards']){
   const type=g.winType as 'self'|'discard'|'rob', awards:RoundResult['awards']=revealed??[];
@@ -114,11 +119,12 @@ function beginWin(g:ModernGame,winner:number,source:number,ctx:WinContext,now:nu
   g.winner=winner;g.source=source;g.winType=ctx.winType;g.pending=null;g.lastDiscard=null;
   if(g.rules.wildcards){g.choice=structuredClone(ctx);g.phase='choosing';due(g,now);note(g,`${g.seats[winner].name} 胡牌，正在选择赖子方案`,now);}
   else settle(g,now,null);
+  if(g.phase==='choosing')captureReplay(g,'胡牌待选方案',winner,now);
 }
 export function confirmWin(g:ModernGame,seat:number,candidateId:string,now=Date.now(),automatic=false){
   if(g.phase!=='choosing'||!g.choice||seat!==g.winner)throw Error('当前不能确认胡牌方案');
   const plan=findWinPlan(g.choice,candidateId);if(!plan)throw Error('这个方案不属于本次胡牌');
-  if(g.rules.revealSeconds){if(g.wall.length<2)throw Error('剩余奖牌不足');g.reveal={plan:structuredClone(plan),awards:[],automatic};g.choice=null;g.phase='revealing';due(g,now);note(g,`${g.seats[seat].name} 已锁定胡牌方案，等待逐张翻开奖牌`,now);}
+  if(g.rules.revealSeconds){if(g.wall.length<2)throw Error('剩余奖牌不足');g.reveal={plan:structuredClone(plan),awards:[],automatic};g.choice=null;g.phase='revealing';due(g,now);note(g,`${g.seats[seat].name} 已锁定胡牌方案，等待逐张翻开奖牌`,now);captureReplay(g,'确认胡牌方案',seat,now);}
   else settle(g,now,structuredClone(plan),automatic);
 }
 export function flipAward(g:ModernGame,seat:number,index:number,now=Date.now(),automatic=false){
@@ -126,14 +132,16 @@ export function flipAward(g:ModernGame,seat:number,index:number,now=Date.now(),a
   if(index!==r.awards.length||index<0||index>1)throw Error('请按顺序翻开下一张奖牌');
   if(!g.wall.length)throw Error('剩余奖牌不足');const tile=g.wall.pop()!,type=effectiveType(tile,g.wildcard),hit=r.plan.hitTypes.includes(type);
   r.awards.push({tile,type,hit});note(g,`${automatic?'超时自动翻开':g.seats[seat].name+' 翻开'}第 ${index+1} 张奖牌：${countLabel(g,tile)} · ${hit?'命中 +1':'未命中'}`,now);
+  captureReplay(g,`翻开奖牌 ${countLabel(g,tile)}`,seat,now);
   if(r.awards.length===2)settle(g,now,r.plan,r.automatic,[...r.awards]);else due(g,now);
 }
 function draw(g:ModernGame,seat:number,replacement:boolean,now:number){
   g.pending=null;if(g.wall.length<=g.rules.reserve){finish(g,'draw',now);return;}
   const tile=replacement?g.wall.pop()!:g.wall.shift()!;g.turn=seat;g.drawn=tile;g.seats[seat].hand=sortEffective(g,[...g.seats[seat].hand,tile]);
   g.flower=replacement;g.seats[seat].last=replacement?'杠后补牌':'摸牌';note(g,`${g.seats[seat].name} ${g.seats[seat].last}`,now);due(g,now);
+  captureReplay(g,replacement?'杠后补牌':'摸牌',seat,now);
 }
-function startPending(g:ModernGame,p:Pending,now:number){g.pending=p;g.drawn=null;g.flower=false;p.eligible=g.seats.map((_,i)=>i).filter(i=>claimOptions(g,i,p).length>0);due(g,now);resolve(g,now);}
+function startPending(g:ModernGame,p:Pending,now:number,action:string){g.pending=p;g.drawn=null;g.flower=false;p.eligible=g.seats.map((_,i)=>i).filter(i=>claimOptions(g,i,p).length>0);due(g,now);captureReplay(g,action,p.from,now);resolve(g,now);}
 const priority=(o:Option)=>o.kind==='hu'?3:o.kind==='chi'?1:2;
 function resolve(g:ModernGame,now:number){
   const p=g.pending!,distance=(seat:number)=>(seat-p.from+4)%4;
@@ -150,7 +158,7 @@ function resolve(g:ModernGame,now:number){
   }
   if(p.kind==='added'){
     take(g,p.from,[p.tile]);const m=g.seats[p.from].melds[p.meldIndex!];m.kind='kong';m.tiles=sortEffective(g,[...m.tiles,p.tile]);
-    chargeKong(g,p.from,'added',now);draw(g,p.from,true,now);return;
+    g.pending=null;chargeKong(g,p.from,'added',now);captureReplay(g,`补杠 ${countLabel(g,p.tile)}`,p.from,now);draw(g,p.from,true,now);return;
   }
   if(!chosen){draw(g,(p.from+1)%4,false,now);return;}
   const {seat,choice}=chosen;take(g,seat,choice.tiles);const river=g.seats[p.from].river;river.splice(river.lastIndexOf(p.tile),1);
@@ -158,6 +166,7 @@ function resolve(g:ModernGame,now:number){
   if(choice.kind!=='kong')emitVisual(g,seat,choice.kind as 'chi'|'pong',now);
   g.opening=false;g.seats[seat].last=choice.kind==='chi'?'吃':choice.kind==='pong'?'碰':'杠';note(g,`${g.seats[seat].name} ${g.seats[seat].last} ${countLabel(g,p.tile)}`,now);
   g.turn=seat;g.pending=null;g.drawn=null;g.lastDiscard=null;
+  captureReplay(g,`${g.seats[seat].last} ${countLabel(g,p.tile)}`,seat,now);
   if(choice.kind==='kong'){chargeKong(g,seat,'exposed',now);draw(g,seat,true,now);}else due(g,now);
 }
 export type ModernMove={action:string;tile?:number;key?:string;candidateId?:string;awardIndex?:number};
@@ -175,15 +184,15 @@ export function moveModern(g:ModernGame,seat:number,m:ModernMove,now=Date.now())
   if(m.action==='hu'){if(!opts.canHu)throw Error('还未组成可胡的牌型');beginWin(g,seat,seat,context(g,seat),now);return;}
   if(m.action==='kong'){
     const k=opts.kongs.find(o=>o.key===m.key);if(!k)throw Error('这些牌不能开杠');g.opening=false;g.flower=false;
-    if(k.kind==='concealed'){take(g,seat,k.tiles);g.seats[seat].melds.push({kind:'kong',tiles:k.tiles,from:seat,concealed:true});chargeKong(g,seat,'concealed',now);draw(g,seat,true,now);}
-    else startPending(g,{kind:'added',from:seat,tile:k.tiles[0],meldIndex:k.meldIndex,eligible:[],responses:{},earth:false},now);
+    if(k.kind==='concealed'){take(g,seat,k.tiles);g.drawn=null;g.seats[seat].melds.push({kind:'kong',tiles:k.tiles,from:seat,concealed:true});chargeKong(g,seat,'concealed',now);captureReplay(g,`暗杠 ${countLabel(g,k.tiles[0])}`,seat,now);draw(g,seat,true,now);}
+    else{startPending(g,{kind:'added',from:seat,tile:k.tiles[0],meldIndex:k.meldIndex,eligible:[],responses:{},earth:false},now,`声明补杠 ${countLabel(g,k.tiles[0])}`);}
     return;
   }
   if(m.action!=='discard'||!Number.isInteger(m.tile)||!g.seats[seat].hand.includes(m.tile!))throw Error('请选择自己的一张手牌');
   if(!opts.discardable.includes(m.tile!))throw Error('本桌赖子不能打出，请选择其他手牌');
   const tile=m.tile!;take(g,seat,[tile]);emitVisual(g,seat,'discard',now);g.seats[seat].river.push(tile);g.seats[seat].last=`打 ${countLabel(g,tile)}`;g.lastDiscard={seat,tile};
   const earth=g.opening&&g.discardCount===0&&seat===g.dealer;g.discardCount++;g.opening=false;
-  note(g,`${g.seats[seat].name} 打出 ${countLabel(g,tile)}`,now);startPending(g,{kind:'discard',from:seat,tile,eligible:[],responses:{},earth},now);
+  note(g,`${g.seats[seat].name} 打出 ${countLabel(g,tile)}`,now);startPending(g,{kind:'discard',from:seat,tile,eligible:[],responses:{},earth},now,`打出 ${countLabel(g,tile)}`);
 }
 export function timeoutModern(g:ModernGame,now=Date.now()){
   if(!['playing','choosing','revealing'].includes(g.phase)||g.deadline>now)return false;

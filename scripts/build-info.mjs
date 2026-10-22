@@ -1,6 +1,9 @@
 import { execFileSync } from 'node:child_process';
 import { writeFileSync, readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
+import {verifyClientAssets} from './verify-client-assets.mjs';
+const verified=verifyClientAssets();
+if(verified.removed.length)console.log(`Removed ${verified.removed.length} absent secondary client preloads after verifying all entries, imports and CSS.`);
 const commit = execFileSync('git', ['rev-parse', '--verify', 'HEAD'], { encoding: 'utf8' }).trim();
 const dirty = Boolean(execFileSync('git', ['status', '--porcelain', '--untracked-files=normal'], { encoding: 'utf8' }).trim());
 const assets = createHash('sha256').update(readFileSync('lib/motion/asset-manifest.ts')).digest('hex');
