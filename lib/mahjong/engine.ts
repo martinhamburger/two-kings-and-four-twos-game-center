@@ -95,8 +95,9 @@ function draw(g:MahjongGame,seat:number,replacement:boolean,now:number){
  note(g,`${g.seats[seat].name} ${replacement?'杠后补牌':'摸牌'}`,now);
  captureReplay(g,replacement?'杠后补牌':'摸牌',seat,now);
 }
-function startPending(g:MahjongGame,p:Pending,now:number){
+function startPending(g:MahjongGame,p:Pending,now:number,action:string){
  g.pending=p;g.drawn=null;p.eligible=g.seats.map((_,i)=>i).filter(i=>claimOptions(g,i,p).length>0);due(g,now);
+ captureReplay(g,action,p.from,now);
  if(!p.eligible.length)resolve(g,now);
 }
 function resolve(g:MahjongGame,now:number){
@@ -109,7 +110,7 @@ function resolve(g:MahjongGame,now:number){
   g.seats[chosen.seat].hand=sortTiles([...g.seats[chosen.seat].hand,p.tile]);finish(g,chosen.seat,p.from,p.kind==='added'?'rob':'discard',now);return;
  }
  if(p.kind==='added'){
-  const s=g.seats[p.from];take(s,[p.tile]);const m=s.melds[p.meldIndex!];m.kind='kong';m.tiles=sortTiles([...m.tiles,p.tile]);
+  const s=g.seats[p.from];take(s,[p.tile]);const m=s.melds[p.meldIndex!];m.kind='kong';m.tiles=sortTiles([...m.tiles,p.tile]);g.pending=null;
   emitVisual(g,p.from,'kong',now,'added');note(g,`${s.name} 补杠 ${tileLabel(p.tile)}`,now);captureReplay(g,`补杠 ${tileLabel(p.tile)}`,p.from,now);draw(g,p.from,true,now);return;
  }
  if(!chosen){draw(g,(p.from+1)%4,false,now);return;}
@@ -136,14 +137,14 @@ export function moveMahjong(g:MahjongGame,seat:number,m:Move,now=Date.now()){
  if(m.action==='hu'){if(!opts.canHu)throw Error('还未组成可胡的牌型');finish(g,seat,seat,'self',now);return;}
  if(m.action==='kong'){
   const k=opts.kongs.find(o=>o.key===m.key);if(!k)throw Error('这些牌不能开杠');
-  if(k.kind==='concealed'){take(s,k.tiles);s.melds.push({kind:'kong',tiles:k.tiles,from:seat,concealed:true});emitVisual(g,seat,'kong',now,'concealed');note(g,`${s.name} 暗杠`,now);captureReplay(g,`暗杠 ${tileLabel(k.tiles[0])}`,seat,now);draw(g,seat,true,now);}
-  else if(g.rules.allowRobAddedKong){captureReplay(g,`声明补杠 ${tileLabel(k.tiles[0])}`,seat,now);startPending(g,{kind:'added',from:seat,tile:k.tiles[0],meldIndex:k.meldIndex,eligible:[],responses:{}},now);}
-  else{take(s,k.tiles);const meld=s.melds[k.meldIndex!];meld.kind='kong';meld.tiles=sortTiles([...meld.tiles,...k.tiles]);emitVisual(g,seat,'kong',now,'added');note(g,`${s.name} 补杠 ${tileLabel(k.tiles[0])}`,now);captureReplay(g,`补杠 ${tileLabel(k.tiles[0])}`,seat,now);draw(g,seat,true,now);}
+  if(k.kind==='concealed'){take(s,k.tiles);g.drawn=null;s.melds.push({kind:'kong',tiles:k.tiles,from:seat,concealed:true});emitVisual(g,seat,'kong',now,'concealed');note(g,`${s.name} 暗杠`,now);captureReplay(g,`暗杠 ${tileLabel(k.tiles[0])}`,seat,now);draw(g,seat,true,now);}
+  else if(g.rules.allowRobAddedKong){startPending(g,{kind:'added',from:seat,tile:k.tiles[0],meldIndex:k.meldIndex,eligible:[],responses:{}},now,`声明补杠 ${tileLabel(k.tiles[0])}`);}
+  else{take(s,k.tiles);g.drawn=null;const meld=s.melds[k.meldIndex!];meld.kind='kong';meld.tiles=sortTiles([...meld.tiles,...k.tiles]);emitVisual(g,seat,'kong',now,'added');note(g,`${s.name} 补杠 ${tileLabel(k.tiles[0])}`,now);captureReplay(g,`补杠 ${tileLabel(k.tiles[0])}`,seat,now);draw(g,seat,true,now);}
   return;
  }
  if(m.action!=='discard'||typeof m.tile!=='number'||!Number.isInteger(m.tile)||!s.hand.includes(m.tile))throw Error('请选择自己的一张手牌');
  take(s,[m.tile]);emitVisual(g,seat,'discard',now);s.river.push(m.tile);s.last=`打 ${tileLabel(m.tile)}`;g.lastDiscard={seat,tile:m.tile};
- note(g,`${s.name} 打出 ${tileLabel(m.tile)}`,now);captureReplay(g,`打出 ${tileLabel(m.tile)}`,seat,now);startPending(g,{kind:'discard',from:seat,tile:m.tile,eligible:[],responses:{}},now);
+ note(g,`${s.name} 打出 ${tileLabel(m.tile)}`,now);startPending(g,{kind:'discard',from:seat,tile:m.tile,eligible:[],responses:{}},now,`打出 ${tileLabel(m.tile)}`);
 }
 export function timeoutMahjong(g:MahjongGame,now=Date.now()){
  if(g.phase!=='playing'||g.deadline>now)return false;

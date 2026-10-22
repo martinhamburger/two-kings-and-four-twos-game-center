@@ -1,5 +1,5 @@
 import {evaluate,type HandValue} from './evaluate.ts';
-import {captureReplay,finishReplay} from '../replay/capture.ts';
+import {captureReplay,finishReplay,refreshReplayScene} from '../replay/capture.ts';
 import type {ReplayState} from '../replay/types.ts';
 export type Money=string;
 export type HoldemRules={id:'holdem-v1'|'holdem-v2'|'holdem-v3'|'holdem-v4'|'holdem-v5';name:string;capacity:number;initial:Money;ante:Money;small:Money;big:Money;seconds:number};
@@ -26,7 +26,7 @@ function next(g:HoldemGame,from:number,p:(s:HoldemSeat)=>boolean){for(let d=1;d<
 function pay(s:HoldemSeat,amount:bigint,live=true){amount=min(n(s.stack),amount);s.stack=(n(s.stack)-amount).toString();s.total=(n(s.total)+amount).toString();if(live)s.bet=(n(s.bet)+amount).toString();s.allIn=s.stack==='0';return amount;}
 const active=(s:HoldemSeat)=>!s.folded&&!s.allIn;
 const needs=(g:HoldemGame,s:HoldemSeat)=>active(s)&&(s.actedAt===null||n(s.bet)<n(g.currentBet));
-function setTurn(g:HoldemGame,seat:number,now:number){g.turn=seat;g.deadline=now+(g.seats[seat].bot?1200:g.rules.seconds*1000);}
+function setTurn(g:HoldemGame,seat:number,now:number){g.turn=seat;g.deadline=now+(g.seats[seat].bot?1200:g.rules.seconds*1000);refreshReplayScene(g);}
 export function startHoldem(g:HoldemGame,now=Date.now()){
  if(!['waiting','finished'].includes(g.phase)||g.seats.length!==g.rules.capacity||g.seats.some(s=>n(s.stack)<=0n||!s.ready))throw Error('坐满且每人有筹码并准备后才能开局');
  g.fixed=true;g.round=crypto.randomUUID();g.roundNumber++;g.button=(g.button+1)%g.seats.length;g.smallSeat=(g.button+1)%g.seats.length;g.bigSeat=(g.button+2)%g.seats.length;g.phase='playing';g.street='preflop';g.board=[];g.burns=[];g.result=null;g.roundStart=g.seats.map(s=>s.stack);g.log=[];
@@ -37,7 +37,7 @@ export function startHoldem(g:HoldemGame,now=Date.now()){
  for(const [index,target] of [[g.smallSeat,g.rules.small],[g.bigSeat,g.rules.big]] as const){const seat=g.seats[index];pay(seat,n(target)-(['holdem-v3','holdem-v4','holdem-v5'].includes(g.rules.id)?n(seat.bet):0n));}g.currentBet=g.rules.big;g.lastRaise=g.rules.big;
  g.seats[g.smallSeat].last='小盲 '+g.seats[g.smallSeat].bet;g.seats[g.bigSeat].last='大盲 '+g.seats[g.bigSeat].bet;
  note(g,`第 ${g.roundNumber} 局开始，前注 ${g.rules.ante}，小盲 ${g.rules.small}，大盲 ${g.rules.big}`,now);
- captureReplay(g,'发牌并投入前注、盲注',undefined,now);progress(g,g.bigSeat,now);
+ g.turn=-1;captureReplay(g,'发牌并投入前注、盲注',undefined,now);progress(g,g.bigSeat,now);
 }
 export function holdemBetStep(r:HoldemRules):Money{return ['holdem-v2','holdem-v3','holdem-v5'].includes(r.id)&&n(r.ante)>0n?r.ante:'1';}
 export type HoldemActionPreview={check:boolean;call:Money;minRaise:Money;maxRaise:Money;betStep?:Money;canRaise:boolean;canAllIn:boolean;raiseReason:string;allInReason:string};
@@ -59,7 +59,7 @@ export function holdemOptions(g:HoldemGame,id:string){
  return {acting:true,check,call,minRaise,maxRaise,canRaise,canAllIn};
 }
 
-function revealStreet(g:HoldemGame,now:number){g.burns.push(g.deck.pop()!);const count=g.street==='preflop'?3:1;for(let i=0;i<count;i++)g.board.push(g.deck.pop()!);g.street=g.street==='preflop'?'flop':g.street==='flop'?'turn':'river';g.currentBet='0';g.lastRaise=g.rules.big;for(const s of g.seats){s.bet='0';s.actedAt=null;s.timeoutChoice=undefined;s.last=s.folded?'弃牌':s.allIn?'全下':'';}const label=`发出${{flop:'翻牌',turn:'转牌',river:'河牌'}[g.street]}`;note(g,label,now);captureReplay(g,label,undefined,now);}
+function revealStreet(g:HoldemGame,now:number){g.turn=-1;g.burns.push(g.deck.pop()!);const count=g.street==='preflop'?3:1;for(let i=0;i<count;i++)g.board.push(g.deck.pop()!);g.street=g.street==='preflop'?'flop':g.street==='flop'?'turn':'river';g.currentBet='0';g.lastRaise=g.rules.big;for(const s of g.seats){s.bet='0';s.actedAt=null;s.timeoutChoice=undefined;s.last=s.folded?'弃牌':s.allIn?'全下':'';}const label=`发出${{flop:'翻牌',turn:'转牌',river:'河牌'}[g.street]}`;note(g,label,now);captureReplay(g,label,undefined,now);}
 /** Layer contributions. Folded chips still fund pots; uncalled excess is refunded. */
 export function settlePots(seats:Pick<HoldemSeat,'total'|'folded'>[],values:(number|null)[],button:number):{pots:Pot[];awards:Money[]}{
  const levels=[...new Set(seats.map(s=>s.total).filter(x=>n(x)>0n))].map(n).sort((a,b)=>a<b?-1:a>b?1:0),awards=seats.map(()=>0n),pots:Pot[]=[];let previous=0n;
@@ -79,7 +79,7 @@ function progress(g:HoldemGame,from:number,now:number){
  const survivors=g.seats.filter(s=>!s.folded);if(survivors.length===1){finish(g,'fold',now);return;}
  const movable=g.seats.filter(active);
  // A lone stack may still owe a call, but cannot bet into an uncontested side pot.
- if(movable.length<=1&&movable.every(s=>n(s.bet)>=n(g.currentBet))){if(g.street==='river'){finish(g,'showdown',now);return;}g.phase='runout';g.turn=-1;g.deadline=now+1600;return;}
+ if(movable.length<=1&&movable.every(s=>n(s.bet)>=n(g.currentBet))){if(g.street==='river'){finish(g,'showdown',now);return;}g.phase='runout';g.turn=-1;g.deadline=now+1600;refreshReplayScene(g);return;}
  const to=next(g,from,s=>needs(g,s));if(to>=0){setTurn(g,to,now);return;}
  if(g.street==='river'){finish(g,'showdown',now);return;}revealStreet(g,now);progress(g,g.button,now);
 }
@@ -99,7 +99,7 @@ export function moveHoldem(g:HoldemGame,id:string,m:HoldemMove,now=Date.now()){
   }
  }else throw Error('未知德州操作');
  s.action={id:crypto.randomUUID(),kind:s.allIn?'allin':m.action as HoldemSeatAction['kind'],paid:(n(s.total)-before).toString(),at:now,street};
- s.timeoutChoice=undefined;s.actedAt=g.currentBet;note(g,s.name+' '+s.last,now);captureReplay(g,s.name+' '+s.last,seat,now);progress(g,seat,now);
+ s.timeoutChoice=undefined;s.actedAt=g.currentBet;note(g,s.name+' '+s.last,now);g.turn=-1;captureReplay(g,s.name+' '+s.last,seat,now);progress(g,seat,now);
 }
 export type HoldemTimeoutChoice={action:string;amount?:string;maxCall:string;round:string;street:HoldemGame['street'];bet:string;stack:string};
 /** Private to the server: never include this choice in other players' views. */

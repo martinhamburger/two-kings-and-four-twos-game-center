@@ -141,7 +141,7 @@ function draw(g:ModernGame,seat:number,replacement:boolean,now:number){
   g.flower=replacement;g.seats[seat].last=replacement?'杠后补牌':'摸牌';note(g,`${g.seats[seat].name} ${g.seats[seat].last}`,now);due(g,now);
   captureReplay(g,replacement?'杠后补牌':'摸牌',seat,now);
 }
-function startPending(g:ModernGame,p:Pending,now:number){g.pending=p;g.drawn=null;g.flower=false;p.eligible=g.seats.map((_,i)=>i).filter(i=>claimOptions(g,i,p).length>0);due(g,now);resolve(g,now);}
+function startPending(g:ModernGame,p:Pending,now:number,action:string){g.pending=p;g.drawn=null;g.flower=false;p.eligible=g.seats.map((_,i)=>i).filter(i=>claimOptions(g,i,p).length>0);due(g,now);captureReplay(g,action,p.from,now);resolve(g,now);}
 const priority=(o:Option)=>o.kind==='hu'?3:o.kind==='chi'?1:2;
 function resolve(g:ModernGame,now:number){
   const p=g.pending!,distance=(seat:number)=>(seat-p.from+4)%4;
@@ -158,7 +158,7 @@ function resolve(g:ModernGame,now:number){
   }
   if(p.kind==='added'){
     take(g,p.from,[p.tile]);const m=g.seats[p.from].melds[p.meldIndex!];m.kind='kong';m.tiles=sortEffective(g,[...m.tiles,p.tile]);
-    chargeKong(g,p.from,'added',now);captureReplay(g,`补杠 ${countLabel(g,p.tile)}`,p.from,now);draw(g,p.from,true,now);return;
+    g.pending=null;chargeKong(g,p.from,'added',now);captureReplay(g,`补杠 ${countLabel(g,p.tile)}`,p.from,now);draw(g,p.from,true,now);return;
   }
   if(!chosen){draw(g,(p.from+1)%4,false,now);return;}
   const {seat,choice}=chosen;take(g,seat,choice.tiles);const river=g.seats[p.from].river;river.splice(river.lastIndexOf(p.tile),1);
@@ -184,15 +184,15 @@ export function moveModern(g:ModernGame,seat:number,m:ModernMove,now=Date.now())
   if(m.action==='hu'){if(!opts.canHu)throw Error('还未组成可胡的牌型');beginWin(g,seat,seat,context(g,seat),now);return;}
   if(m.action==='kong'){
     const k=opts.kongs.find(o=>o.key===m.key);if(!k)throw Error('这些牌不能开杠');g.opening=false;g.flower=false;
-    if(k.kind==='concealed'){take(g,seat,k.tiles);g.seats[seat].melds.push({kind:'kong',tiles:k.tiles,from:seat,concealed:true});chargeKong(g,seat,'concealed',now);captureReplay(g,`暗杠 ${countLabel(g,k.tiles[0])}`,seat,now);draw(g,seat,true,now);}
-    else{captureReplay(g,`声明补杠 ${countLabel(g,k.tiles[0])}`,seat,now);startPending(g,{kind:'added',from:seat,tile:k.tiles[0],meldIndex:k.meldIndex,eligible:[],responses:{},earth:false},now);}
+    if(k.kind==='concealed'){take(g,seat,k.tiles);g.drawn=null;g.seats[seat].melds.push({kind:'kong',tiles:k.tiles,from:seat,concealed:true});chargeKong(g,seat,'concealed',now);captureReplay(g,`暗杠 ${countLabel(g,k.tiles[0])}`,seat,now);draw(g,seat,true,now);}
+    else{startPending(g,{kind:'added',from:seat,tile:k.tiles[0],meldIndex:k.meldIndex,eligible:[],responses:{},earth:false},now,`声明补杠 ${countLabel(g,k.tiles[0])}`);}
     return;
   }
   if(m.action!=='discard'||!Number.isInteger(m.tile)||!g.seats[seat].hand.includes(m.tile!))throw Error('请选择自己的一张手牌');
   if(!opts.discardable.includes(m.tile!))throw Error('本桌赖子不能打出，请选择其他手牌');
   const tile=m.tile!;take(g,seat,[tile]);emitVisual(g,seat,'discard',now);g.seats[seat].river.push(tile);g.seats[seat].last=`打 ${countLabel(g,tile)}`;g.lastDiscard={seat,tile};
   const earth=g.opening&&g.discardCount===0&&seat===g.dealer;g.discardCount++;g.opening=false;
-  note(g,`${g.seats[seat].name} 打出 ${countLabel(g,tile)}`,now);captureReplay(g,`打出 ${countLabel(g,tile)}`,seat,now);startPending(g,{kind:'discard',from:seat,tile,eligible:[],responses:{},earth},now);
+  note(g,`${g.seats[seat].name} 打出 ${countLabel(g,tile)}`,now);startPending(g,{kind:'discard',from:seat,tile,eligible:[],responses:{},earth},now,`打出 ${countLabel(g,tile)}`);
 }
 export function timeoutModern(g:ModernGame,now=Date.now()){
   if(!['playing','choosing','revealing'].includes(g.phase)||g.deadline>now)return false;
