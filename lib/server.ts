@@ -2,6 +2,12 @@ import { env } from 'cloudflare:workers';
 import {scryptSync,timingSafeEqual,randomBytes,createHash} from 'node:crypto';
 export type User={id:string;username:string;display:string;password:string;role:string;banned:number;score:number};
 export class AppError extends Error{constructor(message:string,public status=400){super(message)}}
+// Complete rejected uploads before returning through the local Workers proxy.
+// Bytes are discarded rather than buffered, just as in the avatar upload path.
+export async function discardUnreadBody(req:Request){
+ if(!req.body||req.bodyUsed)return;
+ const reader=req.body.getReader();try{while(!(await reader.read()).done){/* Discard without retaining uploaded bytes. */}}finally{reader.releaseLock();}
+}
 export function db(){const d=(env as unknown as {DB:D1Database}).DB;if(!d)throw new AppError('服务暂不可用，请稍后重试',503);return d;}
 export const vars=()=>env as unknown as Record<string,string>;
 export const digest=(v:string)=>createHash('sha256').update(v).digest('hex');
